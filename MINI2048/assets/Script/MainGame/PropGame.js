@@ -9,6 +9,8 @@ cc.Class({
 		propHammer:cc.Node,
 		cancelNode:cc.Node,
 		mainGameBoard:cc.Node,
+		failNode:cc.Node,
+		iscallBack:false,
     },
 
     onLoad () {
@@ -24,6 +26,8 @@ cc.Class({
             onTouchEnded: function (touch, event) {            // 点击事件结束处理
 			}
          }, this.node);
+		 this.failNode.runAction(cc.fadeOut(0));
+		 this.iscallBack = false;
 	},
 	initLoad(startPos,openType,prop){
 		var self = this;
@@ -37,6 +41,7 @@ cc.Class({
 		},1000);
 	},
 	buttonCb(){
+		this.iscallBack = false;
 		if(this.openType == "PropShare"){
 			var param = {
 				type:null,
@@ -44,7 +49,7 @@ cc.Class({
 				successCallback:this.shareSuccessCb,
 				failCallback:this.shareFailedCb,
 				shareName:this.openType,
-				isWait:false
+				isWait:true
 			};
 			ThirdAPI.shareGame(param);
 		}else if(this.openType == "PropAD"){
@@ -54,12 +59,15 @@ cc.Class({
 		}
 	},
 	shareSuccessCb(type, shareTicket, arg){
-		console.log(type, shareTicket, arg);
-		arg.flyPropOpen();
+		if(arg.iscallBack == false){
+			console.log(type, shareTicket, arg);
+			arg.flyPropOpen();
+		}
+		arg.iscallBack = true;
 	},
 	flyPropOpen(){
 		var self = this;
-		if(this.propKey != null){
+		if(this.propKey != null && this.node.active == true){
 			this.node.active = false;
 			
 			var mainGameBoard = this.mainGameBoard;
@@ -97,7 +105,11 @@ cc.Class({
 		}
 	},
 	shareFailedCb(type,arg){
-		console.log(type,arg);
+		if(arg.iscallBack == false && arg.node.active == true){
+			arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5)));
+			console.log(type,arg);
+		}
+		arg.iscallBack = true;
 	},
 	cancel(){
 		this.node.active = false;

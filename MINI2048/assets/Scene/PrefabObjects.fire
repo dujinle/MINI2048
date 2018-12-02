@@ -329,7 +329,7 @@
       "__id__": 16
     },
     "_name": "PBBombGuide",
-    "_active": false,
+    "_active": true,
     "_position": {
       "__type__": "cc.Vec2",
       "x": 418,

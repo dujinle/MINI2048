@@ -14,8 +14,8 @@ GlobalData = {
 		juNum:0		//当前第几局
 	},
 	cdnGameConfig:{
-		minShareTime:0,
-		shareSuccessWeight:[0.2,0.3,0.4]
+		minShareTime:2,
+		shareSuccessWeight:[1,1,0.8,0.8,0.6]
 	},
 	//设置数字概率生成方式
 	cdnNumRate:{

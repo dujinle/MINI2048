@@ -68,7 +68,7 @@ cc.Class({
 	start(){
 		console.log("start");
 		//初始化所有面板
-		ThirdAPI.loadCDNData();
+		//ThirdAPI.loadCDNData();
 		this.initBoards();
 		if(GlobalData.gameRunTimeParam.gameStatus == 1){
 			this.continueGameBoard.getComponent("ContinueGame").showBoard();
@@ -264,10 +264,11 @@ cc.Class({
 			this.boardItem = null;
 		}
 		//清楚运行时数据
-
+		
 		GlobalData.gameRunTimeParam.gameStatus = 0;
 		GlobalData.gameRunTimeParam.totalScore = 0;
 		GlobalData.gameRunTimeParam.stepNum = 0;
+
 		GlobalData.GamePropParam.bagNum.PropFresh = 0;
 		GlobalData.GamePropParam.bagNum.PropHammer = 0;
 		GlobalData.GamePropParam.bagNum.PropBomb = 0;
@@ -319,8 +320,8 @@ cc.Class({
 		GlobalData.gameRunTimeParam.StartGuideFlag = true;
 	},
 	refeshNumObject(scaleFlag = false){
-		//var test = [256,2048];
-		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % 2];
+		//var test = [256,512,1024];
+		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % 3];
 		while(num == -1){
 			var lastKey = 140;
 			for(var key in GlobalData.cdnNumRate){
@@ -378,16 +379,16 @@ cc.Class({
 			
 			//直接投入的2048 播放动作效果 退出循环
 			if(myNum == 2048){
+				GlobalData.numMap[sq] = 0;
+				GlobalData.numNodeMap[sq] = 0;
 				oriNode.getComponent("NumObject").merge2048Action(sameLevelWasteTime,sq,function(){
 					//console.log(sq);
 					oriNode.stopAllActions();
 					oriNode.removeFromParent();
-					oriNode.destroy();
-					GlobalData.numMap[sq] = 0;
-					GlobalData.numNodeMap[sq] = 0;
+					oriNode.destroy();	
 					//console.log(GlobalData.numMap);
 				});
-				//sameLevelWasteTime += 1.2;
+				sameLevelWasteTime += 1.2;
 				break;
 			}
 			
@@ -405,7 +406,7 @@ cc.Class({
 				}
 			}
 			console.log("once",i,eatNum,myNum);
-			
+			totalEatNum = totalEatNum + eatNum;
 			if(eatNum > 0){
 				var addScore = (myNum + myNum) * eatNum * (i + 1);
 				sameLevelWasteTime += GlobalData.TimeActionParam.EatNodeMoveTime;
@@ -435,42 +436,44 @@ cc.Class({
 					GlobalData.numMap[sq] = myNum;
 					eatTag = true;
 				}
+			}else{
+				break;
 			}
-			totalEatNum = totalEatNum + eatNum;
+			
 		}
-		
 		//等待上边执行完毕
 		setTimeout(function(){
 			if(eatTag == true){
 				self.getProp(totalEatNum + 1,oriPos);
 			}
-		},sameLevelWasteTime * 1000);
-		//判断游戏是否结束
-		var finishTag = true;
-		for(var i = GlobalData.RANK_TOP;i < 6;i++){
-			for(var j = GlobalData.FILE_LEFT;j < 6;j++){
-				var fsq = GlobalData.COORD_XY(i,j);
-				//console.log(sq,GlobalData.numMap[sq]);
-				if(GlobalData.numMap[fsq] == 0){
-					finishTag = false;
-					break;
+		
+			//判断游戏是否结束
+			var finishTag = true;
+			for(var i = GlobalData.RANK_TOP;i < 6;i++){
+				for(var j = GlobalData.FILE_LEFT;j < 6;j++){
+					var fsq = GlobalData.COORD_XY(i,j);
+					//console.log(sq,GlobalData.numMap[sq]);
+					if(GlobalData.numMap[fsq] == 0){
+						finishTag = false;
+						break;
+					}
 				}
 			}
-		}
-		if(finishTag == true){
-			//存储信息
-			if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
-				GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
+			if(finishTag == true){
+				//存储信息
+				if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
+					GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
+				}
+				GlobalData.gameRunTimeParam.gameStatus = 0;
+				//ThirdAPI.updataGameInfo();
+				self.finishGameBoard.getComponent("FinishGame").show();
+			}else{
+				GlobalData.gameRunTimeParam.stepNum += 1;
+				self.boardItem = null;
+				self.refeshNumObject();
 			}
-			GlobalData.gameRunTimeParam.gameStatus = 0;
-			//ThirdAPI.updataGameInfo();
-			this.finishGameBoard.getComponent("FinishGame").show();
-		}else{
-			GlobalData.gameRunTimeParam.stepNum += 1;
-			this.boardItem = null;
-			this.refeshNumObject();
-		}
-		ThirdAPI.updataGameInfo();
+			ThirdAPI.updataGameInfo();
+		},sameLevelWasteTime * 1000);
 	},
 	//获取道具操作
 	getProp(eatNum,fromPos){

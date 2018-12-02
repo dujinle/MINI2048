@@ -96,16 +96,17 @@
         "timeline",
         "inspector",
         "hierarchy",
-        "scene",
-        "assets"
+        "assets",
+        "scene"
       ]
     },
-    "window-1543636476758": {}
+    "window-1543716252767": {},
+    "worker": {}
   },
   "panels": {
     "builder": {
-      "x": 2307,
-      "y": 46,
+      "x": 2361,
+      "y": 30,
       "width": 446,
       "height": 763
     },

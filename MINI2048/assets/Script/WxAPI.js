@@ -88,13 +88,13 @@ let WxGlobal = {
                     if (isSuccess) {
                         console.log("分享成功!");
                         if (this.sharePointConfig.successcallback) {
-                            this.sharePointConfig.successcallback();
+                            this.sharePointConfig.successcallback(null, WxGlobal.shareTicket, this.sharePointConfig.arg);
                         }
                     } else {
                         console.log("分享失败!");
                         // 不在最小分享时间内，直接失败
                         if (this.sharePointConfig.failcallback) {
-                            this.sharePointConfig.failcallback();
+                            this.sharePointConfig.failcallback("cancel", this.sharePointConfig.arg);
                         }
                     }
                     GlobalData.gameRunTimeParam.shareTimes++;
@@ -102,7 +102,7 @@ let WxGlobal = {
                     // 小于最小分享时间
                     console.log("小于最小分享时间");
                     if (this.sharePointConfig.failcallback) {
-                        this.sharePointConfig.failcallback();
+                        this.sharePointConfig.failcallback("cancel", this.sharePointConfig.arg);
                     }
                 }
                 // 重置分享配置
@@ -114,6 +114,7 @@ let WxGlobal = {
     resetSharePointConfig: function () {
         this.sharePointConfig = {
             name: "",
+			arg:null,
             wait: false,
             successcallback: null,
             failcallback: null,
@@ -214,6 +215,7 @@ let WxGlobal = {
         // 分享点和回调配置
         this.sharePointConfig = {
             name: params.shareName,
+			arg:params.arg,
             wait: params.isWait,
             successcallback: successCallback,
             failcallback: failCallback,
