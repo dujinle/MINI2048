@@ -68,7 +68,7 @@ cc.Class({
 	start(){
 		console.log("start");
 		//初始化所有面板
-		//ThirdAPI.loadCDNData();
+		ThirdAPI.loadCDNData();
 		this.initBoards();
 		if(GlobalData.gameRunTimeParam.gameStatus == 1){
 			this.continueGameBoard.getComponent("ContinueGame").showBoard();
