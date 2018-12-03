@@ -11,7 +11,7 @@ GlobalData = {
 		shareTimes:0,
 		stepNum:0,
 		gold:0,
-		juNum:0		//当前第几局
+		juNum:3		//当前第几局
 	},
 	cdnGameConfig:{
 		minShareTime:2,
@@ -131,8 +131,8 @@ GlobalData = {
 	GamePropParam:{
 		bagNum:{
 			PropFresh:0,
-			PropHammer:0,
-			PropBomb:0
+			PropHammer:2,
+			PropBomb:2
 		},
 		useNum:{
 			PropFresh:0,

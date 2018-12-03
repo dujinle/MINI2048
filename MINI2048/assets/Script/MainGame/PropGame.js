@@ -100,7 +100,7 @@ cc.Class({
 			flyProp.setPosition(this.startPos);
 			flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
 				GlobalData.GamePropParam.bagNum[self.propKey] += 1;
-				propNode.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum[self.propKey];
+				self.propFreshNum(self.propKey,propNode);
 			});
 		}
 	},
@@ -110,6 +110,30 @@ cc.Class({
 			console.log(type,arg);
 		}
 		arg.iscallBack = true;
+	},
+	//道具个数发生变化
+	propFreshNum(prop,propNode){
+		if(prop == 'PropFresh'){
+			propNode.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropFresh'];
+		}else if(prop == 'PropHammer'){
+			if(GlobalData.GamePropParam.bagNum['PropHammer'] > 0){
+				propNode.getChildByName("add").active = false;
+				propNode.getChildByName("numLabel").active = true;
+				propNode.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropHammer'];
+			}else{
+				propNode.getChildByName("add").active = true;
+				propNode.getChildByName("numLabel").active = false;
+			}
+		}else if(prop == 'PropBomb'){
+			if(GlobalData.GamePropParam.bagNum['PropBomb'] > 0){
+				propNode.getChildByName("add").active = false;
+				propNode.getChildByName("numLabel").active = true;
+				propNode.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropBomb'];
+			}else{
+				propNode.getChildByName("add").active = true;
+				propNode.getChildByName("numLabel").active = false;
+			}
+		}
 	},
 	cancel(){
 		this.node.active = false;

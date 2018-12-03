@@ -4,10 +4,21 @@
 	<dict>
 		<key>frames</key>
 		<dict>
+			<key>add.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{857,1849},{36,38}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{36,38}</string>
+			</dict>
 			<key>battle_pause.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{750,1770},{74,74}}</string>
+				<string>{{753,360},{74,74}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -18,7 +29,7 @@
 			<key>bigChangeProp.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,1},{157,159}}</string>
+				<string>{{512,1139},{157,159}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -29,7 +40,7 @@
 			<key>blockBigShadow.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,162},{142,149}}</string>
+				<string>{{643,1},{142,149}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -62,13 +73,13 @@
 			<key>bomb.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{679,1113},{89,99}}</string>
+				<string>{{750,1770},{77,106}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
-				<false />
+				<true />
 				<key>sourceSize</key>
-				<string>{89,99}</string>
+				<string>{77,106}</string>
 			</dict>
 			<key>button.png</key>
 			<dict>
@@ -106,18 +117,18 @@
 			<key>clearPropIcon.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{512,1139},{172,165}}</string>
+				<string>{{787,1},{97,101}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
-				<true />
+				<false />
 				<key>sourceSize</key>
-				<string>{172,165}</string>
+				<string>{97,101}</string>
 			</dict>
 			<key>crown.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{739,977},{70,66}}</string>
+				<string>{{789,1849},{70,66}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -128,7 +139,7 @@
 			<key>crown_1.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{681,1073},{36,34}}</string>
+				<string>{{512,1300},{36,34}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -139,7 +150,7 @@
 			<key>deletePropIcon.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,977},{94,94}}</string>
+				<string>{{753,264},{94,94}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -150,7 +161,7 @@
 			<key>flyChest.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,865},{107,110}}</string>
+				<string>{{753,152},{107,110}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -180,6 +191,17 @@
 				<key>sourceSize</key>
 				<string>{229,52}</string>
 			</dict>
+			<key>handle.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{327,1544},{89,126}}</string>
+				<key>offset</key>
+				<string>{-1,1}</string>
+				<key>rotated</key>
+				<true />
+				<key>sourceSize</key>
+				<string>{90,132}</string>
+			</dict>
 			<key>LOGO.png</key>
 			<dict>
 				<key>frame</key>
@@ -191,16 +213,60 @@
 				<key>sourceSize</key>
 				<string>{564,69}</string>
 			</dict>
+			<key>mianfeihuode.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{750,1993},{185,42}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{185,42}</string>
+			</dict>
+			<key>mianfeilibao.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{762,1923},{167,38}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{167,38}</string>
+			</dict>
+			<key>package_board.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{1,1771},{220,220}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{220,220}</string>
+			</dict>
 			<key>propBaseMap.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,742},{121,121}}</string>
+				<string>{{643,581},{121,121}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
 				<string>{121,121}</string>
+			</dict>
+			<key>propHandle.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{327,1139},{183,205}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{183,205}</string>
 			</dict>
 			<key>rank_board2.png</key>
 			<dict>
@@ -227,7 +293,7 @@
 			<key>rankBtnClose.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{789,1846},{74,74}}</string>
+				<string>{{753,436},{74,74}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -271,7 +337,7 @@
 			<key>shareBtn.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,313},{108,141}}</string>
+				<string>{{643,152},{108,141}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -282,7 +348,7 @@
 			<key>soundOff.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,456},{108,141}}</string>
+				<string>{{643,295},{108,141}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -293,7 +359,7 @@
 			<key>soundOn.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{643,599},{108,141}}</string>
+				<string>{{643,438},{108,141}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -322,72 +388,6 @@
 				<false />
 				<key>sourceSize</key>
 				<string>{286,52}</string>
-			</dict>
-			<key>mianfeihuode.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{750,1993},{185,42}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{185,42}</string>
-			</dict>
-			<key>mianfeilibao.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{762,1923},{167,38}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{167,38}</string>
-			</dict>
-			<key>package_board.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{1,1771},{220,220}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{220,220}</string>
-			</dict>
-			<key>handle.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{327,1544},{89,126}}</string>
-				<key>offset</key>
-				<string>{-1,1}</string>
-				<key>rotated</key>
-				<true />
-				<key>sourceSize</key>
-				<string>{90,132}</string>
-			</dict>
-			<key>add.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{643,1073},{36,38}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{36,38}</string>
-			</dict>
-			<key>propHandle.png</key>
-			<dict>
-				<key>frame</key>
-				<string>{{327,1139},{183,205}}</string>
-				<key>offset</key>
-				<string>{0,0}</string>
-				<key>rotated</key>
-				<false />
-				<key>sourceSize</key>
-				<string>{183,205}</string>
 			</dict>
 		</dict>
 		<key>metadata</key>

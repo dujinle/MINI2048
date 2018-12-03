@@ -12,14 +12,14 @@ cc.Class({
 	onLoad(){
 		this.hammerRealNode.active = false;
 		var self = this;
-		var EventCustom = new cc.Event.EventCustom("pressed", true);
+		this.EventCustom = new cc.Event.EventCustom("pressed", true);
 		cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
             onTouchBegan: function (touch, event) {
-				EventCustom.setUserData(event);
-				self.node.dispatchEvent(EventCustom);
+				self.EventCustom.setUserData(event);
+				self.node.dispatchEvent(self.EventCustom);
                 return true;
             },
             onTouchMoved: function (touch, event) {            // 触摸移动时触发
@@ -36,19 +36,23 @@ cc.Class({
 		var self = this;
 		this.startEffect(function(){
 			self.startEffect(function(){
+				/*
 				self.node.getChildByName("propBg").active = false;
 				self.node.getChildByName("bgSprite").active = false;
 				self.node.getChildByName("cancleBg").active = false;
+				*/
 			});
 		});
 	},
-	cancleButtonCb(){
+	cancleButtonCb(event){
 		this.node.getChildByName("propBg").active = false;
 		this.node.getChildByName("bgSprite").active = false;
 		this.node.getChildByName("cancleBg").active = false;
+		this.EventCustom.setUserData(event);
+		this.node.dispatchEvent(this.EventCustom);
 	},
     startEffect(callback){
-		this.numItemNode.runAction(cc.fadeIn(0));
+		this.numItemNode.getChildByName("numSprite").runAction(cc.fadeIn(0));
 		this.handleEffect(callback);
 	},
 	handleEffect(callback){
@@ -74,7 +78,7 @@ cc.Class({
 		var pressAction = cc.sequence(cc.rotateTo(0.2,-30),cc.rotateTo(0.2,0));
 		var moveToOrig = cc.moveTo(0.5,this.hammerPos);
 		var callFunc = cc.callFunc(function(){
-			self.numItemNode.runAction(cc.fadeOut(0.2));
+			self.numItemNode.getChildByName("numSprite").runAction(cc.fadeOut(0.2));
 		},this);
 		var actionEnd = cc.callFunc(function(){
 			callback();

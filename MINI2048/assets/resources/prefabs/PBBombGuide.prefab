@@ -221,7 +221,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 520,
+      "width": 400,
       "height": 230
     },
     "_rotationX": 0,
@@ -230,8 +230,8 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": -59,
-      "y": -451
+      "x": -120,
+      "y": -452
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -1729,7 +1729,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 120,
+      "width": 200,
       "height": 230
     },
     "_rotationX": 0,
@@ -1738,7 +1738,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 260,
+      "x": 217,
       "y": -452
     },
     "_skewX": 0,
@@ -1750,7 +1750,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "cancleLabel",
+    "_name": "BombCancleLabel",
     "_objFlags": 0,
     "_parent": {
       "__id__": 53
@@ -1786,8 +1786,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 80,
-      "height": 40
+      "width": 120,
+      "height": 60
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -1814,9 +1814,9 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_actualFontSize": 40,
-    "_fontSize": 40,
-    "_lineHeight": 40,
+    "_actualFontSize": 60,
+    "_fontSize": 60,
+    "_lineHeight": 60,
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,

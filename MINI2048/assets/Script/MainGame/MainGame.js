@@ -178,9 +178,9 @@ cc.Class({
 			this.boardItem = null;
 		}
 		this.scoreLabel.getComponent(cc.Label).string = GlobalData.gameRunTimeParam.totalScore;
-		this.gamePropFresh.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum["PropFresh"];
-		this.gamePropBomb.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum["PropBomb"];
-		this.gamePropClear.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum["PropHammer"];
+		this.propFreshNum('PropFresh');
+		this.propFreshNum('PropBomb');
+		this.propFreshNum('PropHammer');
 	},
 	gamePropButtonCb(event, customEventData){
 		console.log("gamePropButtonCb",customEventData);
@@ -197,7 +197,7 @@ cc.Class({
 			}
 			GlobalData.GamePropParam.useNum[customEventData] += 1;
 			GlobalData.GamePropParam.bagNum[customEventData] -= 1;
-			this.gamePropFresh.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum[customEventData];
+			this.propFreshNum(customEventData);
 			this.refeshNumObject(true);
 		}else if(customEventData == "PropHammer"){
 			//判断是否超过使用上限
@@ -208,6 +208,8 @@ cc.Class({
 			}
 			//判断是否有道具可以使用
 			if(GlobalData.GamePropParam.bagNum[customEventData] <= 0){
+				//道具没有了点击跳出分享界面获取道具
+				this.getShareProp(customEventData);
 				return;
 			}
 			this.propHammerGuide = cc.instantiate(GlobalData.assets["PBHammerGuide"]);
@@ -215,9 +217,6 @@ cc.Class({
 			var mainPos = this.mainGameBoard.getPosition();
 			this.propHammerGuide.setPosition(mainPos);
 			this.propHammerGuide.getComponent("PropHammerEffect").onStart();
-			GlobalData.GamePropParam.useNum[customEventData] += 1;
-			GlobalData.GamePropParam.bagNum[customEventData] -= 1;
-			this.gamePropClear.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum[customEventData];
 			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
 		}else if(customEventData == "PropBomb"){
 			//判断是否超过使用上限
@@ -228,6 +227,8 @@ cc.Class({
 			}
 			//判断是否有道具可以使用
 			if(GlobalData.GamePropParam.bagNum[customEventData] <= 0){
+				//道具没有了点击跳出分享界面获取道具
+				this.getShareProp(customEventData);
 				return;
 			}
 			this.propBombGuide = cc.instantiate(GlobalData.assets["PBBombGuide"]);
@@ -237,8 +238,9 @@ cc.Class({
 			this.propBombGuide.getComponent("PropBombEffect").onStart();
 			GlobalData.GamePropParam.useNum[customEventData] += 1;
 			GlobalData.GamePropParam.bagNum[customEventData] -= 1;
-			this.gamePropBomb.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum[customEventData];
-			this.propBombAction();
+			this.propFreshNum(customEventData);
+			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
+			this.propBombAction(2048);
 		}
 	},
 	clearGame(){
@@ -277,9 +279,9 @@ cc.Class({
 		GlobalData.GamePropParam.useNum.PropBomb = 0;
 
 		this.scoreLabel.getComponent(cc.Label).string = 0;
-		this.gamePropFresh.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum["PropFresh"];
-		this.gamePropBomb.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum["PropBomb"];
-		this.gamePropClear.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum["PropHammer"];
+		this.propFreshNum('PropFresh');
+		this.propFreshNum('PropBomb');
+		this.propFreshNum('PropHammer');
 	},
 	//开始初始化主游戏界面信息
 	enterGame(){
@@ -337,6 +339,7 @@ cc.Class({
 			this.boardItem.destroy();
 			this.boardItem = null;
 		}
+		this.lastFreshNum = num;
 		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
 		if(scaleFlag == false){
 			this.boardItem.getComponent("NumObject").onInit(num);
@@ -476,6 +479,61 @@ cc.Class({
 		},sameLevelWasteTime * 1000);
 	},
 	//获取道具操作
+	getShareProp(prop){
+		this.propKey = prop;
+		this.isShareCallBack = false;
+		this.shareSuccessCb = function(type, shareTicket, arg){
+			console.log('main',type, shareTicket, arg);
+			if(arg.isShareCallBack == true){
+				return;
+			}
+			arg.isShareCallBack = true;
+			var spriteName = null;
+			var propNode = null;
+			if(arg.propKey == "PropFresh"){
+				spriteName = "deletePropIcon";
+				propNode = arg.gamePropFresh;
+			}else if(arg.propKey == "PropBomb"){
+				spriteName = "bomb";
+				propNode = arg.gamePropBomb;
+			}else if(arg.propKey == "PropHammer"){
+				spriteName = "clearPropIcon";
+				propNode = arg.gamePropClear;
+			}else{
+				return;
+			}
+			var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
+			arg.mainGameBoard.addChild(flyProp);
+			flyProp.setPosition(cc.p(0,0));
+			flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
+				GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
+				arg.propFreshNum(arg.propKey);
+			});
+		};
+		this.shareFailedCb = function(type,arg){
+			console.log(type,arg);
+			if(arg.isShareCallBack == false){
+				var failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+				arg.mainGameBoard.addChild(failNode);
+				var actionEnd = cc.callFunc(function(){
+					failNode.removeFromParent();
+					failNode.destroy();
+				},arg);
+				failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+				
+			}
+			arg.isShareCallBack = true;
+		};
+		var param = {
+			type:null,
+			arg:this,
+			successCallback:this.shareSuccessCb,
+			failCallback:this.shareFailedCb,
+			shareName:prop,
+			isWait:true
+		};
+		ThirdAPI.shareGame(param);
+	},
 	getProp(eatNum,fromPos){
 		var self = this;
 		var res = PropManager.getProp(eatNum);
@@ -499,7 +557,7 @@ cc.Class({
 				//判断背包数量是否少于上限值
 				if(GlobalData.GamePropParam.bagNum[res] < GlobalData.cdnPropParam.PropParam[res].bagNum){
 					GlobalData.GamePropParam.bagNum[res] += 1;
-					self.gamePropFresh.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum[res];
+					self.propFreshNum('PropFresh');
 				}
 			});
 		}
@@ -511,7 +569,10 @@ cc.Class({
 	eventTouchStart(event){
 		this.moveIdx = -1;
 		if(this.propBombGuide != null && this.propBombGuide.isValid == true){
-			this.propBombGuide.getComponent("PropBombEffect").cancleButtonCb();
+			this.propBombGuide.stopAllActions();
+			this.propBombGuide.removeFromParent();
+			this.propBombGuide.destroy();
+			this.propBombGuide = null;
 		}
 		this.initLocation = this.boardItem.getPosition();
 		this.touchLocation = this.boardItem.parent.convertToNodeSpaceAR(event.getLocation());
@@ -604,6 +665,30 @@ cc.Class({
 	},
 	propPressCallBack(event){
 		var data = event.getUserData();
+		if(data == null){
+			return;
+		}
+		console.log(data.currentTarget.name)
+		//取消按钮的传递
+		if(data.currentTarget.name == 'cancleLabel'){
+			this.propHammerGuide.stopAllActions();
+			this.propHammerGuide.removeFromParent();
+			this.propHammerGuide.destroy();
+			this.propHammerGuide = null;
+			this.mainGameBoard.off("pressed",this.propPressCallBack,this);
+			return;
+		}else if(data.currentTarget.name == 'BombCancleLabel'){
+			this.propBombGuide.stopAllActions();
+			this.propBombGuide.removeFromParent();
+			this.propBombGuide.destroy();
+			this.propBombGuide = null;
+			this.mainGameBoard.off("pressed",this.propPressCallBack,this);
+			this.propBombAction(this.lastFreshNum);
+			GlobalData.GamePropParam.useNum['PropBomb'] -= 1;
+			GlobalData.GamePropParam.bagNum['PropBomb'] += 1;
+			this.propFreshNum('PropBomb');
+		}
+		
 		var selectIdx = -1;
 		var pressPos = this.mainGameBoard.convertToNodeSpaceAR(data.currentTouch.getLocation());
 		var box = this.blocksBoard.getBoundingBox();
@@ -611,6 +696,7 @@ cc.Class({
 		if(cc.rectContainsPoint(box,pressPos)){
 			//console.log("在矩形内部");
 			var nearDist = 10000;
+			var blockSize = null;
 			for(var i = 0;i < this.blocksBoard.children.length;i++){
 				var block = this.blocksBoard.children[i];
 				//var blockPos = this.node.convertToNodeSpaceAR(block.getPosition());
@@ -624,10 +710,11 @@ cc.Class({
 					nearDist = dist;
 					selectIdx = i;
 				}
+				blockSize = block.getContentSize();
 			}
 			//this.blockShadow();
-			if(selectIdx != -1){
-				var sq = GlobalData.ConvertToMapSpace(this.moveIdx);
+			if(selectIdx != -1 && blockSize != null &&  nearDist < blockSize.width/2 && nearDist < blockSize.height/2){
+				var sq = GlobalData.ConvertToMapSpace(selectIdx);
 				if(GlobalData.numMap[sq] != 0 && GlobalData.numNodeMap[sq] != 0){
 					//如果找到选择的格子 则取消监听事件
 					var self = this;
@@ -644,25 +731,30 @@ cc.Class({
 						self.propHammerGuide.stopAllActions();
 						self.propHammerGuide.removeFromParent();
 						self.propHammerGuide.destroy();
+						GlobalData.GamePropParam.useNum['PropHammer'] += 1;
+						GlobalData.GamePropParam.bagNum['PropHammer'] -= 1;
+						self.propFreshNum('PropHammer');
 					});
 				}
 			}
 			console.log(selectIdx,nearDist);
 		}else{
+			/*
 			this.propHammerGuide.stopAllActions();
 			this.propHammerGuide.removeFromParent();
 			this.propHammerGuide.destroy();
+			*/
 			console.log("在矩形外部");
 		}
 	},
-	propBombAction(){
+	propBombAction(num){
 		if(this.boardItem != null){
 			this.boardItem.removeFromParent();
 			this.boardItem.destroy();
 			this.boardItem = null;
 		}
 		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
-		this.boardItem.getComponent("NumObject").scaleShow(2048);
+		this.boardItem.getComponent("NumObject").scaleShow(num);
 		this.boardItem.on(cc.Node.EventType.TOUCH_START, this.eventTouchStart,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_MOVE, this.eventTouchMove,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_END, this.eventTouchEnd,this);
@@ -671,6 +763,30 @@ cc.Class({
 		var blockBoardPos = this.blockBoard.getPosition();
 		this.boardItem.setPosition(cc.p(blockBoardPos.x,blockBoardPos.y - 3));
 		console.log("refeshNumObject",GlobalData.gameRunTimeParam.stepNum);
+	},
+	//道具个数发生变化
+	propFreshNum(prop){
+		if(prop == 'PropFresh'){
+			this.gamePropFresh.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropFresh'];
+		}else if(prop == 'PropHammer'){
+			if(GlobalData.GamePropParam.bagNum['PropHammer'] > 0){
+				this.gamePropClear.getChildByName("add").active = false;
+				this.gamePropClear.getChildByName("numLabel").active = true;
+				this.gamePropClear.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropHammer'];
+			}else{
+				this.gamePropClear.getChildByName("add").active = true;
+				this.gamePropClear.getChildByName("numLabel").active = false;
+			}
+		}else if(prop == 'PropBomb'){
+			if(GlobalData.GamePropParam.bagNum['PropBomb'] > 0){
+				this.gamePropBomb.getChildByName("add").active = false;
+				this.gamePropBomb.getChildByName("numLabel").active = true;
+				this.gamePropBomb.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropBomb'];
+			}else{
+				this.gamePropBomb.getChildByName("add").active = true;
+				this.gamePropBomb.getChildByName("numLabel").active = false;
+			}
+		}
 	},
 	blockShadow(){
 		for(var i = 0;i < this.blocksBoard.children.length;i++){

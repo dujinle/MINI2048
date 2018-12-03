@@ -16,14 +16,13 @@ cc.Class({
     },
 	onLoad(){
 		var self = this;
-		var EventCustom = new cc.Event.EventCustom("pressed", true);
+		this.EventCustom = new cc.Event.EventCustom("pressed", true);
+		/*
 		cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
             // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
             onTouchBegan: function (touch, event) {
-				EventCustom.setUserData(event);
-				self.node.dispatchEvent(EventCustom);
                 return true;
             },
             onTouchMoved: function (touch, event) {            // 触摸移动时触发
@@ -31,6 +30,7 @@ cc.Class({
             onTouchEnded: function (touch, event) {            // 点击事件结束处理
 			}
         }, this.node);
+		*/
 		this.eliminateNode1.runAction(cc.fadeOut());
 		this.eliminateNode2.runAction(cc.fadeOut());
 		this.eliminateNode3.runAction(cc.fadeOut());
@@ -47,16 +47,17 @@ cc.Class({
 		var self = this;
 		this.startEffect(function(){
 			self.startEffect(function(){
+				/*
 				self.node.stopAllActions();
 				self.node.removeFromParent();
 				self.node.destroy();
+				*/
 			});
 		});
 	},
-	cancleButtonCb(){
-		this.node.stopAllActions();
-		this.node.removeFromParent();
-		this.node.destroy();
+	cancleButtonCb(event){
+		this.EventCustom.setUserData(event);
+		this.node.dispatchEvent(this.EventCustom);
 	},
     startEffect(callback){
 		this.bombNode.runAction(cc.fadeIn());
