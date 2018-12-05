@@ -322,6 +322,11 @@ cc.Class({
 		GlobalData.gameRunTimeParam.StartGuideFlag = true;
 	},
 	refeshNumObject(scaleFlag = false){
+		if(this.boardItem != null){
+			this.boardItem.removeFromParent();
+			this.boardItem.destroy();
+			this.boardItem = null;
+		}
 		//var test = [256,512,1024];
 		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % 3];
 		while(num == -1){
@@ -334,11 +339,7 @@ cc.Class({
 			}
 			num = util.getRandomNum(GlobalData.cdnNumRate[lastKey]);
 		}
-		if(this.boardItem != null){
-			this.boardItem.removeFromParent();
-			this.boardItem.destroy();
-			this.boardItem = null;
-		}
+		
 		this.lastFreshNum = num;
 		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
 		if(scaleFlag == false){
@@ -346,13 +347,13 @@ cc.Class({
 		}else{
 			this.boardItem.getComponent("NumObject").scaleShow(num);
 		}
+		this.mainGameBoard.addChild(this.boardItem);
+		var blockBoardPos = this.blockBoard.getPosition();
+		this.boardItem.setPosition(cc.p(blockBoardPos.x,blockBoardPos.y - 3));
 		this.boardItem.on(cc.Node.EventType.TOUCH_START, this.eventTouchStart,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_MOVE, this.eventTouchMove,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_END, this.eventTouchEnd,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_CANCEL, this.eventTouchCancel,this);
-		this.mainGameBoard.addChild(this.boardItem);
-		var blockBoardPos = this.blockBoard.getPosition();
-		this.boardItem.setPosition(cc.p(blockBoardPos.x,blockBoardPos.y - 3));
 		console.log("refeshNumObject",num,GlobalData.gameRunTimeParam.stepNum);
 	},
 	offNodeAction(){
@@ -363,7 +364,9 @@ cc.Class({
 	},
 	//游戏规则算法
 	gameLogic(){
-		var self = this;
+		var totalEatNum = 0;
+		var totalScore = 0;
+		var sameLevelWasteTime = 0;
 		var sq = GlobalData.ConvertToMapSpace(this.moveIdx);
 		var x = GlobalData.FILE_X(sq);
 		var y = GlobalData.RANK_Y(sq);
@@ -371,85 +374,102 @@ cc.Class({
 
 		var oriNode = GlobalData.numNodeMap[sq];
 		var oriPos = oriNode.getPosition();
-		var eatTag = false;
 		console.log("gameLogic start",sq,x,y,myNum);
 		//最多有四次组合[-1,1]
-		var totalEatNum = 0;
-		var sameLevelWasteTime = 0;
-		for(var i = 0;i < 4;i++){
-			var eatNum = 0;
-			sameLevelWasteTime = GlobalData.TimeActionParam.EatNodeOtherDelayTime * i;
-			
-			//直接投入的2048 播放动作效果 退出循环
-			if(myNum == 2048){
-				GlobalData.numMap[sq] = 0;
-				GlobalData.numNodeMap[sq] = 0;
-				oriNode.getComponent("NumObject").merge2048Action(sameLevelWasteTime,sq,function(){
-					//console.log(sq);
-					oriNode.stopAllActions();
-					oriNode.removeFromParent();
-					oriNode.destroy();	
-					//console.log(GlobalData.numMap);
-				});
-				sameLevelWasteTime += 1.2;
-				break;
-			}
-			
-			for(var j = 0;j < GlobalData.moveStep.length;j++){
-				var step = GlobalData.moveStep[j];
-				var tsq = GlobalData.COORD_XY(x + step[0],y + step[1]);
-				//console.log("gameLogic",step,GlobalData.numMap[tsq],myNum,tsq);
+		
+		var eatNumLevel = new Array();
+		//查找并收集所有的可以合并的数字
+		for(let i = 0;i < 4;i++){
+			let numDic = {'key':myNum,'list':[],'eatNum':0};
+			for(let j = 0;j < GlobalData.moveStep.length;j++){
+				let step = GlobalData.moveStep[j];
+				let tsq = GlobalData.COORD_XY(x + step[0],y + step[1]);
+				console.log("gameLogic",step,GlobalData.numMap[tsq],myNum,tsq);
 				if(GlobalData.numMap[tsq] == myNum){
-					//1,子被吃掉动画
-					oriNode.getComponent("NumObject").eatOtherNode(i,GlobalData.numNodeMap[tsq]);
-					GlobalData.numMap[tsq] = 0;
-					GlobalData.numNodeMap[tsq] = 0;
-					eatNum = eatNum + 1;
-					sameLevelWasteTime += GlobalData.TimeActionParam.EatNodeSameDelayTime;
+					numDic.list.push(tsq);
+					numDic.eatNum += 1;
+					totalEatNum += 1;
 				}
 			}
-			console.log("once",i,eatNum,myNum);
-			totalEatNum = totalEatNum + eatNum;
-			if(eatNum > 0){
-				var addScore = (myNum + myNum) * eatNum * (i + 1);
-				sameLevelWasteTime += GlobalData.TimeActionParam.EatNodeMoveTime;
-				//1.1判断是否合成的2048
-				if(myNum * 2 == 2048){
-					oriNode.getComponent("NumObject").merge2048Action(sameLevelWasteTime,sq,function(){
-						console.log(oriNode.getNumberOfRunningActions());
-						oriNode.stopAllActions();
-						oriNode.removeFromParent();
-						oriNode.destroy();
-						GlobalData.numMap[sq] = 0;
-						GlobalData.numNodeMap[sq] = 0;
-					});
-					sameLevelWasteTime += 1.2;
-					break;
-				}else{
-					//2.数字合并完毕，进行效果起飞
-					oriNode.getComponent("NumObject").flyEatFinishNode(
-						i,sameLevelWasteTime,
-						myNum * 2,addScore,this.scoreLabel);
-					
-					//3.音效播放
-					oriNode.getComponent("NumObject").eatNodeAudioPlay(i,sameLevelWasteTime);
-					//4.刷新数字并执行吃子结束之后的动画效果
-					oriNode.getComponent("NumObject").eatFinishNum(myNum * 2,sameLevelWasteTime);
-					myNum = myNum * 2;
-					GlobalData.numMap[sq] = myNum;
-					eatTag = true;
-				}
+			if(numDic.eatNum > 0){
+				eatNumLevel.push(numDic);
+				myNum = myNum * 2;
 			}else{
 				break;
 			}
-			
+		}
+		console.log(eatNumLevel);
+		//对可以合并的数字进行action操作
+		var self = this;
+		for(let i = 0;i < eatNumLevel.length;i++){
+			let numDic = eatNumLevel[i];
+			totalScore += (numDic.key * 2) * numDic.list.length * (i + 1);
+			setTimeout(function(ii){
+				let numDic = eatNumLevel[ii];
+				for(let j = 0;j < numDic.list.length;j++){
+					let finished = cc.callFunc(function(pthis,tsq){
+						console.log('eatNode',ii,tsq);
+						let dnode = GlobalData.numNodeMap[numDic.list[tsq]];
+						dnode.removeFromParent();
+						dnode.destroy();
+						GlobalData.numMap[numDic.list[tsq]] = 0;
+						GlobalData.numNodeMap[numDic.list[tsq]] = 0;
+					},this,j);
+					let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
+					GlobalData.numNodeMap[numDic.list[j]].runAction(cc.sequence(moveAction,finished));
+				}
+				
+				setTimeout(function(idx,numDic){
+					//1.1数字合并完毕，进行效果起飞
+					if(self.flyNode == null){
+						self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+						self.node.addChild(self.flyNode);
+					}
+					let pos = oriNode.getPosition();
+					let size = oriNode.getContentSize();
+					let flyNodeSize = self.flyNode.getContentSize();
+					let addScore = (numDic.key * 2) * numDic.list.length * (idx + 1);
+					
+					self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/4));
+					self.flyNode.stopAllActions();
+					self.flyNode.getComponent("FlyNumAction").startFlyOnce(idx,numDic.key,addScore);
+					//1.2播放音效
+					oriNode.getComponent("NumObject").play(GlobalData.AudioParam.AudioComb1 + idx);
+					//4.刷新数字并执行吃子结束之后的动画效果
+					oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2);
+				},(GlobalData.TimeActionParam.EatNodeMoveTime) * 1000,ii,numDic);
+				
+			},GlobalData.TimeActionParam.EatNodeOtherDelayTime * i * 1000,i);
+			//花费的总时长 0.7 为分数起飞的时间
+			sameLevelWasteTime = GlobalData.TimeActionParam.EatNodeOtherDelayTime * i + 0.5;
+		}
+		if(eatNumLevel.length > 0){
+			//所有动作完成进行最后的分数刷新，以及最后的效果
+			GlobalData.numMap[sq] = myNum;
+			setTimeout(function(){
+				self.flyNode.stopAllActions();
+				self.flyNode.removeFromParent();
+				self.flyNode.destroy();
+				self.flyNode = null;
+				self.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
+				self.getProp(totalEatNum + 1,oriPos);
+			},sameLevelWasteTime * 1000);
+		}
+		//2048 播放动作效果 退出循环
+		if(myNum == 2048){
+			GlobalData.numMap[sq] = 0;
+			GlobalData.numNodeMap[sq] = 0;
+			oriNode.getComponent("NumObject").merge2048Action(sameLevelWasteTime,sq,function(){	
+				console.log(GlobalData.numMap);
+				oriNode.stopAllActions();
+				oriNode.removeFromParent();
+				oriNode.destroy();	
+				//console.log(GlobalData.numMap);
+			});
+			sameLevelWasteTime += 1.2;
 		}
 		//等待上边执行完毕
 		setTimeout(function(){
-			if(eatTag == true){
-				self.getProp(totalEatNum + 1,oriPos);
-			}
-		
 			//判断游戏是否结束
 			var finishTag = true;
 			for(var i = GlobalData.RANK_TOP;i < 6;i++){
@@ -476,7 +496,7 @@ cc.Class({
 				self.refeshNumObject();
 			}
 			ThirdAPI.updataGameInfo();
-		},sameLevelWasteTime * 1000);
+		},(sameLevelWasteTime)* 1000);
 	},
 	//获取道具操作
 	getShareProp(prop){
@@ -633,11 +653,14 @@ cc.Class({
 				GlobalData.numMap[sq] = parseInt(this.boardItem.getComponent("NumObject").value);
 				GlobalData.numNodeMap[sq] = this.boardItem;
 				this.gameLogic();
-				return true;
+			}else{
+				var moveAction = cc.moveTo(0.02,this.initLocation);
+				this.boardItem.runAction(moveAction);
 			}
+		}else{
+			var moveAction = cc.moveTo(0.02,this.initLocation);
+			this.boardItem.runAction(moveAction);
 		}
-		var moveAction = cc.moveTo(0.02,this.initLocation);
-		this.boardItem.runAction(moveAction);
 	},
 	eventTouchCancel(event){
 		//console.log('poker TOUCH_CANCEL');
@@ -658,10 +681,14 @@ cc.Class({
 				GlobalData.numNodeMap[sq] = this.boardItem;
 				this.gameLogic();
 				return true;
+			}else{
+				var moveAction = cc.moveTo(0.02,this.initLocation);
+				this.boardItem.runAction(moveAction);
 			}
+		}else{
+			var moveAction = cc.moveTo(0.02,this.initLocation);
+			this.boardItem.runAction(moveAction);
 		}
-		var moveAction = cc.moveTo(0.02,this.initLocation);
-		this.boardItem.runAction(moveAction);
 	},
 	propPressCallBack(event){
 		var data = event.getUserData();

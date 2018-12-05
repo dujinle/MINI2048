@@ -131,8 +131,8 @@ GlobalData = {
 	GamePropParam:{
 		bagNum:{
 			PropFresh:0,
-			PropHammer:2,
-			PropBomb:2
+			PropHammer:0,
+			PropBomb:0
 		},
 		useNum:{
 			PropFresh:0,

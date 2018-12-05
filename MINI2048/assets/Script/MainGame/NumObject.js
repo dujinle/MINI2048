@@ -67,44 +67,6 @@ cc.Class({
 		this.node.runAction(cc.sequence(cc.delayTime(delayTime),ESAction));
 		this.node.runAction(cc.sequence(cc.delayTime(delayTime + 1.2),numAction));
 	},
-	flyEatFinishNode(idx,delayTime,eatValue,totalScore,scoreLabel){
-		//数字合并之后 分数飞到label的效果
-		var self = this;
-		if(this.flyNode == null){
-			this.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
-			this.node.parent.addChild(this.flyNode);
-		}
-		//刷新分数
-		this.rollNumFromLabel = function(){
-			if(totalScore <= 0){
-				this.unschedule(this.rollNumFromLabel);
-				return;
-			}
-			totalScore -= GlobalData.TimeActionParam.NumRollCell;
-			GlobalData.gameRunTimeParam.totalScore += GlobalData.TimeActionParam.NumRollCell;
-			scoreLabel.getComponent(cc.Label).string = GlobalData.gameRunTimeParam.totalScore;
-		}
-		var pos = this.node.getPosition();
-		var size = this.node.getContentSize();
-		var flyNodeSize = this.flyNode.getContentSize();
-		this.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/4));
-		console.log("totalScore",totalScore,idx);
-		var actionEnd = cc.callFunc(function(){
-			self.flyNode.stopAllActions();
-			self.flyNode.getComponent("FlyNumAction").numLabel.setPosition(cc.p(0,0));
-			self.flyNode.getComponent("FlyNumAction").startFly(
-				idx,
-				0,
-				eatValue,
-				totalScore,
-				function(){
-					//开始刷新分数
-					scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
-				}
-			);
-		},this)
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),actionEnd));
-	},
 	//动画增大一次这里加入延迟参数 多次执行的时候延迟一下
 	scaleBigOnce(delayTime){
 		var self = this;
@@ -131,36 +93,13 @@ cc.Class({
 		this.node.runAction(cc.sequence(cc.delayTime(delayTime),scaleUpAction,scaleDownAction));
 		this.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.RefreshNodeTime),playAudioAction));
 	},
-	eatFinishNum(num,delayTime){
+	MergeFinishNum(num){
 		var self = this;
 		var callFunc = cc.callFunc(function(){
 			self.onInit(num);
 		},this);
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),callFunc));
-		this.scaleBigOnce(delayTime);
-	},
-	eatOtherNode(idx,node){
-		//1.移动节点到主节点上
-		var moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,this.node.getPosition());
-		//2.释放节点内存
-		var destroyAction = cc.callFunc(function(){
-			node.removeFromParent();
-			node.destroy();
-		},this);
-		node.runAction(cc.sequence(
-			cc.delayTime(GlobalData.TimeActionParam.EatNodeOtherDelayTime * idx),
-			moveAction,
-			destroyAction
-		));
-	},
-	//播放吃子的音效
-	eatNodeAudioPlay(idx,delayTime){
-		var self = this;
-		//播放音效
-		var playAudioAction = cc.callFunc(function(){
-			self.play(GlobalData.AudioParam.AudioComb1 + idx);
-		},this);
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),playAudioAction));
+		this.node.runAction(callFunc);
+		this.scaleBigOnce(0);
 	},
 	play(type){
 		if(GlobalData.AudioSupport == true){
