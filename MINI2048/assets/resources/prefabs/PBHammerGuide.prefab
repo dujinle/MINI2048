@@ -272,7 +272,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 330,
+      "width": 248,
       "height": 30
     },
     "_rotationX": 0,
@@ -307,7 +307,7 @@
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
-    "_N$string": "拖动锤子到任意数字敲除",
+    "_N$string": "点击任意数字敲除 ",
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",

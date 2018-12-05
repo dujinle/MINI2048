@@ -11,10 +11,11 @@ GlobalData = {
 		shareTimes:0,
 		stepNum:0,
 		gold:0,
-		juNum:3		//当前第几局
+		juNum:0		//当前第几局
 	},
 	cdnGameConfig:{
 		minShareTime:2,
+		gameModel:'crazy',
 		shareSuccessWeight:[1,1,0.8,0.8,0.6]
 	},
 	//设置数字概率生成方式
@@ -162,14 +163,12 @@ GlobalData = {
 		PropUnLock:{	//道具解锁盘数
 			PropFresh:1,
 			PropHammer:3,
-			PropBomb:3
+			PropBomb:3,
+			PropAD:3,		//分享广告解锁盘数
+			PropShare:3,
+			PropRelive:2
 		},
-		PropSABRate:{
-			PropShare:1/2,
-			PropAD:1/2
-		},
-		AdUnLock:3,		//分享广告解锁盘数
-		ShareUnLock:3,
+		PropReliveRate:0.5,
 		SABOpenRate:{		//打开宝箱获取道具的概率
 			PropFresh:0.4,
 			PropHammer:0.3,
@@ -179,7 +178,7 @@ GlobalData = {
 			//刷新概率参数设置
 			PropFresh:{
 				bagNum:5,
-				useNum:-1
+				useNum:-1,
 			},
 			//锤子概率参数设置
 			PropHammer:{
@@ -197,6 +196,71 @@ GlobalData = {
 				useNum:1
 			}
 		},
+		//不同的模式对应的概率不同 可以动态配置
+		PropShareOrADRate:{
+			crazy:{
+				isJushu:50,
+				unLock:{
+					PropHammer:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropBomb:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropSAB:{
+						PropShare:0.7,
+						PropAD:0.3
+					}
+				},
+				lock:{
+					PropHammer:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropBomb:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropSAB:{
+						PropShare:1,
+						PropAD:0
+					}
+				}
+			},
+			normal:{
+				isJushu:10,
+				unLock:{
+					PropHammer:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropBomb:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropSAB:{
+						PropShare:0.7,
+						PropAD:0.3
+					}
+				},
+				lock:{
+					PropHammer:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropBomb:{
+						PropShare:0.3,
+						PropAD:0.7
+					},
+					PropSAB:{
+						PropShare:0,
+						PropAD:1
+					}
+				}
+			}
+		}
 	},
 	cdnShareImages:["res/raw-assets/resources/shareImages/shareDefault.d3b6b.png"],
 	cdnTexts:["你介意男生玩这个游戏吗?"],

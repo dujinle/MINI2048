@@ -209,6 +209,7 @@ cc.Class({
 			//判断是否有道具可以使用
 			if(GlobalData.GamePropParam.bagNum[customEventData] <= 0){
 				//道具没有了点击跳出分享界面获取道具
+				//关闭 等待提审
 				this.getShareProp(customEventData);
 				return;
 			}
@@ -228,6 +229,7 @@ cc.Class({
 			//判断是否有道具可以使用
 			if(GlobalData.GamePropParam.bagNum[customEventData] <= 0){
 				//道具没有了点击跳出分享界面获取道具
+				//关闭 等待提审
 				this.getShareProp(customEventData);
 				return;
 			}
@@ -524,6 +526,8 @@ cc.Class({
 			}
 			arg.isShareCallBack = true;
 		};
+		//先屏蔽 待有了广告在加入
+		//var shareOrAd = PropManager.getShareOrADKey(prop);
 		var param = {
 			type:null,
 			arg:this,
@@ -634,10 +638,14 @@ cc.Class({
 				GlobalData.numNodeMap[sq] = this.boardItem;
 				this.gameLogic();
 				return true;
+			}else{
+				var moveAction = cc.moveTo(0.02,this.initLocation);
+				this.boardItem.runAction(moveAction);
 			}
+		}else{
+			var moveAction = cc.moveTo(0.02,this.initLocation);
+			this.boardItem.runAction(moveAction);
 		}
-		var moveAction = cc.moveTo(0.02,this.initLocation);
-		this.boardItem.runAction(moveAction);
 	},
 	eventTouchCancel(event){
 		//console.log('poker TOUCH_CANCEL');
@@ -658,10 +666,14 @@ cc.Class({
 				GlobalData.numNodeMap[sq] = this.boardItem;
 				this.gameLogic();
 				return true;
+			}else{
+				var moveAction = cc.moveTo(0.02,this.initLocation);
+				this.boardItem.runAction(moveAction);
 			}
+		}else{
+			var moveAction = cc.moveTo(0.02,this.initLocation);
+			this.boardItem.runAction(moveAction);
 		}
-		var moveAction = cc.moveTo(0.02,this.initLocation);
-		this.boardItem.runAction(moveAction);
 	},
 	propPressCallBack(event){
 		var data = event.getUserData();
@@ -769,6 +781,7 @@ cc.Class({
 		if(prop == 'PropFresh'){
 			this.gamePropFresh.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropFresh'];
 		}else if(prop == 'PropHammer'){
+			//关闭等待提审
 			if(GlobalData.GamePropParam.bagNum['PropHammer'] > 0){
 				this.gamePropClear.getChildByName("add").active = false;
 				this.gamePropClear.getChildByName("numLabel").active = true;
