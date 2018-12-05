@@ -16,17 +16,12 @@ let PropManager = {
 			}
 		}else if(prop == "PropSAB"){
 			//随机的道具打开方式 分享、广告、宝箱
-			propsRate = GlobalData.cdnPropParam.PropSABRate;
-			prop = this.getRandomRateKey(propsRate);
+			//propsRate = GlobalData.cdnPropParam.PropSABRate;
+			//prop = this.getRandomRateKey(propsRate);
+			prop = this.getShareOrADKey(prop);
 			//如果是分享则判断是否解锁
-			if(prop == "PropShare"){
-				if(GlobalData.cdnPropParam.ShareUnLock > GlobalData.gameRunTimeParam.juNum){
-					return null;
-				}
-			}else if(prop == "PropAD"){
-				if(GlobalData.cdnPropParam.AdUnLock > GlobalData.gameRunTimeParam.juNum){
-					return null;
-				}
+			if(GlobalData.cdnPropParam.PropUnLock[prop] > GlobalData.gameRunTimeParam.juNum){
+				return null;
 			}
 			propsRate = GlobalData.cdnPropParam.SABOpenRate;
 			var secondProp = this.getRandomRateKey(propsRate);;
@@ -36,12 +31,26 @@ let PropManager = {
 		}
 		return null;
 	},
+	getShareOrADKey(prop){
+		var trate = GlobalData.cdnPropParam.PropShareOrADRate[GlobalData.cdnGameConfig.gameModel];
+		var isUnLock = trate.isJushu < GlobalData.gameRunTimeParam.juNum;
+		console.log(trate,isUnLock);
+		if(isUnLock == true){
+			var propsRate = trate.unLock[prop];
+			var netProp = this.getRandomRateKey(propsRate);
+			return netProp;
+		}else{
+			var propsRate = trate.lock[prop];
+			var netProp = this.getRandomRateKey(propsRate);
+			return netProp;
+		}
+	},
 	getRandomRateKey(propsRate){
 		var prop = null;
 		var random = Math.random();
 		var randomTmp = 0;
 		for(var key in propsRate){
-			console.log(key,propsRate[key]);
+			//console.log(key,propsRate[key]);
 			if(random > randomTmp && random <= propsRate[key] + randomTmp){
 				prop = key;
 			}
