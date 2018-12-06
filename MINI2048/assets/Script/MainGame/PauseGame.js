@@ -8,6 +8,7 @@ cc.Class({
     },
 
     onLoad () {
+		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,
             swallowTouches: true,
@@ -20,6 +21,16 @@ cc.Class({
             onTouchEnded: function (touch, event) {            // 点击事件结束处理
 			}
          }, this.node);
+	},
+	//继续游戏按钮回调
+	onContinueCb(event){
+		this.EventCustom.setUserData({type:'PauseContinue'});
+		this.node.dispatchEvent(this.EventCustom);
+	},
+	//重新开始按钮回调
+	onResetCb(event){
+		this.EventCustom.setUserData({type:'PauseReset'});
+		this.node.dispatchEvent(this.EventCustom);
 	},
 	showPause(){
 		console.log("showPause game board show");
@@ -39,7 +50,6 @@ cc.Class({
 		var gotoHomeAction = cc.scaleTo(GlobalData.TimeActionParam.PauseGameMoveTime,0.2);
 		this.gotoHomeButton.runAction(gotoHomeAction);
 		var hideAction = cc.callFunc(function(){
-			self.node.active = false;
 			if(callBack != null){
 				callBack();
 			}

@@ -6,18 +6,14 @@ cc.Class({
 		value:0,
 		bgSprite:cc.Node,
 		pressedScale:1.2,
-		flyNode:null,
-		audioSources:{
-			type:cc.AudioSource,
-			default:[]
-		},
+		flyNode:null
     },
     onInit(num) {
 		this.value = num;
 		var spriteFrameName = GlobalData.skin + '_' + num;
 		this.bgSprite.getComponent(cc.Sprite).spriteFrame = GlobalData.assets[spriteFrameName];
 	},
-	merge2048Action(delayTime,sq,callback){
+	merge2048Action(audioManager,sq,callback){
 		console.log("merge2048Action",sq);
 		var self = this;
 		var ESAction = cc.callFunc(function(){
@@ -39,13 +35,13 @@ cc.Class({
 			E1Sprite.scale = 1;
 			E2Sprite.scale = 1;
 			E3Sprite.scale = 1;
-			self.bgSprite.runAction(cc.sequence(cc.delayTime(delayTime),cc.fadeOut(0.1)));
+			self.bgSprite.runAction(cc.fadeOut(0.1));
 			console.log(E1Sprite.getContentSize());
 			var scaleBig1 = cc.scaleTo(0.3,2);
 			E1Sprite.runAction(cc.sequence(scaleBig1.clone(),cc.fadeOut(0.1)));
 			E2Sprite.runAction(cc.sequence(cc.delayTime(0.3),scaleBig1.clone(),cc.fadeOut(0.1)));
 			E3Sprite.runAction(cc.sequence(cc.delayTime(0.6),scaleBig1.clone(),cc.fadeOut(0.1)));
-			self.play(GlobalData.AudioParam.AudioClearLight);
+			audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioClearLight);
 		});
 		
 		var numAction = cc.callFunc(function(){
@@ -64,46 +60,48 @@ cc.Class({
 			console.log("merge2048Action",sq);
 			callback();
 		},this);
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),ESAction));
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime + 1.2),numAction));
+		this.node.runAction(ESAction);
+		this.node.runAction(cc.sequence(cc.delayTime(1.2),numAction));
 	},
 	//动画增大一次这里加入延迟参数 多次执行的时候延迟一下
-	scaleBigOnce(delayTime){
-		var self = this;
+	scaleBigOnce(audioManager){
 		this.initScale = this.node.scale;
 		var scaleUpAction = cc.scaleTo(GlobalData.TimeActionParam.EatNodeBigTime, this.pressedScale);
         var scaleDownAction = cc.scaleTo(GlobalData.TimeActionParam.EatNodeBigTime, this.initScale);
-		var playAudioAction = cc.callFunc(function(){
-			self.play(GlobalData.AudioParam.AudioFall);
-		},this);
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),scaleUpAction,scaleDownAction));
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),playAudioAction));
+		audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
+		this.node.runAction(cc.sequence(scaleUpAction,scaleDownAction));
 	},
-	scaleShow(num){
-		var self = this;
-		var delayTime = 0;
+	flyMergeScore(key,length,idx,addScore){
+		console.log('flyMergeScore action......',idx,this.flyNode);
+		if(this.flyNode == null){
+			this.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+			this.node.addChild(this.flyNode);
+		}
+		this.flyNode.stopAllActions();
+		var pos = this.node.getPosition();
+		var size = this.node.getContentSize();
+		var flyNodeSize = this.flyNode.getContentSize();
+		this.flyNode.setPosition(cc.p(0,size.height/2 + flyNodeSize.height/4));
+		this.flyNode.getComponent("FlyNumAction").startFlyOnce(idx,key,addScore);
+	},
+	scaleShow(num,audioManager){
 		this.initScale = this.node.scale;
 		this.node.scale = 0;
 		this.onInit(num);
 		var scaleUpAction = cc.scaleTo(GlobalData.TimeActionParam.RefreshNodeTime, this.pressedScale);
         var scaleDownAction = cc.scaleTo(GlobalData.TimeActionParam.RefreshNodeTime, this.initScale);
 		var playAudioAction = cc.callFunc(function(){
-			self.play(GlobalData.AudioParam.AudioFall);
+			audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
 		},this);
-		this.node.runAction(cc.sequence(cc.delayTime(delayTime),scaleUpAction,scaleDownAction));
+		this.node.runAction(cc.sequence(scaleUpAction,scaleDownAction));
 		this.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.RefreshNodeTime),playAudioAction));
 	},
-	MergeFinishNum(num){
-		var self = this;
-		var callFunc = cc.callFunc(function(){
-			self.onInit(num);
+	MergeFinishNum(num,audioManager,cb){
+		this.onInit(num);
+		this.scaleBigOnce(audioManager);
+		var finish = cc.callFunc(function(){
+			cb();
 		},this);
-		this.node.runAction(callFunc);
-		this.scaleBigOnce(0);
-	},
-	play(type){
-		if(GlobalData.AudioSupport == true){
-			this.audioSources[type].getComponent(cc.AudioSource).play();
-		}
+		this.node.runAction(cc.sequence(cc.delayTime(0.05),finish));
 	}
 });

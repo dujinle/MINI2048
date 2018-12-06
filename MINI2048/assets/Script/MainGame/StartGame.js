@@ -12,6 +12,22 @@ cc.Class({
 		soundOnNode:cc.Node,
 		soundOffNode:cc.Node,
     },
+	onLoad(){
+		cc.eventManager.addListener({
+            event: cc.EventListener.TOUCH_ONE_BY_ONE,
+            swallowTouches: true,
+            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
+            onTouchBegan: function (touch, event) {
+                return true;
+            },
+            onTouchMoved: function (touch, event) {            // 触摸移动时触发
+            },
+            onTouchEnded: function (touch, event) {            // 点击事件结束处理
+			}
+         }, this.node);
+		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
+	},
+	
 	shareButtonCb(){
 		var param = {
 			type:null,
@@ -22,12 +38,6 @@ cc.Class({
 			isWait:false
 		};
 		ThirdAPI.shareGame(param);
-	},
-	shareSuccessCb(type, shareTicket, arg){
-		console.log(type, shareTicket, arg);
-	},
-	shareFailedCb(type,arg){
-		console.log(type,arg);
 	},
 	soundButtonCb(){
 		if(GlobalData.AudioSupport == false){
@@ -40,6 +50,21 @@ cc.Class({
 			this.soundOffNode.active = true;
 		}
 	},
+	rankButtonCb(){
+		this.EventCustom.setUserData({type:'RankView'});
+		this.node.dispatchEvent(this.EventCustom);
+	},
+	startButtonCb(){
+		this.EventCustom.setUserData({type:'StartGame'});
+		this.node.dispatchEvent(this.EventCustom);
+	},
+	shareSuccessCb(type, shareTicket, arg){
+		console.log(type, shareTicket, arg);
+	},
+	shareFailedCb(type,arg){
+		console.log(type,arg);
+	},
+	
 	showStart(){
 		console.log("start game board show");
 		if(GlobalData.AudioSupport == false){
@@ -126,13 +151,5 @@ cc.Class({
 			cc.delayTime(GlobalData.TimeActionParam.StartGameMoveTime),
 			hideAction
 		));
-		/*
-		setTimeout(function(){
-			self.scoreLabel.active = false;
-			self.kingSprite.active = false;
-			self.node.active = false;
-			callBack();
-		},GlobalData.TimeActionParam.StartGameMoveTime * 1000 + 20);
-		*/
 	},
 });

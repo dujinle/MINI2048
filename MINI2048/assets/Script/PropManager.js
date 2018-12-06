@@ -31,6 +31,29 @@ let PropManager = {
 		}
 		return null;
 	},
+	getPropRelive(){
+		//如果没有解锁 不可用
+		if(GlobalData.cdnPropParam.PropUnLock.PropRelive > GlobalData.gameRunTimeParam.juNum){
+			return null;
+		}
+		//如果有道具了 就不获取了
+		if(GlobalData.GamePropParam.bagNum.PropRelive > 0 && GlobalData.GamePropParam.useNum.PropRelive == 0){
+			var prop = this.getShareOrADKey('PropRelive');
+			return prop;
+		}
+		if(GlobalData.GamePropParam.useNum.PropRelive > 0){
+			return null;
+		}
+		if(GlobalData.GamePropParam.bagNum.PropRelive == 0){
+			var random = Math.random();
+			if(random <= GlobalData.cdnPropParam.PropReliveRate){
+				GlobalData.GamePropParam.bagNum.PropRelive += 1;
+				return this.getShareOrADKey('PropRelive');
+			}else{
+				return null;
+			}
+		}
+	},
 	getShareOrADKey(prop){
 		var trate = GlobalData.cdnPropParam.PropShareOrADRate[GlobalData.cdnGameConfig.gameModel];
 		var isUnLock = trate.isJushu < GlobalData.gameRunTimeParam.juNum;

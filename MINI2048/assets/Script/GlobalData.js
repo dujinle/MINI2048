@@ -86,7 +86,7 @@ GlobalData = {
 		GuideMoveTime:2,			//引导动画时间
 		EatNodeMoveTime:0.2,		//被吃掉的子移动时间
 		EatNodeSameDelayTime:0,		//同类子移动延迟单元
-		EatNodeOtherDelayTime:0.3,	//不同类子被吃间隔时间
+		EatNodeOtherDelayTime:0.05,	//不同类子被吃间隔时间
 		EatNodeBigTime:0.1,			//数字变大的时间这个值需要x2
 		RefreshNodeTime:0.3,		//刷新数字的时间
 		NumRollCell:2,				//数字roll的单元
@@ -113,32 +113,30 @@ GlobalData = {
 	//游戏中音效参数不可改变
 	AudioSupport:true,
 	AudioParam:{
-		AudioFall:0,
-		AudioComb:1,
-		AudioComb1:2,
-		AudioComb2:3,
-		AudioComb3:4,
-		AudioComb4:5,
-		AudioComb5:6,
-		AudioComb6:7,
-		AudioClearLight:8,
-		//其他音效
-		AudioButton:0,
-		AudioBg:1,
-		AudioDown:2,
-		AudioFallM:3
+		AudioBg:0,
+		AudioButton:1,
+		AudioFall:2,
+		AudioComb1:3,
+		AudioComb2:4,
+		AudioComb3:5,
+		AudioComb4:6,
+		AudioComb5:7,
+		AudioComb6:8,
+		AudioClearLight:9
 	},
 	//道具概率参数
 	GamePropParam:{
 		bagNum:{
 			PropFresh:0,
 			PropHammer:2,
-			PropBomb:2
+			PropBomb:2,
+			PropRelive:0
 		},
 		useNum:{
 			PropFresh:0,
 			PropHammer:0,
-			PropBomb:0
+			PropBomb:0,
+			PropRelive:0
 		}
 	},
 	cdnPropParam:{	//道具自定义参数
@@ -212,6 +210,10 @@ GlobalData = {
 					PropSAB:{
 						PropShare:0.7,
 						PropAD:0.3
+					},
+					PropRelive:{
+						PropShare:0.3,
+						PropAD:0.7
 					}
 				},
 				lock:{
@@ -226,6 +228,10 @@ GlobalData = {
 					PropSAB:{
 						PropShare:1,
 						PropAD:0
+					},
+					PropRelive:{
+						PropShare:0.3,
+						PropAD:0.7
 					}
 				}
 			},
@@ -243,6 +249,10 @@ GlobalData = {
 					PropSAB:{
 						PropShare:0.7,
 						PropAD:0.3
+					},
+					PropRelive:{
+						PropShare:0.3,
+						PropAD:0.7
 					}
 				},
 				lock:{
@@ -257,6 +267,10 @@ GlobalData = {
 					PropSAB:{
 						PropShare:0,
 						PropAD:1
+					},
+					PropRelive:{
+						PropShare:0.3,
+						PropAD:0.7
 					}
 				}
 			}

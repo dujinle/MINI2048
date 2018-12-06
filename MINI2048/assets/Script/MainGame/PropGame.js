@@ -12,7 +12,6 @@ cc.Class({
 		failNode:cc.Node,
 		iscallBack:false,
     },
-
     onLoad () {
 		cc.eventManager.addListener({
             event: cc.EventListener.TOUCH_ONE_BY_ONE,

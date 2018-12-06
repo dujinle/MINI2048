@@ -23,7 +23,6 @@ cc.Class({
 		mainGameBoard:cc.Node,
 		continueGameBoard:cc.Node,
 		startGameBoard:cc.Node,
-		pauseGameBoard:cc.Node,
 		finishGameBoard:cc.Node,
 		rankGameBorad:cc.Node,
 		propGameBoard:cc.Node,
@@ -36,7 +35,7 @@ cc.Class({
 		console.log("onLoad start");
 		//异步加载动态数据
 		this.rate = 0;
-		this.resLength = 7;
+		this.resLength = 8;
 		GlobalData.assets = {};
 		var self = this;
 		this.loadUpdate = function(){
@@ -44,7 +43,6 @@ cc.Class({
 			var scale = Math.floor((self.rate/self.resLength ) * 100);
 			if(self.rate >= self.resLength){
 				self.unschedule(self.loadUpdate);
-				self.startButton.getComponent(cc.Button).interactable = true;
 			}
 		};
 		cc.loader.loadRes("dynamicPlist", cc.SpriteAtlas, function (err, atlas) {
@@ -61,19 +59,21 @@ cc.Class({
 				console.log("load res prefab:" + assets[i].name);
 			}
 		});
-		this.startButton.getComponent(cc.Button).interactable = false;
 		this.schedule(this.loadUpdate,0.5);
 		ThirdAPI.loadLocalData();
+		//监听事件传递
+		this.node.on('dispatchEvent',this.dispatchMyEvent,this);
 	},
 	start(){
 		console.log("start");
 		//初始化所有面板
-		ThirdAPI.loadCDNData();
+		//ThirdAPI.loadCDNData();
 		this.initBoards();
+		this.startGameBoard.getComponent("StartGame").showStart();
 		if(GlobalData.gameRunTimeParam.gameStatus == 1){
 			this.continueGameBoard.getComponent("ContinueGame").showBoard();
-		}else{
-			this.startGameBoard.getComponent("StartGame").showStart();
+		}else if(GlobalData.gameRunTimeParam.gameStatus == 0){
+			
 		}
 	},
 	initBoards(){
@@ -83,7 +83,6 @@ cc.Class({
 		this.finishGameBoard.active = false;
 		this.rankGameBorad.active = false;
 		this.propGameBoard.active = false;
-		
 		//主游戏界面初始化
 		this.pauseButton.active = false;
 		this.kingLabel.active = false;
@@ -99,42 +98,7 @@ cc.Class({
 		var self = this;
 		//继续游戏
 		this.audioManager.getComponent("AudioManager").play(GlobalData.AudioParam.AudioButton);
-		if(customEventData == "C_continue"){
-			this.continueGameBoard.getComponent("ContinueGame").hideBoard(function(){
-				self.resumeGameMap();
-				self.enterGame();
-				//以上操作会改变游戏状态所以更新信息
-				ThirdAPI.updataGameInfo();
-			});
-		}else if(customEventData == "C_restart"){
-			//重新开始游戏
-			this.continueGameBoard.getComponent("ContinueGame").hideBoard(function(){
-				GlobalData.gameRunTimeParam.gameStatus = 0;
-				self.startGameBoard.getComponent("StartGame").showStart();
-				//以上操作会改变游戏状态所以更新信息
-				ThirdAPI.updataGameInfo();
-			});
-			
-		}else if(customEventData == "S_start"){
-			this.startGameBoard.getComponent("StartGame").hideStart(function(){
-				GlobalData.gameRunTimeParam.juNum += 1;
-				self.clearGame();
-				self.enterGame();
-				//以上操作会改变游戏状态所以更新信息
-				ThirdAPI.updataGameInfo();
-			});
-		}else if(customEventData == "P_continue"){
-			this.pauseGameBoard.getComponent("PauseGame").hidePause();
-		}else if(customEventData == "P_exit"){
-			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
-				GlobalData.gameRunTimeParam.gameStatus = 0;
-				self.clearGame();
-				self.initBoards();
-				self.startGameBoard.getComponent("StartGame").showStart();
-				//以上操作会改变游戏状态所以更新信息
-				ThirdAPI.updataGameInfo();
-			});
-		}else if(customEventData == "F_restart"){
+		if(customEventData == "F_restart"){
 			this.finishGameBoard.getComponent("FinishGame").hide();
 			GlobalData.gameRunTimeParam.juNum += 1;
 			this.clearGame();
@@ -150,6 +114,9 @@ cc.Class({
 			}
 			this.rankGameBorad.getComponent("RankGame").show();
 		}else if(customEventData == "P_show"){
+			this.pauseGameBoard = cc.instantiate(GlobalData.assets['PBPauseGameBoard']);
+			this.node.addChild(this.pauseGameBoard);
+			this.pauseGameBoard.setPosition(cc.p(0,0));
 			this.pauseGameBoard.getComponent("PauseGame").showPause();
 		}
 	},
@@ -327,8 +294,8 @@ cc.Class({
 			this.boardItem.destroy();
 			this.boardItem = null;
 		}
-		//var test = [256,512,1024];
-		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % 3];
+		//var test = [256,512,1024,2048];
+		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % test.length];
 		while(num == -1){
 			var lastKey = 140;
 			for(var key in GlobalData.cdnNumRate){
@@ -345,7 +312,7 @@ cc.Class({
 		if(scaleFlag == false){
 			this.boardItem.getComponent("NumObject").onInit(num);
 		}else{
-			this.boardItem.getComponent("NumObject").scaleShow(num);
+			this.boardItem.getComponent("NumObject").scaleShow(num,this.audioManager);
 		}
 		this.mainGameBoard.addChild(this.boardItem);
 		var blockBoardPos = this.blockBoard.getPosition();
@@ -364,8 +331,8 @@ cc.Class({
 	},
 	//游戏规则算法
 	gameLogic(){
+		var self = this;
 		var totalEatNum = 0;
-		var totalScore = 0;
 		var sameLevelWasteTime = 0;
 		var sq = GlobalData.ConvertToMapSpace(this.moveIdx);
 		var x = GlobalData.FILE_X(sq);
@@ -373,7 +340,6 @@ cc.Class({
 		var myNum = GlobalData.numMap[sq];
 
 		var oriNode = GlobalData.numNodeMap[sq];
-		var oriPos = oriNode.getPosition();
 		console.log("gameLogic start",sq,x,y,myNum);
 		//最多有四次组合[-1,1]
 		
@@ -384,119 +350,150 @@ cc.Class({
 			for(let j = 0;j < GlobalData.moveStep.length;j++){
 				let step = GlobalData.moveStep[j];
 				let tsq = GlobalData.COORD_XY(x + step[0],y + step[1]);
-				console.log("gameLogic",step,GlobalData.numMap[tsq],myNum,tsq);
+				//console.log("gameLogic",step,GlobalData.numMap[tsq],myNum,tsq);
 				if(GlobalData.numMap[tsq] == myNum){
-					numDic.list.push(tsq);
+					numDic.list.push(GlobalData.numNodeMap[tsq]);
 					numDic.eatNum += 1;
+					GlobalData.numMap[tsq] = 0;
+					GlobalData.numNodeMap[tsq] = 0;
 					totalEatNum += 1;
 				}
 			}
 			if(numDic.eatNum > 0){
 				eatNumLevel.push(numDic);
 				myNum = myNum * 2;
+				GlobalData.numMap[sq] = myNum;
 			}else{
 				break;
 			}
 		}
-		console.log(eatNumLevel);
+		//console.log(eatNumLevel);
 		//对可以合并的数字进行action操作
-		var self = this;
-		for(let i = 0;i < eatNumLevel.length;i++){
-			let numDic = eatNumLevel[i];
-			totalScore += (numDic.key * 2) * numDic.list.length * (i + 1);
-			setTimeout(function(ii){
-				let numDic = eatNumLevel[ii];
-				for(let j = 0;j < numDic.list.length;j++){
-					let finished = cc.callFunc(function(pthis,tsq){
-						console.log('eatNode',ii,tsq);
-						let dnode = GlobalData.numNodeMap[numDic.list[tsq]];
-						dnode.removeFromParent();
-						dnode.destroy();
-						GlobalData.numMap[numDic.list[tsq]] = 0;
-						GlobalData.numNodeMap[numDic.list[tsq]] = 0;
-					},this,j);
-					let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
-					GlobalData.numNodeMap[numDic.list[j]].runAction(cc.sequence(moveAction,finished));
-				}
-				
-				setTimeout(function(idx,numDic){
-					//1.1数字合并完毕，进行效果起飞
-					if(self.flyNode == null){
-						self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
-						self.node.addChild(self.flyNode);
-					}
-					let pos = oriNode.getPosition();
-					let size = oriNode.getContentSize();
-					let flyNodeSize = self.flyNode.getContentSize();
-					let addScore = (numDic.key * 2) * numDic.list.length * (idx + 1);
-					
-					self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/4));
-					self.flyNode.stopAllActions();
-					self.flyNode.getComponent("FlyNumAction").startFlyOnce(idx,numDic.key,addScore);
-					//1.2播放音效
-					oriNode.getComponent("NumObject").play(GlobalData.AudioParam.AudioComb1 + idx);
-					//4.刷新数字并执行吃子结束之后的动画效果
-					oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2);
-				},(GlobalData.TimeActionParam.EatNodeMoveTime) * 1000,ii,numDic);
-				
-			},GlobalData.TimeActionParam.EatNodeOtherDelayTime * i * 1000,i);
-			//花费的总时长 0.7 为分数起飞的时间
-			sameLevelWasteTime = GlobalData.TimeActionParam.EatNodeOtherDelayTime * i + 0.5;
-		}
 		if(eatNumLevel.length > 0){
-			//所有动作完成进行最后的分数刷新，以及最后的效果
-			GlobalData.numMap[sq] = myNum;
-			setTimeout(function(){
-				self.flyNode.stopAllActions();
-				self.flyNode.removeFromParent();
-				self.flyNode.destroy();
-				self.flyNode = null;
-				self.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
-				self.getProp(totalEatNum + 1,oriPos);
-			},sameLevelWasteTime * 1000);
-		}
-		//2048 播放动作效果 退出循环
-		if(myNum == 2048){
-			GlobalData.numMap[sq] = 0;
-			GlobalData.numNodeMap[sq] = 0;
-			oriNode.getComponent("NumObject").merge2048Action(sameLevelWasteTime,sq,function(){	
-				console.log(GlobalData.numMap);
-				oriNode.stopAllActions();
-				oriNode.removeFromParent();
-				oriNode.destroy();	
-				//console.log(GlobalData.numMap);
-			});
-			sameLevelWasteTime += 1.2;
-		}
-		//等待上边执行完毕
-		setTimeout(function(){
-			//判断游戏是否结束
-			var finishTag = true;
-			for(var i = GlobalData.RANK_TOP;i < 6;i++){
-				for(var j = GlobalData.FILE_LEFT;j < 6;j++){
-					var fsq = GlobalData.COORD_XY(i,j);
-					//console.log(sq,GlobalData.numMap[sq]);
-					if(GlobalData.numMap[fsq] == 0){
-						finishTag = false;
-						break;
-					}
-				}
-			}
-			if(finishTag == true){
-				//存储信息
-				if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
-					GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
-				}
-				GlobalData.gameRunTimeParam.gameStatus = 0;
-				//ThirdAPI.updataGameInfo();
-				self.finishGameBoard.getComponent("FinishGame").show();
+			this.deepCallSameMerge(sq,eatNumLevel,oriNode,myNum,totalEatNum,0,0);
+		}else{
+			//2048 播放动作效果 退出循环
+			if(myNum == 2048){
+				GlobalData.numMap[sq] = 0;
+				GlobalData.numNodeMap[sq] = 0;
+				oriNode.getComponent("NumObject").merge2048Action(this.audioManager,sq,function(){
+					console.log(GlobalData.numMap);
+					oriNode.stopAllActions();
+					oriNode.removeFromParent();
+					oriNode.destroy();	
+					self.mergeFinish();
+					//console.log(GlobalData.numMap);
+				});
 			}else{
-				GlobalData.gameRunTimeParam.stepNum += 1;
-				self.boardItem = null;
-				self.refeshNumObject();
+				this.mergeFinish();
 			}
-			ThirdAPI.updataGameInfo();
-		},(sameLevelWasteTime)* 1000);
+		}
+	},
+	mergeFinish(){
+		//判断游戏是否结束
+		var self = this;
+		var finishTag = true;
+		for(var i = GlobalData.RANK_TOP;i < 6;i++){
+			for(var j = GlobalData.FILE_LEFT;j < 6;j++){
+				var fsq = GlobalData.COORD_XY(i,j);
+				if(GlobalData.numMap[fsq] == 0){
+					finishTag = false;
+					break;
+				}
+			}
+		}
+		if(finishTag == true){
+			//存储信息
+			if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
+				GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
+			}
+			GlobalData.gameRunTimeParam.gameStatus = 0;
+			//ThirdAPI.updataGameInfo();
+			
+			//复活道具
+			var propRelive = PropManager.getPropRelive();
+			if(propRelive != null && propRelive != 'PropAD'){
+				this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
+				this.node.addChild(this.reliveGameBoard);
+				reliveGameBoard.getComponent('ReliveGame').waitCallBack(function(){
+					self.reliveGameBoard.removeFromParent();
+					self.reliveGameBoard.destroy();
+					self.finishGameBoard.getComponent("FinishGame").show();
+				});
+			}else{
+				this.finishGameBoard.getComponent("FinishGame").show();
+			}
+		}else{
+			GlobalData.gameRunTimeParam.stepNum += 1;
+			this.boardItem = null;
+			this.refeshNumObject();
+		}
+		ThirdAPI.updataGameInfo();
+	},
+	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
+		console.log(totalEatNum,totalScore,deep);
+		var self = this;
+		var numDic = mergeArray.shift();
+		if(numDic == null){
+			this.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
+			if(finishKey == 2048){
+				GlobalData.numMap[sq] = 0;
+				GlobalData.numNodeMap[sq] = 0;
+				oriNode.getComponent("NumObject").merge2048Action(this.audioManager,sq,function(){
+					console.log(GlobalData.numMap);
+					oriNode.stopAllActions();
+					oriNode.removeFromParent();
+					oriNode.destroy();
+					self.getProp(totalEatNum + 1,oriNode.getPosition());
+				});
+			}else{
+				this.getProp(totalEatNum + 1,oriNode.getPosition());
+			}
+			this.mergeFinish();
+		}else{
+			var mergeFinishAction = function(){
+				console.log('start run mergeFinishAction');
+				//1.1数字合并完毕，进行效果起飞
+				let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
+				if(self.flyNode == null){
+					self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+					self.flyNode.setLocalZOrder(3);
+					self.mainGameBoard.addChild(self.flyNode);
+				}
+				self.flyNode.stopAllActions();
+				var pos = oriNode.getPosition();
+				var size = oriNode.getContentSize();
+				var flyNodeSize = self.flyNode.getContentSize();
+				self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
+				self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key,addScore);
+				//oriNode.getComponent("NumObject").flyMergeScore(numDic.key,numDic.list.length,deep,addScore);
+				//4.刷新数字并执行吃子结束之后的动画效果
+				oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager,function(){
+					self.deepCallSameMerge(sq,
+						mergeArray,
+						oriNode,
+						finishKey,
+						totalEatNum,
+						totalScore + addScore,
+						deep + 1
+					);
+				});
+				//1.2播放音效
+				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+			}
+			for(let j = 0;j < numDic.list.length;j++){
+				let finished = cc.callFunc(function(pthis,tsq){
+					//console.log('eatNode',tsq);
+					numDic.list[tsq].removeFromParent();
+					numDic.list[tsq].destroy();
+					if(j == numDic.list.length - 1){
+						mergeFinishAction();
+					}
+				},this,j);
+				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
+				numDic.list[j].runAction(cc.sequence(moveAction,finished));
+			}
+		}
 	},
 	//获取道具操作
 	getShareProp(prop){
@@ -596,7 +593,7 @@ cc.Class({
 		}
 		this.initLocation = this.boardItem.getPosition();
 		this.touchLocation = this.boardItem.parent.convertToNodeSpaceAR(event.getLocation());
-		console.log(this.initLocation.x,this.initLocation.y,this.touchLocation.x,this.touchLocation.y);
+		//console.log(this.initLocation.x,this.initLocation.y,this.touchLocation.x,this.touchLocation.y);
 		var size = this.boardItem.getContentSize();
 		var moveToPos = cc.p(this.touchLocation.x,this.touchLocation.y + size.height / 2);
 		var moveAction = cc.moveTo(0.02,moveToPos);
@@ -648,7 +645,7 @@ cc.Class({
 				blockPos.y = blockPos.y + blocksBoardPos.y;
 				this.boardItem.setPosition(blockPos);
 				block.getComponent("BlockBoard").shadowSprite.active = false;
-				this.boardItem.getComponent("NumObject").scaleBigOnce(0);
+				this.boardItem.getComponent("NumObject").scaleBigOnce(this.audioManager);
 				this.offNodeAction();
 				GlobalData.numMap[sq] = parseInt(this.boardItem.getComponent("NumObject").value);
 				GlobalData.numNodeMap[sq] = this.boardItem;
@@ -675,7 +672,7 @@ cc.Class({
 				blockPos.y = blockPos.y + blocksBoardPos.y;
 				this.boardItem.setPosition(blockPos);
 				block.getComponent("BlockBoard").shadowSprite.active = false;
-				this.boardItem.getComponent("NumObject").scaleBigOnce(0);
+				this.boardItem.getComponent("NumObject").scaleBigOnce(this.audioManager);
 				this.offNodeAction();
 				GlobalData.numMap[sq] = parseInt(this.boardItem.getComponent("NumObject").value);
 				GlobalData.numNodeMap[sq] = this.boardItem;
@@ -781,7 +778,7 @@ cc.Class({
 			this.boardItem = null;
 		}
 		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
-		this.boardItem.getComponent("NumObject").scaleShow(num);
+		this.boardItem.getComponent("NumObject").scaleShow(num,this.audioManager);
 		this.boardItem.on(cc.Node.EventType.TOUCH_START, this.eventTouchStart,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_MOVE, this.eventTouchMove,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_END, this.eventTouchEnd,this);
@@ -814,6 +811,67 @@ cc.Class({
 				this.gamePropBomb.getChildByName("numLabel").active = false;
 			}
 		}
+	},
+	dispatchMyEvent(event){
+		var self = this;
+		var data = event.getUserData();
+		console.log('dispatchMyEvent',data);
+		this.audioManager.getComponent("AudioManager").play(GlobalData.AudioParam.AudioButton);
+		if(data.type == "ContinueGame"){
+			this.continueGameBoard.getComponent("ContinueGame").hideBoard();
+			this.startGameBoard.getComponent("StartGame").hideStart(function(){
+				self.resumeGameMap();
+				self.enterGame();
+				//以上操作会改变游戏状态所以更新信息
+				ThirdAPI.updataGameInfo();
+			});
+		}
+		else if(data.type == "ResetGame"){
+			//重新开始游戏
+			this.continueGameBoard.getComponent("ContinueGame").hideBoard();
+			GlobalData.gameRunTimeParam.gameStatus = 0;
+			//以上操作会改变游戏状态所以更新信息
+			ThirdAPI.updataGameInfo();
+		}
+		else if(data.type == 'StartGame'){
+			this.startGameBoard.getComponent("StartGame").hideStart(function(){
+				GlobalData.gameRunTimeParam.juNum += 1;
+				self.clearGame();
+				self.enterGame();
+				//以上操作会改变游戏状态所以更新信息
+				ThirdAPI.updataGameInfo();
+			});
+		}
+		else if(data.type == "PauseContinue"){
+			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
+				self.pauseGameBoard.removeFromParent();
+				self.pauseGameBoard.destroy();
+			});
+		}else if(data.type == "PauseReset"){
+			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
+				self.pauseGameBoard.removeFromParent();
+				self.pauseGameBoard.destroy();
+				GlobalData.gameRunTimeParam.gameStatus = 0;
+				self.clearGame();
+				self.initBoards();
+				self.startGameBoard.getComponent("StartGame").showStart();
+				//以上操作会改变游戏状态所以更新信息
+				ThirdAPI.updataGameInfo();
+			});
+		}
+		if(data.type == 'ReliveBack'){
+			this.reliveGame();
+		}
+		
+	},
+	reliveGame(){
+		this.reliveGameBoard.removeFromParent();
+		this.reliveGameBoard.destroy();
+		var blockBoardPos = this.blockBoard.getPosition();
+		this.boardItem.removeFromParent();
+		this.boardItem.destroy();
+		this.boardItem = null;
+		this.propBombAction(2048);
 	},
 	blockShadow(){
 		for(var i = 0;i < this.blocksBoard.children.length;i++){

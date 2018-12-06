@@ -21,7 +21,7 @@ let util = {
 		for(var num in rateType){
 			var rateTmp = rateType[num];
 			if(randomNumber > startRate && randomNumber <= startRate + rateTmp){
-				console.log("getRandomNum",num);
+				//console.log("getRandomNum",num);
 				return num;
 			}
 			startRate += rateTmp;
