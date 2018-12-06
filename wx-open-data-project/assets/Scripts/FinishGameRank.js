@@ -8,7 +8,7 @@ cc.Class({
 		}
     },
 	loadRank(data){
-		console.log(data);
+		//console.log(data);
 		for(var i = 0;i < data.length;i++){
 			var dd = data[i];
 			var itemNode = this.rankNodes[i];

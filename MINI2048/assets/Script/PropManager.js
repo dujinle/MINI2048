@@ -15,9 +15,11 @@ let PropManager = {
 				return prop;
 			}
 		}else if(prop == "PropSAB"){
-			//随机的道具打开方式 分享、广告、宝箱
-			//propsRate = GlobalData.cdnPropParam.PropSABRate;
-			//prop = this.getRandomRateKey(propsRate);
+			//确定宝箱是否解锁
+			if(GlobalData.cdnPropParam.PropUnLock['PropSAB'] > GlobalData.gameRunTimeParam.juNum){
+				//没有解锁 直接获取 刷新道具
+				return "PropFresh";
+			}
 			prop = this.getShareOrADKey(prop);
 			//如果是分享则判断是否解锁
 			if(GlobalData.cdnPropParam.PropUnLock[prop] > GlobalData.gameRunTimeParam.juNum){
@@ -34,18 +36,22 @@ let PropManager = {
 	getPropRelive(){
 		//如果没有解锁 不可用
 		if(GlobalData.cdnPropParam.PropUnLock.PropRelive > GlobalData.gameRunTimeParam.juNum){
+			console.log('getPropRelive unLock');
 			return null;
 		}
 		//如果有道具了 就不获取了
 		if(GlobalData.GamePropParam.bagNum.PropRelive > 0 && GlobalData.GamePropParam.useNum.PropRelive == 0){
 			var prop = this.getShareOrADKey('PropRelive');
+			console.log("getPropRelive",prop);
 			return prop;
 		}
 		if(GlobalData.GamePropParam.useNum.PropRelive > 0){
+			console.log("getPropRelive use limit");
 			return null;
 		}
 		if(GlobalData.GamePropParam.bagNum.PropRelive == 0){
 			var random = Math.random();
+			console.log("getPropRelive",random);
 			if(random <= GlobalData.cdnPropParam.PropReliveRate){
 				GlobalData.GamePropParam.bagNum.PropRelive += 1;
 				return this.getShareOrADKey('PropRelive');
@@ -53,6 +59,18 @@ let PropManager = {
 				return null;
 			}
 		}
+	},
+	getPropStart(){
+		//如果没有解锁 不可用
+		if(GlobalData.cdnPropParam.PropUnLock.PropRelive > GlobalData.gameRunTimeParam.juNum){
+			return null;
+		}
+		//如果有道具了 就不获取了
+		if(GlobalData.GamePropParam.bagNum.PropRelive > 0 && GlobalData.GamePropParam.useNum.PropRelive == 0){
+			var prop = this.getShareOrADKey('PropRelive');
+			return prop;
+		}
+		return null;
 	},
 	getShareOrADKey(prop){
 		var trate = GlobalData.cdnPropParam.PropShareOrADRate[GlobalData.cdnGameConfig.gameModel];

@@ -19,7 +19,7 @@ cc.Class({
 					wx.getFriendCloudStorage({
 						keyList: ['maxScore','gold'], // 你要获取的、托管在微信后台都key
 						success: res => {
-							console.log(res.data);
+							//console.log(res.data);
 							//排序
 							this.finishGameRank.active = true;
 							this.rankGmameView.active = false;
@@ -33,7 +33,7 @@ cc.Class({
 					wx.getFriendCloudStorage({
 						keyList: ['maxScore','gold'], // 你要获取的、托管在微信后台都key
 						success: res => {
-							console.log(res.data);
+							//console.log(res.data);
 							//排序
 							this.finishGameRank.active = false;
 							this.rankGmameView.active = true;
@@ -47,7 +47,7 @@ cc.Class({
 						shareTicket: data.shareTicket,
 						keyList: ['maxScore','gold'], // 你要获取的、托管在微信后台都key
 						success: res => {
-							console.log(res.data);
+							//console.log(res.data);
 							//排序
 							this.finishGameRank.active = false;
 							this.rankGmameView.active = true;
@@ -144,14 +144,14 @@ cc.Class({
 		var bmaxScore = 0;
 		for(var i = 0;i < a.KVDataList.length;i++){
 			var aitem = a.KVDataList[i];
-			console.log(aitem);
+			//console.log(aitem);
 			if(aitem.key == "maxScore"){
 				amaxScore = parseInt(aitem.value);
 			}
 		}
 		for(var i = 0;i < b.KVDataList.length;i++){
 			var bitem = b.KVDataList[i];
-			console.log(bitem);
+			//console.log(bitem);
 			if(bitem.key == "maxScore"){
 				bmaxScore = parseInt(bitem.value);
 			}

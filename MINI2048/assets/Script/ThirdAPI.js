@@ -17,26 +17,11 @@ let ThirdAPI = {
         try {
             let storage = cc.sys.localStorage.getItem(ThirdAPI.loadLocalData_storageName);
             console.log('storage data : ' + storage);
-            let localData = JSON.parse(storage);
-            if (localData) {
+			if(storage != null && storage != ""){
+				let localData = JSON.parse(storage);
                 //兼容新添加的数据
 				util.updateObj(GlobalData,localData);
 				console.log(GlobalData);
-				/*
-                for (const key in localData) {
-					if(!GlobalData[key]){
-						GlobalData[key] = localData[key];
-					}else{
-						var item = localData[key];
-						for(var gkey in GlobalData[key]){
-							if(item[gkey] != null){
-								GlobalData[key][gkey] = item[gkey];
-							}
-						}
-						console.log('storage data : ',GlobalData[key]);
-					}
-                }
-				*/
             }
         } catch (error) {
 			console.log(error);
@@ -63,9 +48,9 @@ let ThirdAPI = {
 				"numMap":GlobalData.numMap,
 				"GamePropParam":GlobalData.GamePropParam
 			};
+			console.log('updataGameInfo',dataDic);
             let data = JSON.stringify(dataDic);
-            console.log('try updataGameInfo:', data);
-            cc.sys.localStorage.setItem(ThirdAPI.loadLocalData_storageName, data);
+            cc.sys.localStorage.setItem(ThirdAPI.loadLocalData_storageName, data);	
         } catch (error) {
             console.error(error);
         }

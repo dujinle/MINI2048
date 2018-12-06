@@ -19,9 +19,8 @@ cc.Class({
 		var self = this;
 		setTimeout(function(){
 			//console.log("deal time");
-			GlobalData.gameRunTimeParam.totalScore += GlobalData.TimeActionParam.NumRollCell;
-			self.value = GlobalData.gameRunTimeParam.totalScore;
-			self.node.getComponent(cc.Label).string = GlobalData.gameRunTimeParam.totalScore;
+			self.value += GlobalData.TimeActionParam.NumRollCell;
+			self.node.getComponent(cc.Label).string = self.value;
 		},time * 1000);
 	}
 });

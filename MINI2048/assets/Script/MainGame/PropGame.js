@@ -4,12 +4,8 @@ cc.Class({
 
     properties: {
 		propKey:null,
-		propFresh:cc.Node,
-		propBomb:cc.Node,
-		propHammer:cc.Node,
+		openType:null,
 		cancelNode:cc.Node,
-		mainGameBoard:cc.Node,
-		failNode:cc.Node,
 		iscallBack:false,
     },
     onLoad () {
@@ -25,15 +21,14 @@ cc.Class({
             onTouchEnded: function (touch, event) {            // 点击事件结束处理
 			}
          }, this.node);
-		 this.failNode.runAction(cc.fadeOut(0));
+		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		 this.iscallBack = false;
 	},
 	initLoad(startPos,openType,prop){
 		var self = this;
-		this.node.active = true;
 		this.cancelNode.active = false;
-		this.openType = openType;
 		this.startPos = startPos;
+		this.openType = openType;
 		this.propKey = prop;
 		setTimeout(function(){
 			self.cancelNode.active = true;
@@ -53,17 +48,17 @@ cc.Class({
 			ThirdAPI.shareGame(param);
 		}else if(this.openType == "PropAD"){
 			console.log(this.openType);
-		}else if(this.openType == "PropBao"){
-			this.flyPropOpen();
 		}
 	},
 	shareSuccessCb(type, shareTicket, arg){
 		if(arg.iscallBack == false){
 			console.log(type, shareTicket, arg);
-			arg.flyPropOpen();
+			arg.EventCustom.setUserData({type:'PropShareSuccess',propKey:arg.propKey,startPos:arg.startPos});
+			arg.node.dispatchEvent(arg.EventCustom);
 		}
 		arg.iscallBack = true;
 	},
+	/*
 	flyPropOpen(){
 		var self = this;
 		if(this.propKey != null && this.node.active == true){
@@ -103,9 +98,16 @@ cc.Class({
 			});
 		}
 	},
+	*/
 	shareFailedCb(type,arg){
 		if(arg.iscallBack == false && arg.node.active == true){
-			arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5)));
+			var failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+			arg.node.addChild(failNode);
+			var actionEnd = cc.callFunc(function(){
+				failNode.removeFromParent();
+				failNode.destroy();
+			},arg);
+			failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
 			console.log(type,arg);
 		}
 		arg.iscallBack = true;
@@ -135,6 +137,7 @@ cc.Class({
 		}
 	},
 	cancel(){
-		this.node.active = false;
+		this.node.removeFromParent();
+		this.node.destroy();
 	}
 });

@@ -8,6 +8,8 @@ GlobalData = {
 		gameStatus:0,
 		totalScore:0,
 		maxScore:0,
+		lastSq:0,		//最后一次棋子的位置
+		lastFreshNum:0,
 		shareTimes:0,
 		stepNum:0,
 		gold:0,
@@ -128,8 +130,8 @@ GlobalData = {
 	GamePropParam:{
 		bagNum:{
 			PropFresh:0,
-			PropHammer:2,
-			PropBomb:2,
+			PropHammer:0,
+			PropBomb:0,
 			PropRelive:0
 		},
 		useNum:{
@@ -161,6 +163,7 @@ GlobalData = {
 		PropUnLock:{	//道具解锁盘数
 			PropFresh:1,
 			PropHammer:3,
+			PropSAB:3,
 			PropBomb:3,
 			PropAD:3,		//分享广告解锁盘数
 			PropShare:3,

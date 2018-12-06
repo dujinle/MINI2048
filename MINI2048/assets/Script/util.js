@@ -17,7 +17,7 @@ let util = {
 	getRandomNum:function(rateType){
 		var randomNumber = Math.random();
 		var startRate = 0.0;
-		console.log("getRandomNum",randomNumber);
+		//console.log("getRandomNum",randomNumber);
 		for(var num in rateType){
 			var rateTmp = rateType[num];
 			if(randomNumber > startRate && randomNumber <= startRate + rateTmp){

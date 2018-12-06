@@ -1,3 +1,4 @@
+var ThirdAPI = require('ThirdAPI');
 cc.Class({
     extends: cc.Component,
 
@@ -5,6 +6,7 @@ cc.Class({
 		processBar:cc.Node,
 		numLabel:cc.Node,
 		rate:10,
+		action:0,
 		openType:null,
     },
     onLoad () {
@@ -47,8 +49,8 @@ cc.Class({
 	shareSuccessCb(type, shareTicket, arg){
 		if(arg.iscallBack == false){
 			console.log(type, shareTicket, arg);
-			this.EventCustom.setUserData({type:'ReliveBack'});
-			this.node.dispatchEvent(this.EventCustom);
+			arg.EventCustom.setUserData({type:'ReliveBack',action:arg.action});
+			arg.node.dispatchEvent(arg.EventCustom);
 		}
 		arg.iscallBack = true;
 	},
@@ -64,8 +66,11 @@ cc.Class({
 		}
 		arg.iscallBack = true;
 	},
-	waitCallBack(prop,cb){
+	waitCallBack(action,prop,cb){
+		var self = this;
+		this.node.active = true;
 		this.openType = prop;
+		this.action = action;
 		this.loadUpdate = function(){
 			self.rate = self.rate - 1;
 			this.numLabel.getComponent(cc.Label).string = self.rate;
@@ -74,6 +79,7 @@ cc.Class({
 			self.processBar.getComponent(cc.ProgressBar).progress = scale;
 			if(self.rate <= 0){
 				self.unschedule(self.loadUpdate);
+				self.node.active = false;
 				cb();
 			}
 		};

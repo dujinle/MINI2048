@@ -6,7 +6,7 @@ cc.Class({
 		viewScroll:cc.Node,
     },
 	loadRank(data){
-		console.log(data);
+		//console.log(data);
 		this.viewScroll.getComponent("ScrollView").setInitData(data);
 		for(var i = 0;i < data.length;i++){
 			var dd = data[i];
