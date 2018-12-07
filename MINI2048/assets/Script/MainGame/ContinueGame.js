@@ -3,8 +3,6 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
-		continueButton:cc.Node,
-		restartButton:cc.Node,
 		tipLabel:cc.Node,
     },
 
@@ -22,6 +20,7 @@ cc.Class({
 			}
          }, this.node);
 		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
+		 this.node.scale = 0.5;
 	},
 	//继续游戏按钮回调
 	onContinueCb(event){
@@ -34,9 +33,10 @@ cc.Class({
 		this.node.dispatchEvent(this.EventCustom);
 	},
 	showBoard(){
-		this.node.active = true;
+		this.node.runAction(cc.scaleTo(0.2,1));
 	},
 	hideBoard(){
-		this.node.active = false;
+		this.node.removeFromParent();
+		this.node.destroy();
 	}
 });

@@ -21,9 +21,7 @@ cc.Class({
 		blocksBoard:cc.Node,
 		blockBoard:cc.Node,
 		mainGameBoard:cc.Node,
-		continueGameBoard:cc.Node,
 		startGameBoard:cc.Node,
-		reliveGameBoard:cc.Node,
 		finishGameBoard:cc.Node,
 		rankGameBorad:cc.Node,
 		//其他参数
@@ -34,13 +32,14 @@ cc.Class({
 		console.log("onLoad start");
 		//异步加载动态数据
 		this.rate = 0;
-		this.resLength = 10;
+		this.resLength = 12;
 		GlobalData.assets = {};
 		var self = this;
 		this.loadUpdate = function(){
 			console.log("this.rate:" + self.rate);
 			var scale = Math.floor((self.rate/self.resLength ) * 100);
 			if(self.rate >= self.resLength){
+				self.startButton.getComponent(cc.Button).interactable = true;
 				self.unschedule(self.loadUpdate);
 			}
 		};
@@ -59,38 +58,24 @@ cc.Class({
 			}
 		});
 		this.schedule(this.loadUpdate,0.5);
+		GlobalData.gameRunTimeParam.juNum = 1;
 		ThirdAPI.loadLocalData();
 		//监听事件传递
+		this.startButton.getComponent(cc.Button).interactable = false;
 		this.node.on('dispatchEvent',this.dispatchMyEvent,this);
 	},
 	start(){
 		console.log("start");
 		//初始化所有面板
-		var self = this;
-		//ThirdAPI.loadCDNData();
+		ThirdAPI.loadCDNData();
 		this.initBoards();
-		if(GlobalData.gameRunTimeParam.gameStatus == 1){
-			this.startGameBoard.getComponent("StartGame").showStart();
-			this.continueGameBoard.getComponent("ContinueGame").showBoard();
-		}else if(GlobalData.gameRunTimeParam.gameStatus == 0){
-			var propRelive = PropManager.getPropStart();
-			if(propRelive != null && propRelive != 'PropAD'){
-				this.reliveGameBoard.getComponent('ReliveGame').waitCallBack(0,propRelive,function(){
-					console.log("ReliveGame cancle");
-					self.startGameBoard.getComponent("StartGame").showStart();
-				});
-			}else{
-				this.startGameBoard.getComponent("StartGame").showStart();
-			}
-		}
+		this.startGameBoard.getComponent("StartGame").showStart();
 	},
 	initBoards(){
 		console.log("initBoards start");
 		//this.clearGame();
-		this.continueGameBoard.active = false;
 		this.finishGameBoard.active = false;
 		this.rankGameBorad.active = false;
-		this.reliveGameBoard.active = false;
 		//主游戏界面初始化
 		this.pauseButton.active = false;
 		this.kingLabel.active = false;
@@ -153,6 +138,7 @@ cc.Class({
 			this.boardItem = null;
 		}
 		this.scoreLabel.getComponent(cc.Label).string = GlobalData.gameRunTimeParam.totalScore;
+		this.scoreLabel.getComponent('NumWrap').value = GlobalData.gameRunTimeParam.totalScore;
 		this.propFreshNum('PropFresh');
 		this.propFreshNum('PropBomb');
 		this.propFreshNum('PropHammer');
@@ -258,6 +244,7 @@ cc.Class({
 		GlobalData.GamePropParam.useNum.PropRelive = 0;
 
 		this.scoreLabel.getComponent(cc.Label).string = 0;
+		this.scoreLabel.getComponent('NumWrap').value =0;
 		this.propFreshNum('PropFresh');
 		this.propFreshNum('PropBomb');
 		this.propFreshNum('PropHammer');
@@ -287,6 +274,7 @@ cc.Class({
 			this.startGuideBoard();
 		}
 		GlobalData.gameRunTimeParam.gameStatus = 1;
+		ThirdAPI.updataGameInfo();
 	},
 	startGuideBoard(){
 		var guideNode = cc.instantiate(GlobalData.assets["PBGuideStart"]);
@@ -423,8 +411,14 @@ cc.Class({
 			//复活道具
 			var propRelive = PropManager.getPropRelive();
 			if(propRelive != null && propRelive != 'PropAD'){
+				this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
+				this.node.addChild(this.reliveGameBoard);
+				this.reliveGameBoard.setPosition(cc.p(0,0));
 				this.reliveGameBoard.getComponent('ReliveGame').waitCallBack(1,propRelive,function(){
+					self.reliveGameBoard.removeFromParent();
+					self.reliveGameBoard.destroy();
 					self.finishGameBoard.getComponent("FinishGame").show();
+					console.log("ReliveGame cancle");
 				});
 			}else{
 				this.finishGameBoard.getComponent("FinishGame").show();
@@ -827,31 +821,53 @@ cc.Class({
 		var self = this;
 		var data = event.getUserData();
 		console.log('dispatchMyEvent',data);
-		this.audioManager.getComponent("AudioManager").play(GlobalData.AudioParam.AudioButton);
+		if(data.type != 'ReliveBack' && data.type != 'PropShareSuccess'){
+			this.audioManager.getComponent("AudioManager").play(GlobalData.AudioParam.AudioButton);
+		}
+		//归档回调
 		if(data.type == "ContinueGame"){
 			this.continueGameBoard.getComponent("ContinueGame").hideBoard();
-			this.startGameBoard.getComponent("StartGame").hideStart(function(){
+			this.startGameBoard.getComponent("StartGame").hideStaticStart(function(){
 				self.resumeGameMap();
 				self.enterGame();
-				//以上操作会改变游戏状态所以更新信息
-				ThirdAPI.updataGameInfo();
 			});
 		}
 		else if(data.type == "ResetGame"){
 			//重新开始游戏
 			this.continueGameBoard.getComponent("ContinueGame").hideBoard();
-			GlobalData.gameRunTimeParam.gameStatus = 0;
-			//以上操作会改变游戏状态所以更新信息
-			ThirdAPI.updataGameInfo();
-		}
-		else if(data.type == 'StartGame'){
-			this.startGameBoard.getComponent("StartGame").hideStart(function(){
-				GlobalData.gameRunTimeParam.juNum += 1;
+			this.startGameBoard.getComponent("StartGame").hideStaticStart(function(){
 				self.clearGame();
 				self.enterGame();
-				//以上操作会改变游戏状态所以更新信息
-				ThirdAPI.updataGameInfo();
 			});
+		}
+		else if(data.type == 'StartGame'){
+			if(GlobalData.gameRunTimeParam.gameStatus == 1){
+				this.continueGameBoard = cc.instantiate(GlobalData.assets['PBContinueGameBoard']);
+				this.node.addChild(this.continueGameBoard);
+				this.continueGameBoard.setPosition(cc.p(0,0));
+				this.continueGameBoard.getComponent("ContinueGame").showBoard();
+			}else{
+				var propRelive = PropManager.getPropStart();
+				if(propRelive != null && propRelive != 'PropAD'){
+					this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
+					this.node.addChild(this.reliveGameBoard);
+					this.reliveGameBoard.setPosition(cc.p(0,0));
+					this.startGameBoard.getComponent("StartGame").hideStaticStart(function(){
+						self.reliveGameBoard.getComponent('ReliveGame').waitCallBack(0,propRelive,function(){
+							self.reliveGameBoard.removeFromParent();
+							self.reliveGameBoard.destroy();
+							self.clearGame();
+							self.enterGame();	
+							console.log("ReliveGame cancle");
+						});
+					});
+				}else{
+					this.startGameBoard.getComponent("StartGame").hideStart(function(){
+						self.clearGame();
+						self.enterGame();
+					});
+				}
+			}
 		}
 		else if(data.type == "PauseContinue"){
 			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
@@ -909,7 +925,8 @@ cc.Class({
 		else if(data.type == 'ReliveBack'){
 			GlobalData.GamePropParam.bagNum.PropRelive -= 1;
 			GlobalData.GamePropParam.useNum.PropRelive += 1;
-			this.reliveGameBoard.active = false;
+			this.reliveGameBoard.removeFromParent();
+			this.reliveGameBoard.destroy();
 			if(data.action == 1){
 				this.boardItem.removeFromParent();
 				this.boardItem.destroy();
@@ -922,17 +939,19 @@ cc.Class({
 					GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq] = 0;
 				}
 			}else{
-				this.resumeGameMap();
-				if(GlobalData.gameRunTimeParam.lastSq != 0){
-					if(GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq] != 0){
-						GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq].removeFromParent();
-						GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq].destroy();
-						GlobalData.numMap[GlobalData.gameRunTimeParam.lastSq] = 0;
-						GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq] = 0;
+				this.startGameBoard.getComponent("StartGame").hideStaticStart(function(){
+					self.resumeGameMap();
+					if(GlobalData.gameRunTimeParam.lastSq != 0){
+						if(GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq] != 0){
+							GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq].removeFromParent();
+							GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq].destroy();
+							GlobalData.numMap[GlobalData.gameRunTimeParam.lastSq] = 0;
+							GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq] = 0;
+						}
 					}
-				}
-				this.enterGame();
-				this.propBombAction(2048);
+					self.enterGame();
+					self.propBombAction(2048);
+				});
 			}
 			//以上操作会改变游戏状态所以更新信息
 			ThirdAPI.updataGameInfo();

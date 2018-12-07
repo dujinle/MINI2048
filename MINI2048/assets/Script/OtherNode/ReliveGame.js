@@ -5,9 +5,11 @@ cc.Class({
     properties: {
 		processBar:cc.Node,
 		numLabel:cc.Node,
+		cancleLabel:cc.Node,
 		rate:10,
 		action:0,
 		openType:null,
+		callback:null,
     },
     onLoad () {
 		var self = this;
@@ -26,11 +28,11 @@ cc.Class({
 		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		this.numLabel.getComponent(cc.Label).string = 10;
 		this.processBar.getComponent(cc.ProgressBar).progress = 1;
+		this.cancleLabel.runAction(cc.fadeOut());
+		this.node.scale = 0.5;
 	},
 	continueNow(event){
-		if(this.iscallBack == false){
-			this.unschedule(this.loadUpdate);
-		}
+		this.unschedule(this.loadUpdate);
 		this.iscallBack = false;
 		if(this.openType == "PropShare"){
 			var param = {
@@ -46,6 +48,13 @@ cc.Class({
 			console.log(this.openType);
 		}
 	},
+	cancleButtonCb(){
+		console.log('cancleButtonCb');
+		this.unschedule(this.loadUpdate);
+		this.node.removeFromParent();
+		this.node.destroy();
+		this.callback();
+	},
 	shareSuccessCb(type, shareTicket, arg){
 		if(arg.iscallBack == false){
 			console.log(type, shareTicket, arg);
@@ -56,6 +65,7 @@ cc.Class({
 	},
 	shareFailedCb(type,arg){
 		if(arg.iscallBack == false && arg.node.active == true){
+			arg.schedule(arg.loadUpdate,1);
 			var failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
 			arg.node.addChild(failNode);
 			var actionEnd = cc.callFunc(function(){
@@ -68,7 +78,8 @@ cc.Class({
 	},
 	waitCallBack(action,prop,cb){
 		var self = this;
-		this.node.active = true;
+		this.callback = cb;
+		this.node.runAction(cc.scaleTo(0.2,1));
 		this.openType = prop;
 		this.action = action;
 		this.loadUpdate = function(){
@@ -79,10 +90,10 @@ cc.Class({
 			self.processBar.getComponent(cc.ProgressBar).progress = scale;
 			if(self.rate <= 0){
 				self.unschedule(self.loadUpdate);
-				self.node.active = false;
 				cb();
 			}
 		};
 		this.schedule(this.loadUpdate,1);
+		this.cancleLabel.runAction(cc.sequence(cc.delayTime(4),cc.fadeIn()));
 	}
 });

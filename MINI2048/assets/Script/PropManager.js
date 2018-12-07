@@ -35,6 +35,8 @@ let PropManager = {
 	},
 	getPropRelive(){
 		//如果没有解锁 不可用
+		//GlobalData.GamePropParam.bagNum.PropRelive += 1;
+		//return 'PropShare';
 		if(GlobalData.cdnPropParam.PropUnLock.PropRelive > GlobalData.gameRunTimeParam.juNum){
 			console.log('getPropRelive unLock');
 			return null;
@@ -62,6 +64,7 @@ let PropManager = {
 	},
 	getPropStart(){
 		//如果没有解锁 不可用
+		//return 'PropShare';
 		if(GlobalData.cdnPropParam.PropUnLock.PropRelive > GlobalData.gameRunTimeParam.juNum){
 			return null;
 		}

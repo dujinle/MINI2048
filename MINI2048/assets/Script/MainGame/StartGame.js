@@ -118,6 +118,35 @@ cc.Class({
 			this.buttonLayout.runAction(layoutMoveTo);
 		}
 	},
+	hideStaticStart(callBack){
+		var self = this;
+		//this.node.active = false;
+		console.log("start game board hide");
+		var winSize = this.node.getContentSize();
+		//logo 效果设置
+		var logoPos = this.gameLogo.getPosition();
+		var logoSize = this.gameLogo.getContentSize();
+		var logoY = winSize.height/2 + logoSize.height/2;
+		this.gameLogo.setPosition(cc.p(logoPos.x,logoY));
+		//开始效果设置
+		var startPos = this.startButton.getPosition();
+		var startSize = this.startButton.getContentSize();
+		var startX = (startSize.width/2 + winSize.width/2) * -1;
+		this.startButton.setPosition(cc.p(startX,startPos.y));
+		//分享，排行，声音效果设置
+		var layoutPos = this.buttonLayout.getPosition();
+		var layoutSize = this.buttonLayout.getContentSize();
+		var layoutY = (winSize.height/2 + logoSize.height/2) * -1;
+		this.buttonLayout.setPosition(cc.p(layoutPos.x,layoutY));
+		
+		var hideAction = cc.callFunc(function(){
+			self.scoreLabel.active = false;
+			self.kingSprite.active = false;
+			self.node.active = false;
+			callBack();
+		},this);
+		this.node.runAction(hideAction);
+	},
 	hideStart(callBack){
 		var self = this;
 		console.log("start game board hide");
