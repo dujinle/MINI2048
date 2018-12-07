@@ -32,6 +32,10 @@ cc.Class({
 		this.EventCustom.setUserData({type:'ResetGame'});
 		this.node.dispatchEvent(this.EventCustom);
 	},
+	onClose(event){
+		this.node.removeFromParent();
+		this.node.destroy();
+	},
 	showBoard(){
 		this.node.runAction(cc.scaleTo(0.2,1));
 	},

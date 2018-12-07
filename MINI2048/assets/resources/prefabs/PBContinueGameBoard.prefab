@@ -654,8 +654,8 @@
       "__id__": 1
     },
     "component": "ContinueGame",
-    "handler": "onResetCb",
-    "customEventData": "C_close"
+    "handler": "onClose",
+    "customEventData": ""
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -1231,12 +1231,6 @@
       "__id__": 1
     },
     "_enabled": true,
-    "continueButton": {
-      "__id__": 22
-    },
-    "restartButton": {
-      "__id__": 30
-    },
     "tipLabel": {
       "__id__": 6
     }

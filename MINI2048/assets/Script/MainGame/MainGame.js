@@ -228,7 +228,7 @@ cc.Class({
 		}
 		//清楚运行时数据
 		
-		GlobalData.gameRunTimeParam.gameStatus = 0;
+		//GlobalData.gameRunTimeParam.gameStatus = 0;
 		GlobalData.gameRunTimeParam.totalScore = 0;
 		GlobalData.gameRunTimeParam.stepNum = 0;
 		GlobalData.gameRunTimeParam.lastSq = 0;
@@ -879,7 +879,6 @@ cc.Class({
 			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
 				self.pauseGameBoard.removeFromParent();
 				self.pauseGameBoard.destroy();
-				GlobalData.gameRunTimeParam.gameStatus = 0;
 				self.clearGame();
 				self.initBoards();
 				self.startGameBoard.getComponent("StartGame").showStart();
@@ -938,6 +937,7 @@ cc.Class({
 					GlobalData.numMap[GlobalData.gameRunTimeParam.lastSq] = 0;
 					GlobalData.numNodeMap[GlobalData.gameRunTimeParam.lastSq] = 0;
 				}
+				GlobalData.gameRunTimeParam.gameStatus = 1;
 			}else{
 				this.startGameBoard.getComponent("StartGame").hideStaticStart(function(){
 					self.resumeGameMap();
