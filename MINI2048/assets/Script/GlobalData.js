@@ -167,7 +167,7 @@ GlobalData = {
 			PropBomb:3,
 			PropAD:3,		//分享广告解锁盘数
 			PropShare:3,
-			PropRelive:2
+			PropRelive:1
 		},
 		PropReliveRate:0.5,
 		SABOpenRate:{		//打开宝箱获取道具的概率
