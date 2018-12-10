@@ -233,6 +233,7 @@ cc.Class({
 		GlobalData.gameRunTimeParam.stepNum = 0;
 		GlobalData.gameRunTimeParam.lastSq = 0;
 		GlobalData.gameRunTimeParam.lastFreshNum = 0;
+		GlobalData.gameRunTimeParam.shareTimes = 0;
 		
 		GlobalData.GamePropParam.bagNum.PropFresh = 0;
 		GlobalData.GamePropParam.bagNum.PropHammer = 0;
@@ -408,9 +409,11 @@ cc.Class({
 			}
 			
 			GlobalData.gameRunTimeParam.gameStatus = 0;
+			
 			//复活道具
 			var propRelive = PropManager.getPropRelive();
 			if(propRelive != null && propRelive != 'PropAD'){
+				ThirdAPI.updataGameInfo();
 				this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
 				this.node.addChild(this.reliveGameBoard);
 				this.reliveGameBoard.setPosition(cc.p(0,0));
@@ -421,14 +424,15 @@ cc.Class({
 					console.log("ReliveGame cancle");
 				});
 			}else{
+				ThirdAPI.updataGameInfo();
 				this.finishGameBoard.getComponent("FinishGame").show();
 			}
 		}else{
 			GlobalData.gameRunTimeParam.stepNum += 1;
 			this.boardItem = null;
 			this.refeshNumObject();
+			ThirdAPI.updataGameInfo();
 		}
-		ThirdAPI.updataGameInfo();
 	},
 	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
 		console.log(totalEatNum,totalScore,deep);
@@ -466,7 +470,7 @@ cc.Class({
 				var size = oriNode.getContentSize();
 				var flyNodeSize = self.flyNode.getContentSize();
 				self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
-				self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key,addScore);
+				self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore);
 				//oriNode.getComponent("NumObject").flyMergeScore(numDic.key,numDic.list.length,deep,addScore);
 				//4.刷新数字并执行吃子结束之后的动画效果
 				oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager,function(){
@@ -531,13 +535,23 @@ cc.Class({
 		this.shareFailedCb = function(type,arg){
 			console.log(type,arg);
 			if(arg.isShareCallBack == false){
-				var failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-				arg.mainGameBoard.addChild(failNode);
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
+				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+				arg.mainGameBoard.addChild(arg.failNode);
 				var actionEnd = cc.callFunc(function(){
-					failNode.removeFromParent();
-					failNode.destroy();
+					if(arg.failNode != null){
+						arg.failNode.stopAllActions();
+						arg.failNode.removeFromParent();
+						arg.failNode.destroy();
+						arg.failNode = null;
+					}
 				},arg);
-				failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
 				
 			}
 			arg.isShareCallBack = true;

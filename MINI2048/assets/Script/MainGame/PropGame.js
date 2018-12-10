@@ -61,56 +61,25 @@ cc.Class({
 		}
 		arg.iscallBack = true;
 	},
-	/*
-	flyPropOpen(){
-		var self = this;
-		if(this.propKey != null && this.node.active == true){
-			this.node.active = false;
-			
-			var mainGameBoard = this.mainGameBoard;
-			var spriteName = null;
-			var propNode = null;
-			if(this.propKey == "PropFresh"){
-				spriteName = "deletePropIcon";
-				propNode = this.propFresh;
-			}else if(this.propKey == "PropBomb"){
-				spriteName = "bomb";
-				propNode = this.propBomb;
-			}else if(this.propKey == "PropHammer"){
-				spriteName = "clearPropIcon";
-				propNode = this.propHammer;
-			}else{
-				return;
-			}
-			//判断是否超过使用上限
-			if(GlobalData.cdnPropParam.PropParam[this.propKey].useNum >= 0){
-				if(GlobalData.GamePropParam.useNum[this.propKey] >= GlobalData.cdnPropParam.PropParam[this.propKey].useNum){
-					return;
-				}
-			}
-			//判断背包数量是否少于上限值
-			if(GlobalData.GamePropParam.bagNum[this.propKey] >= GlobalData.cdnPropParam.PropParam[self.propKey].bagNum){
-				return;
-			}
-			var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
-			mainGameBoard.addChild(flyProp);
-			flyProp.setPosition(this.startPos);
-			flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
-				GlobalData.GamePropParam.bagNum[self.propKey] += 1;
-				self.propFreshNum(self.propKey,propNode);
-			});
-		}
-	},
-	*/
 	shareFailedCb(type,arg){
 		if(arg.iscallBack == false && arg.node.active == true){
-			var failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-			arg.node.addChild(failNode);
+			if(arg.failNode != null){
+				arg.failNode.stopAllActions();
+				arg.failNode.removeFromParent();
+				arg.failNode.destroy();
+				arg.failNode = null;
+			}
+			arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+			arg.node.addChild(arg.failNode);
 			var actionEnd = cc.callFunc(function(){
-				failNode.removeFromParent();
-				failNode.destroy();
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
 			},arg);
-			failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
 			console.log(type,arg);
 		}
 		arg.iscallBack = true;

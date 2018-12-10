@@ -68,14 +68,24 @@ cc.Class({
 	},
 	shareFailedCb(type,arg){
 		if(arg.iscallBack == false && arg.node.active == true){
-			arg.schedule(arg.loadUpdate,1);
-			var failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-			arg.node.addChild(failNode);
+			if(arg.failNode != null){
+				arg.failNode.stopAllActions();
+				arg.failNode.removeFromParent();
+				arg.failNode.destroy();
+				arg.failNode = null;
+			}
+			arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+			arg.node.addChild(arg.failNode);
 			var actionEnd = cc.callFunc(function(){
-				failNode.removeFromParent();
-				failNode.destroy();
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
 			},arg);
-			failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			console.log(type,arg);
 		}
 		arg.iscallBack = true;
 	},

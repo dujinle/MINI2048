@@ -1,2 +1,4 @@
-# hello-world
-Hello world new project template.
+# laste
+1,修复分享失败 提示 自动出现问题
+2,修复分享失败概率 突然很高问题
+3,最高分没有实时更新
