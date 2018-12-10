@@ -2,6 +2,7 @@ GlobalData = {
 	//皮肤设置
 	skin:'color1',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
+	cdnFileDefaultPath:"minigame/mini2048/cdnParam.json",
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,
@@ -18,7 +19,9 @@ GlobalData = {
 	cdnGameConfig:{
 		minShareTime:2,
 		gameModel:'crazy',
-		shareSuccessWeight:[1,1,0.8,0.8,0.6]
+		shareSuccessWeight:[1,1,0.8,0.8,0.6],
+		shareCustomSet:1,		//0 关闭 自定义分享 1打开自定义分享
+		cdnFileDefaultPath:"minigame/mini2048/cdnParam.json"	//配置cdn动态更新文件
 	},
 	//设置数字概率生成方式
 	cdnNumRate:{

@@ -550,6 +550,9 @@ cc.Class({
 			shareName:prop,
 			isWait:true
 		};
+		if(GlobalData.cdnGameConfig.shareCustomSet == 0){
+			param.isWait = false;
+		}
 		ThirdAPI.shareGame(param);
 	},
 	getProp(eatNum,fromPos){
@@ -594,6 +597,7 @@ cc.Class({
 			this.propBombGuide.removeFromParent();
 			this.propBombGuide.destroy();
 			this.propBombGuide = null;
+			GlobalData.gameRunTimeParam.lastFreshNum = 2048;
 		}
 		this.initLocation = this.boardItem.getPosition();
 		this.touchLocation = this.boardItem.parent.convertToNodeSpaceAR(event.getLocation());
@@ -781,7 +785,7 @@ cc.Class({
 			this.boardItem.destroy();
 			this.boardItem = null;
 		}
-		GlobalData.gameRunTimeParam.lastFreshNum = num;
+		
 		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
 		this.boardItem.getComponent("NumObject").scaleShow(num,this.audioManager);
 		this.boardItem.on(cc.Node.EventType.TOUCH_START, this.eventTouchStart,this);

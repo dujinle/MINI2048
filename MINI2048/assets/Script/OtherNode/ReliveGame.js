@@ -43,6 +43,9 @@ cc.Class({
 				shareName:this.openType,
 				isWait:true
 			};
+			if(GlobalData.cdnGameConfig.shareCustomSet == 0){
+				param.isWait = false;
+			}
 			ThirdAPI.shareGame(param);
 		}else if(this.openType == "PropAD"){
 			console.log(this.openType);

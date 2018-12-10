@@ -20,7 +20,7 @@ let ThirdAPI = {
 			if(storage != null && storage != ""){
 				let localData = JSON.parse(storage);
                 //兼容新添加的数据
-				util.updateObj(GlobalData,localData);
+				util.updateObj(GlobalData,localData,'cdnNumRate');
 				console.log(GlobalData);
             }
         } catch (error) {
@@ -28,11 +28,21 @@ let ThirdAPI = {
 		}
     },
     loadCDNData:function(){
-		var url = GlobalData.cdnWebsite + "minigame/mini2048/cdnParam.json";
+		var url = GlobalData.cdnWebsite + GlobalData.cdnFileDefaultPath;
 		util.httpGET(url,null,function(code,data){
 			if(code == 200){
-				util.updateObj(GlobalData,data);
+				util.updateObj(GlobalData,data,'cdnNumRate');
 				console.log(GlobalData);
+				//如果默认的cdn文件和动态文件不一致 则再次更新数据
+				if(GlobalData.cdnGameConfig.cdnFileDefaultPath != GlobalData.cdnFileDefaultPath){
+					url = GlobalData.cdnWebsite + GlobalData.cdnGameConfig.cdnFileDefaultPath;
+					util.httpGET(url,null,function(code,data){
+						if(code == 200){
+							util.updateObj(GlobalData,data,'cdnNumRate');
+						}
+						console.log(GlobalData);
+					});
+				}
 			}
 		});
 	},

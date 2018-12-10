@@ -221,7 +221,11 @@ let WxGlobal = {
             failcallback: failCallback,
             shareTime: (new Date())
         };
-
+		//判断是否打开自定义分享
+		if(params.isWait == true){
+			successCallback = null;
+			failCallback = null;
+		}
         WxGlobal.shareAppMessage({
 			title: shareInfo.text,
 			imageUrl: shareInfo.imageUrl,
@@ -237,25 +241,8 @@ let WxGlobal = {
 						success: function (result) {
 							console.log('获取分享信息成功', result);
 							if (result) {
-								if (params.type && params.type == "rankUIGroupRank") {
-                                    if (successCallback != null) {
-                                        successCallback(null, WxGlobal.shareTicket, params.arg);
-                                    }
-								} else {
-                                    //校验分享到同一群
-									/*
-                                    console.log("校验分享到同一群");
-                                    var sendParams = {
-                                        "errMsg": result.errMsg,
-                                        "encryptedData": result.encryptedData,
-                                        "iv": result.iv
-                                    };
-                                    //checkShareGroup.checkShareGroupID(sendParams, successCallback, params.arg);
-									*/
-									console.log('校验分享到同一群开关已关闭');
-									if (successCallback != null) {
-										successCallback(null, WxGlobal.shareTicket, params.arg);
-									}
+								if(successCallback != null){
+									successCallback(null, WxGlobal.shareTicket, params.arg);
 								}
                             }
                         },
