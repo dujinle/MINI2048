@@ -48,6 +48,12 @@
       },
       {
         "__id__": 25
+      },
+      {
+        "__id__": 27
+      },
+      {
+        "__id__": 29
       }
     ],
     "_tag": -1,
@@ -513,7 +519,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 1463,
-      "y": 561
+      "y": 560
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -529,6 +535,72 @@
       "__uuid__": "9552a22e-af7b-4cc3-9995-bbdf561453fe"
     },
     "fileId": "004CvnZfBHWaxsDIQDHNp3",
+    "sync": true
+  },
+  {
+    "__type__": "cc.Node",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1
+    },
+    "_id": "0dLkQpAlZGZYRPD/IL6Evr",
+    "_prefab": {
+      "__id__": 28
+    },
+    "_name": "PBFinishGameBoard",
+    "_active": true,
+    "_position": {
+      "__type__": "cc.Vec2",
+      "x": 2145,
+      "y": 560
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_localZOrder": 0,
+    "_globalZOrder": 0
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 27
+    },
+    "asset": {
+      "__uuid__": "d48af678-f40b-4ea6-8461-4b6ff7fc7863"
+    },
+    "fileId": "0dLkQpAlZGZYRPD/IL6Evr",
+    "sync": true
+  },
+  {
+    "__type__": "cc.Node",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1
+    },
+    "_id": "97l0JDLvJPOI15tEb/MI3S",
+    "_prefab": {
+      "__id__": 30
+    },
+    "_name": "PBRankGameBoard",
+    "_active": true,
+    "_position": {
+      "__type__": "cc.Vec2",
+      "x": 2863,
+      "y": 560
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_localZOrder": 0,
+    "_globalZOrder": 0
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 29
+    },
+    "asset": {
+      "__uuid__": "012402c5-2fdf-421a-8612-f041601849ef"
+    },
+    "fileId": "97l0JDLvJPOI15tEb/MI3S",
     "sync": true
   }
 ]

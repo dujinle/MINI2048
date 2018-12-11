@@ -16,14 +16,13 @@ cc.Class({
 		kingLabel:cc.Node,
 		kingSprite:cc.Node,
 		scoreLabel:cc.Node,
+		battleNode:cc.Node,
 		
 		//面板接受参数
 		blocksBoard:cc.Node,
 		blockBoard:cc.Node,
 		mainGameBoard:cc.Node,
 		startGameBoard:cc.Node,
-		finishGameBoard:cc.Node,
-		rankGameBorad:cc.Node,
 		//其他参数
 		audioManager:cc.Node,
 		
@@ -32,7 +31,7 @@ cc.Class({
 		console.log("onLoad start");
 		//异步加载动态数据
 		this.rate = 0;
-		this.resLength = 12;
+		this.resLength = 14;
 		GlobalData.assets = {};
 		var self = this;
 		this.loadUpdate = function(){
@@ -74,8 +73,6 @@ cc.Class({
 	initBoards(){
 		console.log("initBoards start");
 		//this.clearGame();
-		this.finishGameBoard.active = false;
-		this.rankGameBorad.active = false;
 		//主游戏界面初始化
 		this.pauseButton.active = false;
 		this.kingLabel.active = false;
@@ -91,22 +88,7 @@ cc.Class({
 		var self = this;
 		//继续游戏
 		this.audioManager.getComponent("AudioManager").play(GlobalData.AudioParam.AudioButton);
-		if(customEventData == "F_restart"){
-			this.finishGameBoard.getComponent("FinishGame").hide();
-			GlobalData.gameRunTimeParam.juNum += 1;
-			this.clearGame();
-			this.initBoards();
-			this.enterGame();
-			//以上操作会改变游戏状态所以更新信息
-			ThirdAPI.updataGameInfo();
-		}else if(customEventData == "R_exit"){
-			this.rankGameBorad.getComponent("RankGame").hide();
-		}else if(customEventData == "R_show"){
-			if(this.finishGameBoard.active == true){
-				this.finishGameBoard.getComponent("FinishGame").isDraw = false;
-			}
-			this.rankGameBorad.getComponent("RankGame").show();
-		}else if(customEventData == "P_show"){
+		if(customEventData == "P_show"){
 			this.pauseGameBoard = cc.instantiate(GlobalData.assets['PBPauseGameBoard']);
 			this.node.addChild(this.pauseGameBoard);
 			this.pauseGameBoard.setPosition(cc.p(0,0));
@@ -269,13 +251,18 @@ cc.Class({
 			this.gamePropClear.active = true;
 		}
 		this.blockBoard.active = true;
-		this.refeshNumObject();
 		this.kingLabel.getComponent(cc.Label).string = GlobalData.gameRunTimeParam.maxScore;
 		if(GlobalData.gameRunTimeParam.StartGuideFlag == false){
 			this.startGuideBoard();
 		}
 		GlobalData.gameRunTimeParam.gameStatus = 1;
 		ThirdAPI.updataGameInfo();
+		var params = {
+			type:'initFriendRank'
+		};
+		ThirdAPI.getRank(params);
+		this.refeshNumObject();
+		this.battleNode.getComponent('BattleNode').onStart();
 	},
 	startGuideBoard(){
 		var guideNode = cc.instantiate(GlobalData.assets["PBGuideStart"]);
@@ -402,37 +389,57 @@ cc.Class({
 				}
 			}
 		}
+		//存储信息
+		if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
+			GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
+		}
+		this.battleNode.getComponent('BattleNode').show();
 		if(finishTag == true){
-			//存储信息
-			if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
-				GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
-			}
-			
 			GlobalData.gameRunTimeParam.gameStatus = 0;
 			
 			//复活道具
 			var propRelive = PropManager.getPropRelive();
 			if(propRelive != null && propRelive != 'PropAD'){
-				ThirdAPI.updataGameInfo();
 				this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
 				this.node.addChild(this.reliveGameBoard);
 				this.reliveGameBoard.setPosition(cc.p(0,0));
 				this.reliveGameBoard.getComponent('ReliveGame').waitCallBack(1,propRelive,function(){
 					self.reliveGameBoard.removeFromParent();
 					self.reliveGameBoard.destroy();
-					self.finishGameBoard.getComponent("FinishGame").show();
+					self.battleNode.getComponent('BattleNode').onStop();
+					self.showPBGameBoard('FinishGameBoard');
 					console.log("ReliveGame cancle");
 				});
 			}else{
-				ThirdAPI.updataGameInfo();
-				this.finishGameBoard.getComponent("FinishGame").show();
+				this.battleNode.getComponent('BattleNode').onStop();
+				this.showPBGameBoard('FinishGameBoard');
 			}
 		}else{
 			GlobalData.gameRunTimeParam.stepNum += 1;
 			this.boardItem = null;
 			this.refeshNumObject();
-			ThirdAPI.updataGameInfo();
 		}
+		ThirdAPI.updataGameInfo();
+	},
+	showPBGameBoard(type){
+		if(type == 'FinishGameBoard'){
+			this.finishGameBoard = cc.instantiate(GlobalData.assets['PBFinishGameBoard']);
+			this.node.addChild(this.finishGameBoard);
+			this.finishGameBoard.setPosition(cc.p(0,0));
+			this.finishGameBoard.getComponent("FinishGame").show();
+		}else if(type == 'RankGameBoard'){
+			this.rankGameBorad = cc.instantiate(GlobalData.assets['PBRankGameBoard']);
+			this.node.addChild(this.rankGameBorad);
+			this.rankGameBorad.setPosition(cc.p(0,0));
+			this.rankGameBorad.getComponent("RankGame").show();
+		}
+	},
+	destroyGameBoard(board){
+		if(board != null){
+			board.removeFromParent();
+			board.destroy();
+		}
+		return null;
 	},
 	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
 		console.log(totalEatNum,totalScore,deep);
@@ -858,6 +865,15 @@ cc.Class({
 				self.enterGame();
 			});
 		}
+		else if(data.type == 'FRestart'){
+			this.finishGameBoard = this.destroyGameBoard(this.finishGameBoard);
+			GlobalData.gameRunTimeParam.juNum += 1;
+			this.clearGame();
+			this.initBoards();
+			this.enterGame();
+			//以上操作会改变游戏状态所以更新信息
+			ThirdAPI.updataGameInfo();
+		}
 		else if(data.type == 'StartGame'){
 			if(GlobalData.gameRunTimeParam.gameStatus == 1){
 				this.continueGameBoard = cc.instantiate(GlobalData.assets['PBContinueGameBoard']);
@@ -895,6 +911,7 @@ cc.Class({
 		}
 		else if(data.type == "PauseReset"){
 			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
+				self.battleNode.getComponent('BattleNode').hide();
 				self.pauseGameBoard.removeFromParent();
 				self.pauseGameBoard.destroy();
 				self.clearGame();
@@ -939,6 +956,44 @@ cc.Class({
 				self.propFreshNum(data.propKey);
 			});
 		}
+		else if(data.type == 'StartBattleSuccess'){
+			this.startGameBoard.getComponent("StartGame").hideStaticStart(function(){
+				self.clearGame();
+				self.enterGame();
+				var spriteName = null;
+				var propNode = null;
+				if(data.propKey == "PropFresh"){
+					spriteName = "deletePropIcon";
+					propNode = self.gamePropFresh;
+				}else if(data.propKey == "PropBomb"){
+					spriteName = "bomb";
+					propNode = self.gamePropBomb;
+				}else if(data.propKey == "PropHammer"){
+					spriteName = "clearPropIcon";
+					propNode = self.gamePropClear;
+				}else{
+					return;
+				}
+				//判断是否超过使用上限
+				if(GlobalData.cdnPropParam.PropParam[data.propKey].useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].useNum){
+						return;
+					}
+				}
+				//判断背包数量是否少于上限值
+				if(GlobalData.GamePropParam.bagNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].bagNum){
+					return;
+				}
+				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
+				self.mainGameBoard.addChild(flyProp);
+				flyProp.setPosition(data.startPos);
+				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
+					GlobalData.GamePropParam.bagNum[data.propKey] += 1;
+					ThirdAPI.updataGameInfo();
+					self.propFreshNum(data.propKey);
+				});
+			});
+		}
 		else if(data.type == 'ReliveBack'){
 			GlobalData.GamePropParam.bagNum.PropRelive -= 1;
 			GlobalData.GamePropParam.useNum.PropRelive += 1;
@@ -973,6 +1028,11 @@ cc.Class({
 			}
 			//以上操作会改变游戏状态所以更新信息
 			ThirdAPI.updataGameInfo();
+		}else if(data.type == 'RankView'){
+			if(this.finishGameBoard != null){
+				this.finishGameBoard.getComponent("FinishGame").isDraw = false;
+			}
+			this.showPBGameBoard('RankGameBoard');
 		}
 	},
 	blockShadow(){
@@ -995,5 +1055,4 @@ cc.Class({
 			}
 		}
 	}
-    // update (dt) {},
 });

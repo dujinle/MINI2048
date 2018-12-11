@@ -5,15 +5,14 @@ cc.Class({
     properties: {
 		finishGameRank:cc.Node,
 		rankGmameView:cc.Node,
+		aboveGameView:cc.Node,
     },
 	onLoad(){
-		this.finishGameRank.active = false;
-		this.rankGmameView.active = false;
+		this.setViewVisiable(null);
 	},
     start () {
         wx.onMessage(data => {
-			this.finishGameRank.active = false;
-			this.rankGmameView.active = false;
+			this.setViewVisiable(null);
             switch (data.type) {
                 case 'gameOverUIRank':
 					wx.getFriendCloudStorage({
@@ -21,8 +20,7 @@ cc.Class({
 						success: res => {
 							//console.log(res.data);
 							//排序
-							this.finishGameRank.active = true;
-							this.rankGmameView.active = false;
+							this.setViewVisiable(data.type);
 							var rankList = this.sortRank(res.data);
 							this.drawRankOverList(rankList,data);
 						}
@@ -35,8 +33,7 @@ cc.Class({
 						success: res => {
 							//console.log(res.data);
 							//排序
-							this.finishGameRank.active = false;
-							this.rankGmameView.active = true;
+							this.setViewVisiable(data.type);
 							var rankList = this.sortRank(res.data);
 							this.drawRankFrientList(rankList,data);
 						}
@@ -49,16 +46,77 @@ cc.Class({
 						success: res => {
 							//console.log(res.data);
 							//排序
-							this.finishGameRank.active = false;
-							this.rankGmameView.active = true;
+							this.setViewVisiable(data.type);
 							var rankList = this.sortRank(res.data);
 							this.drawRankFrientList(rankList,data);
 						}
 					});
                     break;
+				case 'initFriendRank':
+					this.setViewVisiable(data.type);
+					this.initRankFriendCloudStorage(data);
+					break;
+				case 'battleUIRank':
+					this.setViewVisiable(data.type);
+					this.drawRankList(this.rankList,data);
+                    break;
             }
         });
     },
+	initRankFriendCloudStorage(data){
+		this.rankList = null;
+		this.battleInit = false;
+		this.myRankData = null;
+		wx.getFriendCloudStorage({
+			keyList: ['maxScore','gold'], // 你要获取的、托管在微信后台都key
+			success: res => {
+				//console.log(res.data);
+				var dataList = res.data;
+				wx.getUserInfo({
+					openIdList: ['selfOpenId'],
+					lang: 'zh_CN',
+					success: (res) => {
+						console.log('getUserInfo success', res.data);
+						for(var i = 0;i < dataList.length;i++){
+							var item = dataList[i];
+							item.rank = i + 1;
+							item.my = false;
+							if(item.nickname == res.data[0].nickName){
+								item.my = true;
+								this.myRankData = item;
+							}
+						}
+						this.rankList = this.sortRank(dataList);
+						this.battleInit = true;
+						var data = {type:'battleUIRank',score:0};
+						this.setViewVisiable(data.type);
+						this.drawRankList(this.rankList,data);
+					},
+					fail: (res) => {
+						//console.log('getUserInfo reject', res.data)
+						reject(res)
+						//data.name = '我';
+						//data.avatarUrl = 'res/raw-assets/resources/textures/fireSprite.png';
+						//this.drawSelfRank(data.KVDataList);
+					}
+				})
+			}
+		});
+	},
+	setViewVisiable(type){
+		this.finishGameRank.active = false;
+		this.rankGmameView.active = false;
+		this.aboveGameView.active = false;
+		if(type == 'battleUIRank'){
+			this.aboveGameView.active = true;
+		}else if(type == 'rankUIGroupRank'){
+			this.rankGmameView.active = true;
+		}else if(type == 'rankUIFriendRank'){
+			this.rankGmameView.active = true;
+		}else if(type == 'gameOverUIRank'){
+			this.finishGameRank.active = true;
+		}
+	},
 	drawRankOverList(dataList,data){
 		wx.getUserInfo({
 			openIdList: ['selfOpenId'],
@@ -130,10 +188,15 @@ cc.Class({
 		})
 	},
 	drawRankList(drawList,data){
+		console.log('drawRankList',drawList,data);
 		if(data.type == "gameOverUIRank"){
 			this.finishGameRank.getComponent("FinishGameRank").loadRank(drawList);
-		}else if(data.type == "rankUIFriendRank"){
+		}else if(data.type == "rankUIFriendRank" || data.type == "rankUIGroupRank"){
 			this.rankGmameView.getComponent("RankGameView").loadRank(drawList);
+		}else if(data.type == 'battleUIRank'){
+			if(this.battleInit == true){
+				this.aboveGameView.getComponent("AboveGameView").loadRank(drawList,this.myRankData,data.score);
+			}
 		}
 	},
 	sortRank(data){

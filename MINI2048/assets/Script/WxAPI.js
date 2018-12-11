@@ -363,8 +363,7 @@ let WxGlobal = {
         try {
             let openDataContext = wx.getOpenDataContext();
             let msg = {
-                type: params.type,
-                blacklist: params.blacklist
+                type: params.type
             }
             if (WxGlobal.shareTicketEnabled) {
                 msg.shareTicket = WxGlobal.shareTicket;
@@ -379,10 +378,7 @@ let WxGlobal = {
             let openDataContext = wx.getOpenDataContext();
             let msg = {
                 type: params.type,
-                blacklist: params.blacklist,
-                score: params.score,
-                width: params.rect.width,
-                height: params.rect.height,
+                score: params.score
             }
             if (WxGlobal.shareTicketEnabled) {
                 msg.shareTicket = WxGlobal.shareTicket;

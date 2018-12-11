@@ -28,6 +28,10 @@ cc.Class({
 		//this.sharedCanvas.width = 640;
 		//this.sharedCanvas.height = 1136;
 	},
+	onClose(){
+		this.node.removeFromParent();
+		this.node.destroy();
+	},
 	show(){
 		console.log("finish game show");
 		this.isDraw = true;

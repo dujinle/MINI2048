@@ -1,9 +1,11 @@
 var ThirdAPI = require('ThirdAPI');
+var PropManager = require('PropManager');
 cc.Class({
     extends: cc.Component,
 
     properties: {
 		startButton:cc.Node,
+		battleButton:cc.Node,
 		gameLogo:cc.Node,
 		buttonLayout:cc.Node,
 		scoreLabel:cc.Node,
@@ -64,7 +66,56 @@ cc.Class({
 	shareFailedCb(type,arg){
 		console.log(type,arg);
 	},
-	
+	battleButtonCb(){
+		this.isShareCallBack = false;
+		var prop = PropManager.getShareOrADKey('PropBattle');
+		if(prop == 'PropShare'){
+			var param = {
+				type:null,
+				arg:this,
+				successCallback:this.sharePropSuccessCb,
+				failCallback:this.sharePropFailedCb,
+				shareName:prop,
+				isWait:true
+			};
+			if(GlobalData.cdnGameConfig.shareCustomSet == 0){
+				param.isWait = false;
+			}
+			ThirdAPI.shareGame(param);
+		}
+	},
+	sharePropSuccessCb(type, shareTicket, arg){
+		arg.isShareCallBack = true;
+		arg.EventCustom.setUserData({
+			type:'StartBattleSuccess',
+			propKey:'PropBomb',
+			startPos:cc.p(0,0)
+		});
+		arg.node.dispatchEvent(arg.EventCustom);
+	},
+	sharePropFailedCb(type,arg){
+		if(arg.isShareCallBack == false){
+			if(arg.failNode != null){
+				arg.failNode.stopAllActions();
+				arg.failNode.removeFromParent();
+				arg.failNode.destroy();
+				arg.failNode = null;
+			}
+			arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+			arg.node.addChild(arg.failNode);
+			var actionEnd = cc.callFunc(function(){
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
+			},arg);
+			arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			
+		}
+		arg.isShareCallBack = true;
+	},
 	showStart(){
 		console.log("start game board show");
 		if(GlobalData.AudioSupport == false){
@@ -73,6 +124,11 @@ cc.Class({
 		}else{
 			this.soundOnNode.active = true;
 			this.soundOffNode.active = false;
+		}
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			this.battleButton.active = true;
+		}else{
+			this.battleButton.active = false;
 		}
 		if(this.gameStart == false){
 			this.node.active = true;
@@ -94,6 +150,16 @@ cc.Class({
 			this.startButton.setPosition(cc.p(startX,this.startPos.y));
 			var startMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.startPos);
 			this.startButton.runAction(startMoveTo);
+			
+			//挑战效果设置
+			this.battlePos = this.battleButton.getPosition();
+			var battleSize = this.battleButton.getContentSize();
+			var battleX = (battleSize.width/2 + winSize.width/2);
+			this.battleButton.setPosition(cc.p(battleX,this.battlePos.y));
+			var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.battlePos);
+			if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+				this.battleButton.runAction(battleMoveTo);
+			}
 			//分享，排行，声音效果设置
 			this.layoutPos = this.buttonLayout.getPosition();
 			var layoutSize = this.buttonLayout.getContentSize();
@@ -113,6 +179,11 @@ cc.Class({
 			//开始效果设置
 			var startMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.startPos);
 			this.startButton.runAction(startMoveTo);
+			//挑战效果设置
+			var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.battlePos);
+			if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+				this.battleButton.runAction(battleMoveTo);
+			}
 			//分享，排行，声音效果设置
 			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
 			this.buttonLayout.runAction(layoutMoveTo);
@@ -123,6 +194,11 @@ cc.Class({
 		//this.node.active = false;
 		console.log("start game board hide");
 		var winSize = this.node.getContentSize();
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			this.battleButton.active = true;
+		}else{
+			this.battleButton.active = false;
+		}
 		//logo 效果设置
 		var logoPos = this.gameLogo.getPosition();
 		var logoSize = this.gameLogo.getContentSize();
@@ -133,6 +209,12 @@ cc.Class({
 		var startSize = this.startButton.getContentSize();
 		var startX = (startSize.width/2 + winSize.width/2) * -1;
 		this.startButton.setPosition(cc.p(startX,startPos.y));
+		//挑战效果设置
+		var battlePos = this.battleButton.getPosition();
+		var battleSize = this.battleButton.getContentSize();
+		var battleX = (battleSize.width/2 + winSize.width/2);
+		this.battleButton.setPosition(cc.p(battleX,battlePos.y));
+
 		//分享，排行，声音效果设置
 		var layoutPos = this.buttonLayout.getPosition();
 		var layoutSize = this.buttonLayout.getContentSize();
@@ -151,6 +233,11 @@ cc.Class({
 		var self = this;
 		console.log("start game board hide");
 		var winSize = this.node.getContentSize();
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			this.battleButton.active = true;
+		}else{
+			this.battleButton.active = false;
+		}
 		//logo 效果设置
 		var logoPos = this.gameLogo.getPosition();
 		var logoSize = this.gameLogo.getContentSize();
@@ -163,6 +250,14 @@ cc.Class({
 		var startX = (startSize.width/2 + winSize.width/2) * -1;
 		var startMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(startX,startPos.y));
 		this.startButton.runAction(startMoveTo);
+		//挑战效果设置
+		var battlePos = this.battleButton.getPosition();
+		var battleSize = this.battleButton.getContentSize();
+		var battleX = (battleSize.width/2 + winSize.width/2);
+		var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(battleX,battlePos.y));
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			this.battleButton.runAction(battleMoveTo);
+		}
 		//分享，排行，声音效果设置
 		var layoutPos = this.buttonLayout.getPosition();
 		var layoutSize = this.buttonLayout.getContentSize();

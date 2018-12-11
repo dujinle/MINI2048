@@ -20,26 +20,33 @@ cc.Class({
             onTouchEnded: function (touch, event) {            // 点击事件结束处理
 			}
          }, this.node);
+		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 	},
 	start(){
 		this.texture = new cc.Texture2D();
 		var openDataContext = wx.getOpenDataContext();
 		this.sharedCanvas = openDataContext.canvas;
-		//this.sharedCanvas.width = 640;
-		//this.sharedCanvas.height = 1136;
 	},
 	show(){
 		console.log("finish game show");
 		this.isDraw = true;
-		this.node.active = true;
-		 var param = {
+		//this.node.active = true;
+		var param = {
 			type:'gameOverUIRank'
 		};
-		 ThirdAPI.getRank(param);
+		ThirdAPI.getRank(param);
 	},
 	hide(){
 		this.isDraw = false;
 		this.node.active = false;
+	},
+	rankButtonCb(){
+		this.EventCustom.setUserData({type:'RankView'});
+		this.node.dispatchEvent(this.EventCustom);
+	},
+	restartButtonCb(){
+		this.EventCustom.setUserData({type:'FRestart'});
+		this.node.dispatchEvent(this.EventCustom);
 	},
 	shareToFriends(){
 		var param = {

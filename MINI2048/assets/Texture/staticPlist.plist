@@ -18,7 +18,7 @@
 			<key>battle_pause.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{1042,1964},{74,74}}</string>
+				<string>{{1083,1854},{74,74}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -62,7 +62,7 @@
 			<key>blockShadow.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{843,1606},{128,135}}</string>
+				<string>{{843,1611},{128,135}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -73,7 +73,7 @@
 			<key>bomb.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{868,1906},{77,106}}</string>
+				<string>{{975,1854},{77,106}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -139,7 +139,7 @@
 			<key>clearPropIcon.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{1119,1795},{97,101}}</string>
+				<string>{{1159,1795},{97,101}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -150,7 +150,7 @@
 			<key>close.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{1119,1898},{58,58}}</string>
+				<string>{{1281,1939},{58,58}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -172,7 +172,7 @@
 			<key>crown.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{1218,1791},{70,66}}</string>
+				<string>{{1281,1867},{70,66}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -183,7 +183,7 @@
 			<key>crown_1.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{840,1568},{36,34}}</string>
+				<string>{{839,1906},{36,34}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -194,7 +194,7 @@
 			<key>deletePropIcon.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{1194,1898},{94,94}}</string>
+				<string>{{1185,1898},{94,94}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -348,7 +348,7 @@
 			<key>rankBtnClose.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{1118,1964},{74,74}}</string>
+				<string>{{1258,1791},{74,74}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -370,7 +370,7 @@
 			<key>relieve.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{701,1568},{137,42}}</string>
+				<string>{{868,1944},{137,42}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -447,7 +447,7 @@
 			<key>soundOn.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{976,1854},{108,141}}</string>
+				<string>{{1042,1933},{108,141}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
@@ -480,13 +480,24 @@
 			<key>tips.png</key>
 			<dict>
 				<key>frame</key>
-				<string>{{937,1985},{103,48}}</string>
+				<string>{{937,1988},{103,48}}</string>
 				<key>offset</key>
 				<string>{0,0}</string>
 				<key>rotated</key>
 				<false />
 				<key>sourceSize</key>
 				<string>{103,48}</string>
+			</dict>
+			<key>battle.png</key>
+			<dict>
+				<key>frame</key>
+				<string>{{701,1568},{186,41}}</string>
+				<key>offset</key>
+				<string>{0,0}</string>
+				<key>rotated</key>
+				<false />
+				<key>sourceSize</key>
+				<string>{186,41}</string>
 			</dict>
 		</dict>
 		<key>metadata</key>
@@ -498,12 +509,12 @@
 			<key>realTextureFileName</key>
 			<string>staticPlist.png</string>
 			<key>size</key>
-			<string>{1289,2046}</string>
+			<string>{1348,2046}</string>
 		</dict>
 		<key>texture</key>
 		<dict>
 			<key>width</key>
-			<integer>1289</integer>
+			<integer>1348</integer>
 			<key>height</key>
 			<integer>2046</integer>
 		</dict>
