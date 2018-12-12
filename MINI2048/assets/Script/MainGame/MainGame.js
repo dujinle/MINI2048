@@ -938,20 +938,21 @@ cc.Class({
 			}else{
 				return;
 			}
-			//判断是否超过使用上限
-			if(GlobalData.cdnPropParam.PropParam[data.propKey].useNum >= 0){
-				if(GlobalData.GamePropParam.useNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].useNum){
-					return;
-				}
-			}
-			//判断背包数量是否少于上限值
-			if(GlobalData.GamePropParam.bagNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].bagNum){
-				return;
-			}
+			
 			var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
 			this.mainGameBoard.addChild(flyProp);
 			flyProp.setPosition(data.startPos);
 			flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
+				//判断是否超过使用上限
+				if(GlobalData.cdnPropParam.PropParam[data.propKey].useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].useNum){
+						return;
+					}
+				}
+				//判断背包数量是否少于上限值
+				if(GlobalData.GamePropParam.bagNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].bagNum){
+					return;
+				}
 				GlobalData.GamePropParam.bagNum[data.propKey] += 1;
 				self.propFreshNum(data.propKey);
 			});

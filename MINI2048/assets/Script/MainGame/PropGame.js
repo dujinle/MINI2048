@@ -6,6 +6,7 @@ cc.Class({
 		propKey:null,
 		openType:null,
 		cancelNode:cc.Node,
+		bgContext:cc.Node,
 		iscallBack:false,
     },
     onLoad () {
@@ -22,14 +23,16 @@ cc.Class({
 			}
          }, this.node);
 		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
+		 this.cancelNode.active = false;
 		 this.iscallBack = false;
+		 this.bgContext.scale = 0.2;
 	},
 	initLoad(startPos,openType,prop){
 		var self = this;
-		this.cancelNode.active = false;
 		this.startPos = startPos;
 		this.openType = openType;
 		this.propKey = prop;
+		this.bgContext.runAction(cc.scaleTo(GlobalData.TimeActionParam.PropSBAScaleTime,1));
 		setTimeout(function(){
 			self.cancelNode.active = true;
 		},1000);

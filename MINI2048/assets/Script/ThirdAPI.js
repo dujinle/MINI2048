@@ -33,16 +33,6 @@ let ThirdAPI = {
 			if(code == 200){
 				util.updateObj(GlobalData,data,'cdnNumRate');
 				console.log(GlobalData);
-				//如果默认的cdn文件和动态文件不一致 则再次更新数据
-				if(GlobalData.cdnGameConfig.cdnFileDefaultPath != GlobalData.cdnFileDefaultPath){
-					url = GlobalData.cdnWebsite + GlobalData.cdnGameConfig.cdnFileDefaultPath;
-					util.httpGET(url,null,function(code,data){
-						if(code == 200){
-							util.updateObj(GlobalData,data,'cdnNumRate');
-						}
-						console.log(GlobalData);
-					});
-				}
 			}
 		});
 	},
