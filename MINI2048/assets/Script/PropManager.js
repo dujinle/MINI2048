@@ -102,6 +102,19 @@ let PropManager = {
 		}
 		console.log("PropManager.getProp",random,propsRate,prop);
 		return prop;
+	},
+	getPropBag(prop){
+		if(prop == 'PropFresh' || prop == 'PropRelive'){
+			return GlobalData.cdnPropParam.PropParam[prop];
+		}else{
+			var bag = GlobalData.cdnPropParam.PropParam[prop];
+			for(var key in bag){
+				if(GlobalData.gameRunTimeParam.juNum <= key){
+					return bag[key];
+				}
+			}
+			return bag['default'];
+		}
 	}
 };
 module.exports = PropManager;

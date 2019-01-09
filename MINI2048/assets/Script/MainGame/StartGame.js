@@ -227,7 +227,11 @@ cc.Class({
 			self.node.active = false;
 			callBack();
 		},this);
-		this.node.runAction(hideAction);
+		if(this.node.active != false){
+			this.node.runAction(hideAction);
+		}else{
+			callBack();
+		}
 	},
 	hideStart(callBack){
 		var self = this;
@@ -271,9 +275,13 @@ cc.Class({
 			self.node.active = false;
 			callBack();
 		},this);
-		this.node.runAction(cc.sequence(
-			cc.delayTime(GlobalData.TimeActionParam.StartGameMoveTime),
-			hideAction
-		));
+		if(this.node.active == true){
+			this.node.runAction(cc.sequence(
+				cc.delayTime(GlobalData.TimeActionParam.StartGameMoveTime),
+				hideAction
+			));
+		}else{
+			callBack();
+		}
 	},
 });

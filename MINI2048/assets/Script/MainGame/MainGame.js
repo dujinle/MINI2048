@@ -114,6 +114,7 @@ cc.Class({
 				}
 			}
 		}
+		//this.stopRotateProp();
 		if(this.boardItem != null){
 			this.boardItem.removeFromParent();
 			this.boardItem.destroy();
@@ -127,10 +128,12 @@ cc.Class({
 	},
 	gamePropButtonCb(event, customEventData){
 		console.log("gamePropButtonCb",customEventData);
+		this.stopRotateProp();
 		if(customEventData == "PropFresh"){
 			//判断是否超过使用上限
-			if(GlobalData.cdnPropParam.PropParam[customEventData].useNum >= 0){
-				if(GlobalData.GamePropParam.useNum[customEventData] >= GlobalData.cdnPropParam.PropParam[customEventData].useNum){
+			var propBag = PropManager.getPropBag(customEventData);
+			if(propBag.useNum >= 0){
+				if(GlobalData.GamePropParam.useNum[customEventData] >= propBag.useNum){
 					return;
 				}
 			}
@@ -144,8 +147,9 @@ cc.Class({
 			this.refeshNumObject(true);
 		}else if(customEventData == "PropHammer"){
 			//判断是否超过使用上限
-			if(GlobalData.cdnPropParam.PropParam[customEventData].useNum >= 0){
-				if(GlobalData.GamePropParam.useNum[customEventData] >= GlobalData.cdnPropParam.PropParam[customEventData].useNum){
+			var propBag = PropManager.getPropBag(customEventData);
+			if(propBag.useNum >= 0){
+				if(GlobalData.GamePropParam.useNum[customEventData] >= propBag.useNum){
 					return;
 				}
 			}
@@ -163,8 +167,9 @@ cc.Class({
 			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
 		}else if(customEventData == "PropBomb"){
 			//判断是否超过使用上限
-			if(GlobalData.cdnPropParam.PropParam[customEventData].useNum >= 0){
-				if(GlobalData.GamePropParam.useNum[customEventData] >= GlobalData.cdnPropParam.PropParam[customEventData].useNum){
+			var propBag = PropManager.getPropBag(customEventData);
+			if(propBag.useNum >= 0){
+				if(GlobalData.GamePropParam.useNum[customEventData] >= propBag.useNum){
 					return;
 				}
 			}
@@ -209,7 +214,7 @@ cc.Class({
 			this.boardItem = null;
 		}
 		//清楚运行时数据
-		
+		this.stopRotateProp();
 		//GlobalData.gameRunTimeParam.gameStatus = 0;
 		GlobalData.gameRunTimeParam.totalScore = 0;
 		GlobalData.gameRunTimeParam.stepNum = 0;
@@ -379,13 +384,12 @@ cc.Class({
 	mergeFinish(){
 		//判断游戏是否结束
 		var self = this;
-		var finishTag = true;
+		var leftNum = 0;
 		for(var i = GlobalData.RANK_TOP;i < 6;i++){
 			for(var j = GlobalData.FILE_LEFT;j < 6;j++){
 				var fsq = GlobalData.COORD_XY(i,j);
 				if(GlobalData.numMap[fsq] == 0){
-					finishTag = false;
-					break;
+					leftNum += 1;
 				}
 			}
 		}
@@ -394,7 +398,7 @@ cc.Class({
 			GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
 		}
 		this.battleNode.getComponent('BattleNode').show();
-		if(finishTag == true){
+		if(leftNum == 0){
 			GlobalData.gameRunTimeParam.gameStatus = 0;
 			
 			//复活道具
@@ -414,12 +418,64 @@ cc.Class({
 				this.battleNode.getComponent('BattleNode').onStop();
 				this.showPBGameBoard('FinishGameBoard');
 			}
+		}else if(leftNum == 1){
+			GlobalData.gameRunTimeParam.stepNum += 1;
+			this.boardItem = null;
+			this.refeshNumObject();
+			//如果剩余一个格子则进行道具的引导使用 随机一个道具进行晃动
+			var propArray = new Array();
+			if(GlobalData.GamePropParam.bagNum['PropFresh'] > 0){
+				propArray.push('PropFresh');
+			}
+			var propBag = PropManager.getPropBag('PropHammer');
+			if(GlobalData.GamePropParam.useNum['PropHammer'] < propBag.useNum){
+				if(GlobalData.cdnPropParam.PropUnLock['PropHammer'] <= GlobalData.gameRunTimeParam.juNum){
+					propArray.push('PropHammer');
+				}
+			}
+			var propBag = PropManager.getPropBag('PropBomb');
+			if(GlobalData.GamePropParam.useNum['PropBomb'] < propBag.useNum){
+				if(GlobalData.cdnPropParam.PropUnLock['PropBomb'] <= GlobalData.gameRunTimeParam.juNum){
+					propArray.push('PropBomb');
+				}
+			}
+			var idx = util.getRandomIndexForArray(propArray);
+			if(idx != -1){
+				var propDc = propArray[idx];
+				this.rotateProp(propDc);
+			}
 		}else{
+			this.stopRotateProp();
 			GlobalData.gameRunTimeParam.stepNum += 1;
 			this.boardItem = null;
 			this.refeshNumObject();
 		}
 		ThirdAPI.updataGameInfo();
+	},
+	rotateProp(propName){
+		console.log('rotateProp ',propName);
+		var rotateAction = cc.repeatForever(
+			cc.sequence(
+				cc.rotateBy(0.1, 10),
+				cc.rotateBy(0.2, -20),
+				cc.rotateBy(0.2, 20),
+				cc.rotateBy(0.2, -20),
+				cc.rotateBy(0.1, 10),
+				cc.delayTime(1)
+			)
+		);
+		if(propName == 'PropFresh'){
+			this.gamePropFresh.runAction(rotateAction);
+		}else if(propName == 'PropHammer'){
+			this.gamePropClear.runAction(rotateAction);
+		}else if(propName == 'PropBomb'){
+			this.gamePropBomb.runAction(rotateAction);
+		}
+	},
+	stopRotateProp(){
+		this.gamePropFresh.stopAllActions();
+		this.gamePropClear.stopAllActions();
+		this.gamePropBomb.stopAllActions();
 	},
 	showPBGameBoard(type){
 		if(type == 'FinishGameBoard'){
@@ -591,13 +647,14 @@ cc.Class({
 			flyProp.setPosition(fromPos);
 			flyProp.getComponent("NumFly").startFly(0.3,"deletePropIcon",1,this.gamePropFresh.getPosition(),function(){
 				//判断是否超过使用上限
-				if(GlobalData.cdnPropParam.PropParam[res].useNum >= 0){
-					if(GlobalData.GamePropParam.useNum[res] >= GlobalData.cdnPropParam.PropParam[res].useNum){
+				var propBag = PropManager.getPropBag(res);
+				if(propBag.useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[res] >= propBag.useNum){
 						return;
 					}
 				}
 				//判断背包数量是否少于上限值
-				if(GlobalData.GamePropParam.bagNum[res] < GlobalData.cdnPropParam.PropParam[res].bagNum){
+				if(GlobalData.GamePropParam.bagNum[res] < propBag.bagNum){
 					GlobalData.GamePropParam.bagNum[res] += 1;
 					self.propFreshNum('PropFresh');
 				}
@@ -944,13 +1001,14 @@ cc.Class({
 			flyProp.setPosition(data.startPos);
 			flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
 				//判断是否超过使用上限
-				if(GlobalData.cdnPropParam.PropParam[data.propKey].useNum >= 0){
-					if(GlobalData.GamePropParam.useNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].useNum){
+				var propBag = PropManager.getPropBag(data.propKey);
+				if(propBag.useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[data.propKey] >= propBag.useNum){
 						return;
 					}
 				}
 				//判断背包数量是否少于上限值
-				if(GlobalData.GamePropParam.bagNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].bagNum){
+				if(GlobalData.GamePropParam.bagNum[data.propKey] >= propBag.bagNum){
 					return;
 				}
 				GlobalData.GamePropParam.bagNum[data.propKey] += 1;
@@ -976,13 +1034,14 @@ cc.Class({
 					return;
 				}
 				//判断是否超过使用上限
-				if(GlobalData.cdnPropParam.PropParam[data.propKey].useNum >= 0){
-					if(GlobalData.GamePropParam.useNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].useNum){
+				var propBag = PropManager.getPropBag(data.propKey);
+				if(propBag.useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[data.propKey] >= propBag.useNum){
 						return;
 					}
 				}
 				//判断背包数量是否少于上限值
-				if(GlobalData.GamePropParam.bagNum[data.propKey] >= GlobalData.cdnPropParam.PropParam[data.propKey].bagNum){
+				if(GlobalData.GamePropParam.bagNum[data.propKey] >= propBag.bagNum){
 					return;
 				}
 				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);

@@ -92,9 +92,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 11,
+      "g": 49,
+      "b": 9,
       "a": 255
     },
     "_cascadeOpacityEnabled": true,
@@ -4462,9 +4462,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 99,
+      "g": 97,
+      "b": 97,
       "a": 255
     },
     "_cascadeOpacityEnabled": true,
@@ -4744,9 +4744,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 255,
-      "g": 255,
-      "b": 255,
+      "r": 99,
+      "g": 97,
+      "b": 97,
       "a": 255
     },
     "_cascadeOpacityEnabled": true,
@@ -4757,7 +4757,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
+      "width": 80,
       "height": 30
     },
     "_rotationX": 0,
@@ -4766,7 +4766,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 37,
+      "x": 45,
       "y": 19
     },
     "_skewX": 0,
@@ -4787,13 +4787,13 @@
     "_useOriginalSize": false,
     "_actualFontSize": 25,
     "_fontSize": 25,
-    "_lineHeight": 30,
+    "_lineHeight": 25,
     "_enableWrapText": false,
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_N$string": "",
-    "_N$horizontalAlign": 1,
+    "_N$horizontalAlign": 0,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
     "_N$overflow": 2
@@ -4818,9 +4818,9 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 251,
-      "g": 189,
-      "b": 73,
+      "r": 99,
+      "g": 97,
+      "b": 97,
       "a": 255
     },
     "_cascadeOpacityEnabled": true,
@@ -4831,7 +4831,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 100,
+      "width": 80,
       "height": 30
     },
     "_rotationX": 0,
@@ -4840,7 +4840,7 @@
     "_scaleY": 1,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 37,
+      "x": 45,
       "y": -16
     },
     "_skewX": 0,
@@ -4861,13 +4861,13 @@
     "_useOriginalSize": false,
     "_actualFontSize": 25,
     "_fontSize": 25,
-    "_lineHeight": 30,
+    "_lineHeight": 25,
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
     "_spacingX": 0,
     "_N$string": "",
-    "_N$horizontalAlign": 1,
+    "_N$horizontalAlign": 0,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
     "_N$overflow": 2

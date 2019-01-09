@@ -151,11 +151,11 @@ GlobalData = {
 				PropSAB:0
 			},
 			3:{
-				PropSAB:0.3,
-				PropFresh:0
+				PropSAB:0.2,
+				PropFresh:0.2
 			},
 			4:{
-				PropFresh:0.4,
+				PropFresh:0.3,
 				PropSAB:0.4
 			},
 			5:{
@@ -165,15 +165,15 @@ GlobalData = {
 		},
 		PropUnLock:{	//道具解锁盘数
 			PropFresh:1,
-			PropHammer:3,
-			PropSAB:3,
-			PropBomb:3,
+			PropHammer:8,
+			PropSAB:2,
+			PropBomb:8,
 			PropAD:3,		//分享广告解锁盘数
 			PropShare:3,
-			PropRelive:1,
+			PropRelive:3,
 			PropBattle:3
 		},
-		PropReliveRate:0.5,
+		PropReliveRate:1,
 		SABOpenRate:{		//打开宝箱获取道具的概率
 			PropFresh:1,
 			PropHammer:0,
@@ -187,13 +187,33 @@ GlobalData = {
 			},
 			//锤子概率参数设置
 			PropHammer:{
-				bagNum:2,
-				useNum:2
+				15:{
+					bagNum:1,
+					useNum:1
+				},
+				30:{
+					bagNum:2,
+					useNum:2
+				},
+				default:{
+					bagNum:3,
+					useNum:3
+				}
 			},
 			//炸弹概率参数设置
 			PropBomb:{
-				bagNum:2,
-				useNum:2
+				15:{
+					bagNum:1,
+					useNum:1
+				},
+				30:{
+					bagNum:2,
+					useNum:2
+				},
+				default:{
+					bagNum:3,
+					useNum:3
+				}
 			},
 			//复活概率参数设置
 			PropRelive:{
@@ -219,8 +239,8 @@ GlobalData = {
 						PropAD:0.3
 					},
 					PropRelive:{
-						PropShare:0.3,
-						PropAD:0.7
+						PropShare:1,
+						PropAD:0
 					},
 					PropBattle:{
 						PropShare:0.7,
@@ -241,8 +261,8 @@ GlobalData = {
 						PropAD:0
 					},
 					PropRelive:{
-						PropShare:0.3,
-						PropAD:0.7
+						PropShare:1,
+						PropAD:0
 					},
 					PropBattle:{
 						PropShare:1,

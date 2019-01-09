@@ -6,9 +6,11 @@ cc.Class({
 		isDraw:false,
     },
 	start(){
-		this.texture = new cc.Texture2D();
-		var openDataContext = wx.getOpenDataContext();
-		this.sharedCanvas = openDataContext.canvas;
+		try{
+			this.texture = new cc.Texture2D();
+			var openDataContext = wx.getOpenDataContext();
+			this.sharedCanvas = openDataContext.canvas;
+		}catch(error){}
 	},
 	onStart(){
 		this.node.active = true;
