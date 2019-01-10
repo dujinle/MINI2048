@@ -419,8 +419,8 @@
     "_active": true,
     "_position": {
       "__type__": "cc.Vec2",
-      "x": 420,
-      "y": 579
+      "x": -1248,
+      "y": 587
     },
     "_rotationX": 0,
     "_rotationY": 0,
