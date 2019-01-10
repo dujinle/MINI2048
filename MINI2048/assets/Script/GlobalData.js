@@ -2,7 +2,7 @@ GlobalData = {
 	//皮肤设置
 	skin:'color1',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.json",
+	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.1.json",
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,
