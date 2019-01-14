@@ -13,6 +13,23 @@ let util = {
 		var dist = Math.sqrt(a * a + b * b);
 		return dist;
 	},
+	reSetPropShareOrADRate(){
+		var ucPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.crazy.unLock.PropSAB;
+		var cPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.crazy.lock.PropSAB;
+		var unPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.normal.unLock.PropSAB;
+		var nPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.normal.lock.PropSAB;
+		ucPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
+		ucPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
+		
+		cPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
+		cPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
+		
+		unPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
+		unPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
+		
+		nPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
+		nPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
+	},
 	//获取随机数
 	getRandomNum:function(rateType){
 		var randomNumber = Math.random();
@@ -29,6 +46,33 @@ let util = {
 		
 		//这里返回2 避免rateType设置错误导致无效
 		return -1;
+	},
+	refreshOneNum(){
+		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % test.length];
+		if(GlobalData.gameRunTimeParam.juNum <= 15){
+			while(num == -1){
+				var lastKey = 'default';
+				for(var key in GlobalData.cdnNumRate){
+					if(GlobalData.gameRunTimeParam.stepNum <= key){
+						lastKey = key;
+						break;
+					}
+				}
+				num = this.getRandomNum(GlobalData.cdnNumRate[lastKey]);
+			}
+		}else{
+			while(num == -1){
+				var lastKey = 'default';
+				for(var key in GlobalData.cdnNumRate15){
+					if(GlobalData.gameRunTimeParam.stepNum <= key){
+						lastKey = key;
+						break;
+					}
+				}
+				num = this.getRandomNum(GlobalData.cdnNumRate15[lastKey]);
+			}
+		}
+		return num;
 	},
 	isArrayFn:function(value){
 		if (typeof Array.isArray === "function") {

@@ -288,17 +288,7 @@ cc.Class({
 			this.boardItem = null;
 		}
 		//var test = [256,512,1024,2048];
-		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % test.length];
-		while(num == -1){
-			var lastKey = 140;
-			for(var key in GlobalData.cdnNumRate){
-				if(GlobalData.gameRunTimeParam.stepNum <= key){
-					lastKey = key;
-					break;
-				}
-			}
-			num = util.getRandomNum(GlobalData.cdnNumRate[lastKey]);
-		}
+		var num = util.refreshOneNum();
 		GlobalData.gameRunTimeParam.lastFreshNum = num;
 		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
 		if(scaleFlag == false){
@@ -313,7 +303,7 @@ cc.Class({
 		this.boardItem.on(cc.Node.EventType.TOUCH_MOVE, this.eventTouchMove,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_END, this.eventTouchEnd,this);
 		this.boardItem.on(cc.Node.EventType.TOUCH_CANCEL, this.eventTouchCancel,this);
-		console.log("refeshNumObject",num,GlobalData.gameRunTimeParam.stepNum);
+		console.log("refeshNumObject",num,GlobalData.gameRunTimeParam.stepNum,GlobalData.gameRunTimeParam.juNum);
 	},
 	offNodeAction(){
 		this.boardItem.off(cc.Node.EventType.TOUCH_START, this.eventTouchStart,this);
@@ -396,6 +386,9 @@ cc.Class({
 		//存储信息
 		if(GlobalData.gameRunTimeParam.maxScore < GlobalData.gameRunTimeParam.totalScore){
 			GlobalData.gameRunTimeParam.maxScore = GlobalData.gameRunTimeParam.totalScore;
+		}
+		if(GlobalData.gameRunTimeParam.totalScore > GlobalData.cdnGameConfig.shareADLevel){
+			util.reSetPropShareOrADRate();
 		}
 		this.battleNode.getComponent('BattleNode').show();
 		if(leftNum == 0){
@@ -568,7 +561,7 @@ cc.Class({
 		this.propKey = prop;
 		this.isShareCallBack = false;
 		this.shareSuccessCb = function(type, shareTicket, arg){
-			console.log('main',type, shareTicket, arg);
+			//console.log('main',type, shareTicket, arg);
 			if(arg.isShareCallBack == true){
 				return;
 			}
@@ -596,7 +589,7 @@ cc.Class({
 			});
 		};
 		this.shareFailedCb = function(type,arg){
-			console.log(type,arg);
+			//console.log(type,arg);
 			if(arg.isShareCallBack == false){
 				if(arg.failNode != null){
 					arg.failNode.stopAllActions();

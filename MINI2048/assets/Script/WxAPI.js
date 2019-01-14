@@ -206,7 +206,7 @@ let WxGlobal = {
 	
     //拉起微信分享(参数：successCallback,failCallback)
     shareGame: function (params) {
-        console.log('分享到群:', params);
+        console.log('分享到群:');
         //var checkShareGroup = require('../common/checkShareGroup');
         var shareInfo = this.getShareInfo();
         var successCallback = params.successCallback;
@@ -254,15 +254,16 @@ let WxGlobal = {
                         },
                         complete: () => {},
                     });
-                } else {
-                    console.log('wx分享到群失败', failCallback, params.arg);
+                }
+				else {
+                    console.log('wx分享到群失败');
                     if (failCallback) {
 						failCallback("fail", params.arg);
 					}
 				}
 			},
             fail: () => {
-				console.log('wx换个群试试吧', failCallback, params.arg);
+				console.log('wx换个群试试吧');
 				if (failCallback) {
 					failCallback("cancel", params.arg);
 				}
@@ -305,7 +306,7 @@ let WxGlobal = {
 
     //群排行分享成功
     onShareGroupSuccess: function (openGId, shareTicket, arg) {
-        console.log('额外参数', arg);
+        console.log('分享到群成功回调');
         //分享给群
         try {
             let openDataContext = wx.getOpenDataContext()
