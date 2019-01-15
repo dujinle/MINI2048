@@ -54,9 +54,9 @@ cc.Class({
 	cancleButtonCb(){
 		console.log('cancleButtonCb');
 		this.unschedule(this.loadUpdate);
+		this.callback();
 		this.node.removeFromParent();
 		this.node.destroy();
-		this.callback();
 	},
 	shareSuccessCb(type, shareTicket, arg){
 		if(arg.iscallBack == false){
