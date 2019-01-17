@@ -410,7 +410,7 @@ cc.Class({
 		this.battleNode.getComponent('BattleNode').show();
 		if(leftNum == 0){
 			GlobalData.gameRunTimeParam.gameStatus = 0;
-			
+			this.stopRotateProp();
 			//复活道具
 			var propRelive = PropManager.getPropRelive();
 			if(propRelive != null){
