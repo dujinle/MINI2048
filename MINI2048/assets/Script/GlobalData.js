@@ -18,9 +18,9 @@ GlobalData = {
 	},
 	cdnGameConfig:{
 		refreshBanner:0,		//0 关闭	1打开
-		minShareTime:2,
+		minShareTime:2.8,
 		gameModel:'crazy',
-		shareSuccessWeight:[1,1,0.8,0.8,0.6],
+		shareSuccessWeight:[1,1,1,1,1],
 		shareADLevel:50000,
 		PropShare:0.5,
 		PropAV:0.5,
@@ -221,8 +221,8 @@ GlobalData = {
 				PropFresh:0.2
 			},
 			4:{
-				PropFresh:0.3,
-				PropSAB:0.4
+				PropFresh:0.45,
+				PropSAB:0.3
 			},
 			5:{
 				PropFresh:0,
