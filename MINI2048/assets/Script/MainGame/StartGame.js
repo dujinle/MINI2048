@@ -1,5 +1,6 @@
 var ThirdAPI = require('ThirdAPI');
 var PropManager = require('PropManager');
+var WxVideoAd = require('WxVideoAd');
 cc.Class({
     extends: cc.Component,
 
@@ -67,21 +68,55 @@ cc.Class({
 		console.log(type,arg);
 	},
 	battleButtonCb(){
-		this.isShareCallBack = false;
-		var prop = PropManager.getShareOrADKey('PropBattle');
-		if(prop == 'PropShare'){
+		if(this.prop == null){
+			this.prop = PropManager.getShareOrADKey('PropBattle');
+		}
+		if(this.prop == 'PropShare'){
+			this.isShareCallBack = false;
 			var param = {
 				type:null,
 				arg:this,
 				successCallback:this.sharePropSuccessCb,
 				failCallback:this.sharePropFailedCb,
-				shareName:prop,
+				shareName:this.prop,
 				isWait:true
 			};
 			if(GlobalData.cdnGameConfig.shareCustomSet == 0){
 				param.isWait = false;
 			}
 			ThirdAPI.shareGame(param);
+		}
+		else if(this.prop == 'PropAV'){
+			this.AVSuccessCb = function(arg){
+				arg.EventCustom.setUserData({
+					type:'StartBattleSuccess',
+					propKey:'PropBomb',
+					startPos:cc.p(0,0)
+				});
+				arg.prop = null;
+				arg.node.dispatchEvent(arg.EventCustom);
+			};
+			this.AVFailedCb = function(arg){
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
+				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
+				arg.node.addChild(arg.failNode);
+				var actionEnd = cc.callFunc(function(){
+					if(arg.failNode != null){
+						arg.failNode.stopAllActions();
+						arg.failNode.removeFromParent();
+						arg.failNode.destroy();
+						arg.failNode = null;
+					}
+				},arg);
+				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			};
+			WxVideoAd.initCreateReward(this.AVSuccessCb,this.AVFailedCb,this);
 		}
 	},
 	sharePropSuccessCb(type, shareTicket, arg){
@@ -91,6 +126,7 @@ cc.Class({
 			propKey:'PropBomb',
 			startPos:cc.p(0,0)
 		});
+		arg.prop = null;
 		arg.node.dispatchEvent(arg.EventCustom);
 	},
 	sharePropFailedCb(type,arg){

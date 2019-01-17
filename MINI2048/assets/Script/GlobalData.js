@@ -17,12 +17,13 @@ GlobalData = {
 		juNum:0		//当前第几局
 	},
 	cdnGameConfig:{
+		refreshBanner:0,		//0 关闭	1打开
 		minShareTime:2,
 		gameModel:'crazy',
 		shareSuccessWeight:[1,1,0.8,0.8,0.6],
 		shareADLevel:50000,
 		PropShare:0.5,
-		PropAD:0.5,
+		PropAV:0.5,
 		shareCustomSet:1		//0 关闭 自定义分享 1打开自定义分享
 	},
 	//设置数字概率生成方式
@@ -230,11 +231,12 @@ GlobalData = {
 		},
 		PropUnLock:{	//道具解锁盘数
 			PropFresh:1,
-			PropHammer:8,
+			PropHammer:4,
 			PropSAB:2,
-			PropBomb:8,
+			PropBomb:4,
 			PropAD:3,		//分享广告解锁盘数
-			PropShare:3,
+			PropAV:3,
+			PropShare:2,
 			PropRelive:3,
 			PropBattle:3
 		},
@@ -293,45 +295,45 @@ GlobalData = {
 				unLock:{
 					PropHammer:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropBomb:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropSAB:{
 						PropShare:0.7,
-						PropAD:0.3
+						PropAV:0.3
 					},
 					PropRelive:{
 						PropShare:1,
-						PropAD:0
+						PropAV:0
 					},
 					PropBattle:{
 						PropShare:0.7,
-						PropAD:0.3
+						PropAV:0.3
 					}
 				},
 				lock:{
 					PropHammer:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropBomb:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropSAB:{
 						PropShare:1,
-						PropAD:0
+						PropAV:0
 					},
 					PropRelive:{
 						PropShare:1,
-						PropAD:0
+						PropAV:0
 					},
 					PropBattle:{
 						PropShare:1,
-						PropAD:0
+						PropAV:0
 					}
 				}
 			},
@@ -340,45 +342,45 @@ GlobalData = {
 				unLock:{
 					PropHammer:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropBomb:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropSAB:{
 						PropShare:0.7,
-						PropAD:0.3
+						PropAV:0.3
 					},
 					PropRelive:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropBattle:{
 						PropShare:0.7,
-						PropAD:0.3
+						PropAV:0.3
 					}
 				},
 				lock:{
 					PropHammer:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropBomb:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropSAB:{
 						PropShare:0,
-						PropAD:1
+						PropAV:1
 					},
 					PropRelive:{
 						PropShare:0.3,
-						PropAD:0.7
+						PropAV:0.7
 					},
 					PropBattle:{
 						PropShare:0,
-						PropAD:1
+						PropAV:1
 					}
 				}
 			}

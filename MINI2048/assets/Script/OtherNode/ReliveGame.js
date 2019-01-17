@@ -1,4 +1,5 @@
 var ThirdAPI = require('ThirdAPI');
+var WxVideoAd = require('WxVideoAd');
 cc.Class({
     extends: cc.Component,
 
@@ -47,8 +48,32 @@ cc.Class({
 				param.isWait = false;
 			}
 			ThirdAPI.shareGame(param);
-		}else if(this.openType == "PropAD"){
-			console.log(this.openType);
+		}else if(this.openType == "PropAV"){
+			this.AVSuccessCb = function(arg){
+				arg.EventCustom.setUserData({type:'ReliveBack',action:arg.action});
+				arg.node.dispatchEvent(arg.EventCustom);
+			};
+			this.AVFailedCb = function(arg){
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
+				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
+				arg.node.addChild(arg.failNode);
+				var actionEnd = cc.callFunc(function(){
+					if(arg.failNode != null){
+						arg.failNode.stopAllActions();
+						arg.failNode.removeFromParent();
+						arg.failNode.destroy();
+						arg.failNode = null;
+					}
+				},arg);
+				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			};
+			WxVideoAd.initCreateReward(this.AVSuccessCb,this.AVFailedCb,this);
 		}
 	},
 	cancleButtonCb(){

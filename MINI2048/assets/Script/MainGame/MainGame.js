@@ -1,6 +1,8 @@
 var ThirdAPI = require('ThirdAPI');
 var util = require('util');
 var PropManager = require('PropManager');
+var WxBannerAd = require('WxBannerAd');
+var WxVideoAd = require('WxVideoAd');
 cc.Class({
     extends: cc.Component,
 
@@ -29,6 +31,11 @@ cc.Class({
     },
     onLoad () {
 		console.log("onLoad start");
+		if(util.isIphoneX()){
+			var cvs = this.node.getComponent(cc.Canvas);
+			cvs.fitHeight = true;
+			cvs.fitWidth = true;
+		}
 		//异步加载动态数据
 		this.rate = 0;
 		this.resLength = 14;
@@ -114,7 +121,6 @@ cc.Class({
 				}
 			}
 		}
-		//this.stopRotateProp();
 		if(this.boardItem != null){
 			this.boardItem.removeFromParent();
 			this.boardItem.destroy();
@@ -165,6 +171,7 @@ cc.Class({
 			this.propHammerGuide.setPosition(mainPos);
 			this.propHammerGuide.getComponent("PropHammerEffect").onStart();
 			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
+			WxBannerAd.hideBannerAd();
 		}else if(customEventData == "PropBomb"){
 			//判断是否超过使用上限
 			var propBag = PropManager.getPropBag(customEventData);
@@ -189,6 +196,7 @@ cc.Class({
 			this.propFreshNum(customEventData);
 			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
 			this.propBombAction(2048);
+			WxBannerAd.hideBannerAd();
 		}
 	},
 	clearGame(){
@@ -268,6 +276,15 @@ cc.Class({
 		ThirdAPI.getRank(params);
 		this.refeshNumObject();
 		this.battleNode.getComponent('BattleNode').onStart();
+		//添加广告计算 最下面的节点位置所占的全屏比例 广告位置 不得超过这个节点
+		if(GlobalData.cdnPropParam.PropUnLock['PropAD'] <= GlobalData.gameRunTimeParam.juNum){
+			var sizeHeight = cc.winSize.height;
+			var blockBoardPos = this.blockBoard.getPosition();
+			//向下移 10个像素 不要挨得最下面的节点太近
+			var yy = Math.abs(blockBoardPos.y) +  this.blockBoard.getContentSize().height/2 + sizeHeight/2;
+			var yRate = 1 - yy/sizeHeight;
+			WxBannerAd.createBannerAd(yRate);
+		}
 	},
 	startGuideBoard(){
 		var guideNode = cc.instantiate(GlobalData.assets["PBGuideStart"]);
@@ -396,7 +413,7 @@ cc.Class({
 			
 			//复活道具
 			var propRelive = PropManager.getPropRelive();
-			if(propRelive != null && propRelive != 'PropAD'){
+			if(propRelive != null){
 				this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
 				this.node.addChild(this.reliveGameBoard);
 				this.reliveGameBoard.setPosition(cc.p(0,0));
@@ -469,6 +486,9 @@ cc.Class({
 		this.gamePropFresh.stopAllActions();
 		this.gamePropClear.stopAllActions();
 		this.gamePropBomb.stopAllActions();
+		this.gamePropFresh.rotation = 0;
+		this.gamePropClear.rotation = 0;
+		this.gamePropBomb.rotation = 0;
 	},
 	showPBGameBoard(type){
 		if(type == 'FinishGameBoard'){
@@ -558,39 +578,101 @@ cc.Class({
 	},
 	//获取道具操作
 	getShareProp(prop){
-		this.propKey = prop;
-		this.isShareCallBack = false;
-		this.shareSuccessCb = function(type, shareTicket, arg){
-			//console.log('main',type, shareTicket, arg);
-			if(arg.isShareCallBack == true){
-				return;
+		var propType = PropManager.getShareOrADKey(prop);
+		if(propType == 'PropShare'){
+			this.propKey = prop;
+			this.isShareCallBack = false;
+			this.shareSuccessCb = function(type, shareTicket, arg){
+				console.log('main',type, shareTicket, arg);
+				if(arg.isShareCallBack == true){
+					return;
+				}
+				arg.isShareCallBack = true;
+				var spriteName = null;
+				var propNode = null;
+				if(arg.propKey == "PropFresh"){
+					spriteName = "deletePropIcon";
+					propNode = arg.gamePropFresh;
+				}else if(arg.propKey == "PropBomb"){
+					spriteName = "bomb";
+					propNode = arg.gamePropBomb;
+				}else if(arg.propKey == "PropHammer"){
+					spriteName = "clearPropIcon";
+					propNode = arg.gamePropClear;
+				}else{
+					return;
+				}
+				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
+				arg.mainGameBoard.addChild(flyProp);
+				flyProp.setPosition(cc.p(0,0));
+				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
+					GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
+					arg.propFreshNum(arg.propKey);
+				});
+			};
+			this.shareFailedCb = function(type,arg){
+				console.log(type,arg);
+				if(arg.isShareCallBack == false){
+					if(arg.failNode != null){
+						arg.failNode.stopAllActions();
+						arg.failNode.removeFromParent();
+						arg.failNode.destroy();
+						arg.failNode = null;
+					}
+					arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+					arg.mainGameBoard.addChild(arg.failNode);
+					var actionEnd = cc.callFunc(function(){
+						if(arg.failNode != null){
+							arg.failNode.stopAllActions();
+							arg.failNode.removeFromParent();
+							arg.failNode.destroy();
+							arg.failNode = null;
+						}
+					},arg);
+					arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+					
+				}
+				arg.isShareCallBack = true;
+			};
+			var param = {
+				type:null,
+				arg:this,
+				successCallback:this.shareSuccessCb,
+				failCallback:this.shareFailedCb,
+				shareName:prop,
+				isWait:true
+			};
+			if(GlobalData.cdnGameConfig.shareCustomSet == 0){
+				param.isWait = false;
 			}
-			arg.isShareCallBack = true;
-			var spriteName = null;
-			var propNode = null;
-			if(arg.propKey == "PropFresh"){
-				spriteName = "deletePropIcon";
-				propNode = arg.gamePropFresh;
-			}else if(arg.propKey == "PropBomb"){
-				spriteName = "bomb";
-				propNode = arg.gamePropBomb;
-			}else if(arg.propKey == "PropHammer"){
-				spriteName = "clearPropIcon";
-				propNode = arg.gamePropClear;
-			}else{
-				return;
-			}
-			var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
-			arg.mainGameBoard.addChild(flyProp);
-			flyProp.setPosition(cc.p(0,0));
-			flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
-				GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
-				arg.propFreshNum(arg.propKey);
-			});
-		};
-		this.shareFailedCb = function(type,arg){
-			//console.log(type,arg);
-			if(arg.isShareCallBack == false){
+			ThirdAPI.shareGame(param);
+		}
+		else if(propType == 'PropAV'){
+			this.propKey = prop;
+			this.shareSuccessCb = function(arg){
+				var spriteName = null;
+				var propNode = null;
+				if(arg.propKey == "PropFresh"){
+					spriteName = "deletePropIcon";
+					propNode = arg.gamePropFresh;
+				}else if(arg.propKey == "PropBomb"){
+					spriteName = "bomb";
+					propNode = arg.gamePropBomb;
+				}else if(arg.propKey == "PropHammer"){
+					spriteName = "clearPropIcon";
+					propNode = arg.gamePropClear;
+				}else{
+					return;
+				}
+				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
+				arg.mainGameBoard.addChild(flyProp);
+				flyProp.setPosition(cc.p(0,0));
+				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
+					GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
+					arg.propFreshNum(arg.propKey);
+				});
+			};
+			this.shareFailedCb = function(arg){
 				if(arg.failNode != null){
 					arg.failNode.stopAllActions();
 					arg.failNode.removeFromParent();
@@ -598,6 +680,7 @@ cc.Class({
 					arg.failNode = null;
 				}
 				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
 				arg.mainGameBoard.addChild(arg.failNode);
 				var actionEnd = cc.callFunc(function(){
 					if(arg.failNode != null){
@@ -608,22 +691,9 @@ cc.Class({
 					}
 				},arg);
 				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-				
-			}
-			arg.isShareCallBack = true;
-		};
-		var param = {
-			type:null,
-			arg:this,
-			successCallback:this.shareSuccessCb,
-			failCallback:this.shareFailedCb,
-			shareName:prop,
-			isWait:true
-		};
-		if(GlobalData.cdnGameConfig.shareCustomSet == 0){
-			param.isWait = false;
+			};
+			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,this);	
 		}
-		ThirdAPI.shareGame(param);
 	},
 	getProp(eatNum,fromPos){
 		var self = this;
@@ -660,6 +730,53 @@ cc.Class({
 			this.propGameBoard.setPosition(cc.p(0,0));
 			this.propGameBoard.getComponent("PropGame").initLoad(fromPos,resArr[0],resArr[1]);
 		}
+		else if(resArr[0] == 'PropAV'){
+			this.propKey = resArr[1];
+			this.shareSuccessCb = function(arg){
+				var spriteName = null;
+				var propNode = null;
+				if(arg.propKey == "PropFresh"){
+					spriteName = "deletePropIcon";
+					propNode = arg.gamePropFresh;
+				}else if(arg.propKey == "PropBomb"){
+					spriteName = "bomb";
+					propNode = arg.gamePropBomb;
+				}else if(arg.propKey == "PropHammer"){
+					spriteName = "clearPropIcon";
+					propNode = arg.gamePropClear;
+				}else{
+					return;
+				}
+				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
+				arg.mainGameBoard.addChild(flyProp);
+				flyProp.setPosition(cc.p(0,0));
+				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
+					GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
+					arg.propFreshNum(arg.propKey);
+				});
+			};
+			this.shareFailedCb = function(arg){
+				if(arg.failNode != null){
+					arg.failNode.stopAllActions();
+					arg.failNode.removeFromParent();
+					arg.failNode.destroy();
+					arg.failNode = null;
+				}
+				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
+				arg.mainGameBoard.addChild(arg.failNode);
+				var actionEnd = cc.callFunc(function(){
+					if(arg.failNode != null){
+						arg.failNode.stopAllActions();
+						arg.failNode.removeFromParent();
+						arg.failNode.destroy();
+						arg.failNode = null;
+					}
+				},arg);
+				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+			};
+			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,this);
+		}
 	},
 	eventTouchStart(event){
 		this.moveIdx = -1;
@@ -669,6 +786,7 @@ cc.Class({
 			this.propBombGuide.destroy();
 			this.propBombGuide = null;
 			GlobalData.gameRunTimeParam.lastFreshNum = 2048;
+			WxBannerAd.showBannerAd();
 		}
 		this.initLocation = this.boardItem.getPosition();
 		this.touchLocation = this.boardItem.parent.convertToNodeSpaceAR(event.getLocation());
@@ -779,6 +897,7 @@ cc.Class({
 			this.propHammerGuide.destroy();
 			this.propHammerGuide = null;
 			this.mainGameBoard.off("pressed",this.propPressCallBack,this);
+			WxBannerAd.showBannerAd();
 			return;
 		}else if(data.currentTarget.name == 'BombCancleLabel'){
 			this.propBombGuide.stopAllActions();
@@ -790,6 +909,8 @@ cc.Class({
 			GlobalData.GamePropParam.useNum['PropBomb'] -= 1;
 			GlobalData.GamePropParam.bagNum['PropBomb'] += 1;
 			this.propFreshNum('PropBomb');
+			WxBannerAd.showBannerAd();
+			return;
 		}
 		
 		var selectIdx = -1;
@@ -837,6 +958,7 @@ cc.Class({
 						GlobalData.GamePropParam.useNum['PropHammer'] += 1;
 						GlobalData.GamePropParam.bagNum['PropHammer'] -= 1;
 						self.propFreshNum('PropHammer');
+						WxBannerAd.showBannerAd();
 					});
 				}
 			}
@@ -932,7 +1054,7 @@ cc.Class({
 				this.continueGameBoard.getComponent("ContinueGame").showBoard();
 			}else{
 				var propRelive = PropManager.getPropStart();
-				if(propRelive != null && propRelive != 'PropAD'){
+				if(propRelive != null){
 					this.reliveGameBoard = cc.instantiate(GlobalData.assets['PBReliveGameBoard']);
 					this.node.addChild(this.reliveGameBoard);
 					this.reliveGameBoard.setPosition(cc.p(0,0));
@@ -960,6 +1082,7 @@ cc.Class({
 			});
 		}
 		else if(data.type == "PauseReset"){
+			WxBannerAd.hideBannerAd();
 			this.pauseGameBoard.getComponent("PauseGame").hidePause(function(){
 				self.battleNode.getComponent('BattleNode').hide();
 				self.pauseGameBoard.removeFromParent();
@@ -1081,11 +1204,18 @@ cc.Class({
 			}
 			//以上操作会改变游戏状态所以更新信息
 			ThirdAPI.updataGameInfo();
-		}else if(data.type == 'RankView'){
+		}
+		else if(data.type == 'RankView'){
+			WxBannerAd.hideBannerAd();
 			if(this.finishGameBoard != null){
 				this.finishGameBoard.getComponent("FinishGame").isDraw = false;
 			}
 			this.showPBGameBoard('RankGameBoard');
+		}
+		else if(data.type == 'PropGameCancle'){
+			if(this.finishGameBoard != null){
+				WxBannerAd.showBannerAd();
+			}
 		}
 	},
 	blockShadow(){
