@@ -27,12 +27,13 @@ let ThirdAPI = {
 			console.log(error);
 		}
     },
-    loadCDNData:function(){
+    loadCDNData:function(callback){
 		var url = GlobalData.cdnWebsite + GlobalData.cdnFileDefaultPath;
 		util.httpGET(url,null,function(code,data){
 			if(code == 200){
 				util.updateObj(GlobalData,data,'cdnNumRate');
 				console.log(GlobalData);
+				callback();
 			}
 		});
 	},

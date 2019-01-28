@@ -14,6 +14,7 @@ cc.Class({
 		gameStart:false,
 		soundOnNode:cc.Node,
 		soundOffNode:cc.Node,
+		innerChain:cc.Node,
     },
 	onLoad(){
 		cc.eventManager.addListener({
@@ -30,7 +31,12 @@ cc.Class({
          }, this.node);
 		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 	},
-	
+	initInnerChain(){
+		this.innerChain.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
+	},
+	showInnerChain(){
+		this.innerChain.getComponent('ScrollLinkGame').playScrollLinkGame(true);
+	},
 	shareButtonCb(){
 		var param = {
 			type:null,
@@ -204,6 +210,7 @@ cc.Class({
 			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
 			this.buttonLayout.runAction(layoutMoveTo);
 			this.gameStart = true;
+			this.initInnerChain();
 		}else{
 			this.node.active = true;
 			this.scoreLabel.active = true;
@@ -223,6 +230,7 @@ cc.Class({
 			//分享，排行，声音效果设置
 			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
 			this.buttonLayout.runAction(layoutMoveTo);
+			this.showInnerChain();
 		}
 	},
 	hideStaticStart(callBack){

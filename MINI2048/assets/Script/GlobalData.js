@@ -16,6 +16,58 @@ GlobalData = {
 		gold:0,
 		juNum:0		//当前第几局
 	},
+	cdnOtherGameDoor:{
+		locker:[
+			{
+				hideRate:0.5,
+				hotFlag:0,
+				name:"2048六角正版",
+				appid:"wxc796e8cabc773566",
+				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:0,
+				name:"2048六角正版",
+				appid:"wxc796e8cabc773566",
+				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:0,
+				name:"2048六角正版",
+				appid:"wxc796e8cabc773566",
+				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:0,
+				name:"2048六角正版",
+				appid:"wxc796e8cabc773566",
+				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:0,
+				name:"2048六角正版",
+				appid:"wxc796e8cabc773566",
+				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:0,
+				name:"2048六角正版",
+				appid:"wxc796e8cabc773566",
+				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			}
+		],
+		InnerChain:{
+			hotFlag:0,
+			name:"2048六角正版",
+			appid:"wxc796e8cabc773566",
+			logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+		}
+	},
 	cdnGameConfig:{
 		refreshBanner:0,		//0 关闭	1打开
 		minShareTime:2.8,
@@ -238,7 +290,9 @@ GlobalData = {
 			PropAV:3,
 			PropShare:2,
 			PropRelive:3,
-			PropBattle:3
+			PropBattle:3,
+			PropInner:3,
+			PropLocker:3
 		},
 		PropReliveRate:1,
 		SABOpenRate:{		//打开宝箱获取道具的概率
