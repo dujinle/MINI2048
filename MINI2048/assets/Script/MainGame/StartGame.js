@@ -15,6 +15,7 @@ cc.Class({
 		soundOnNode:cc.Node,
 		soundOffNode:cc.Node,
 		innerChain:cc.Node,
+		oneInner:cc.Node,
     },
 	onLoad(){
 		cc.eventManager.addListener({
@@ -31,16 +32,23 @@ cc.Class({
          }, this.node);
 		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 	},
+	refreshGame(){
+		if(this.innerChain.active == true){
+			this.initInnerChain(0);
+		}
+	},
 	initInnerChain(time){
 		var self = this;
 		this.innerChain.active = false;
-		this.innerChain.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
-		this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
-			self.innerChain.active = true;
-		})));
-	},
-	showInnerChain(){
-		this.innerChain.getComponent('ScrollLinkGame').playScrollLinkGame(true);
+		if(GlobalData.cdnPropParam.PropUnLock.PropLocker <= GlobalData.gameRunTimeParam.juNum){
+			this.innerChain.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
+			this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
+				self.innerChain.active = true;
+			})));
+		}
+		if(GlobalData.cdnPropParam.PropUnLock.PropInner <= GlobalData.gameRunTimeParam.juNum){
+			this.oneInner.getComponent('LockerItem').setLinkGame(GlobalData.cdnOtherGameDoor.InnerChain);
+		}
 	},
 	shareButtonCb(){
 		var param = {
@@ -235,7 +243,6 @@ cc.Class({
 			//分享，排行，声音效果设置
 			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
 			this.buttonLayout.runAction(layoutMoveTo);
-			this.showInnerChain();
 		}
 	},
 	hideStaticStart(callBack){

@@ -73,7 +73,10 @@ cc.Class({
 	start(){
 		console.log("start");
 		//初始化所有面板
-		ThirdAPI.loadCDNData();
+		var self = this;
+		ThirdAPI.loadCDNData(function(){
+			self.startGameBoard.getComponent("StartGame").refreshGame();
+		});
 		this.initBoards();
 		this.startGameBoard.getComponent("StartGame").showStart();
 	},

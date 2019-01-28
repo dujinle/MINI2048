@@ -2,7 +2,7 @@ GlobalData = {
 	//皮肤设置
 	skin:'color1',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.2.json",
+	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.3.json",
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,
@@ -65,7 +65,7 @@ GlobalData = {
 			hotFlag:0,
 			name:"2048六角正版",
 			appid:"wxc796e8cabc773566",
-			logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_sixAngle.png"
+			logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
 		}
 	},
 	cdnGameConfig:{
@@ -291,8 +291,8 @@ GlobalData = {
 			PropShare:2,
 			PropRelive:3,
 			PropBattle:3,
-			PropInner:3,
-			PropLocker:3
+			PropInner:1,
+			PropLocker:1
 		},
 		PropReliveRate:1,
 		SABOpenRate:{		//打开宝箱获取道具的概率
@@ -309,12 +309,12 @@ GlobalData = {
 			//锤子概率参数设置
 			PropHammer:{
 				15:{
-					bagNum:1,
-					useNum:1
-				},
-				30:{
 					bagNum:2,
 					useNum:2
+				},
+				30:{
+					bagNum:3,
+					useNum:3
 				},
 				default:{
 					bagNum:3,
@@ -324,12 +324,12 @@ GlobalData = {
 			//炸弹概率参数设置
 			PropBomb:{
 				15:{
-					bagNum:1,
-					useNum:1
-				},
-				30:{
 					bagNum:2,
 					useNum:2
+				},
+				30:{
+					bagNum:3,
+					useNum:3
 				},
 				default:{
 					bagNum:3,
@@ -345,23 +345,23 @@ GlobalData = {
 		//不同的模式对应的概率不同 可以动态配置
 		PropShareOrADRate:{
 			crazy:{
-				isJushu:50,
+				isJushu:30,
 				unLock:{
 					PropHammer:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0.7,
+						PropAV:0.3
 					},
 					PropBomb:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0.7,
+						PropAV:0.3
 					},
 					PropSAB:{
 						PropShare:0.7,
 						PropAV:0.3
 					},
 					PropRelive:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0.7,
+						PropAV:0.3
 					},
 					PropBattle:{
 						PropShare:0.7,
@@ -370,12 +370,12 @@ GlobalData = {
 				},
 				lock:{
 					PropHammer:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:1,
+						PropAV:0
 					},
 					PropBomb:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:1,
+						PropAV:0
 					},
 					PropSAB:{
 						PropShare:1,
