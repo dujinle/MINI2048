@@ -9,20 +9,19 @@ cc.Class({
 		logoUrl:null,
 		hotSprite:cc.Node,
     },
-	onLoad () {
-		this.hotSprite.active = false;
-	},
 	setLinkGame(item){
 		var self = this;
 		this.appName = item.name;
 		this.appId = item.appid;
 		this.logoUrl = item.logo;
+		this.hotSprite.active = false;
 		cc.loader.load(this.logoUrl, function (err, texture) {
             // Use texture to create sprite frame
 			//console.log('setLinkGame',texture);
             var sprite = self.gameLogo.getComponent(cc.Sprite);
             sprite.spriteFrame = new cc.SpriteFrame(texture);
 			if(item.hotFlag != 0){
+				console.log('setLinkGame',item.name);
 				self.hotSprite.active = true;
 			}
         });

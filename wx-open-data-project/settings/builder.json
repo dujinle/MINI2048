@@ -34,7 +34,7 @@
     "buildsub": true,
     "hasSubdomain": true,
     "isSubdomain": true,
-    "orientation": "landscape"
+    "orientation": "portrait"
   },
   "xxteaKey": "0f6c60db-2545-4d",
   "zipCompressJs": true

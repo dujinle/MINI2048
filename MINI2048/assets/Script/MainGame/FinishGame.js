@@ -33,10 +33,12 @@ cc.Class({
 	initInnerChain(time){
 		var self = this;
 		this.innerChainNode.active = false;
-		this.innerChainNode.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
-		this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
-			self.innerChainNode.active = true;
-		})));
+		if(GlobalData.cdnPropParam.PropUnLock.PropLocker <= GlobalData.gameRunTimeParam.juNum){
+			this.innerChainNode.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
+			this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
+				self.innerChainNode.active = true;
+			})));
+		}
 	},
 	showInnerChain(){
 		this.innerChainNode.getComponent('ScrollLinkGame').playScrollLinkGame(true);
