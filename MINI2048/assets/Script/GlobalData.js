@@ -20,52 +20,52 @@ GlobalData = {
 		locker:[
 			{
 				hideRate:0.5,
-				hotFlag:0,
+				hotFlag:1,
 				name:"2048六角正版",
 				appid:"wxc796e8cabc773566",
-				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_sixAngle.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:1,
+				name:"绝地求升",
+				appid:"wx2bc7cdb0119bb86b",
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_snow.png"
+			},
+			{
+				hideRate:0.5,
+				hotFlag:1,
+				name:"无尽钓鱼",
+				appid:"wx52f8dec006405bf6",
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_fishmaster.png"
 			},
 			{
 				hideRate:0.5,
 				hotFlag:0,
-				name:"2048六角正版",
-				appid:"wxc796e8cabc773566",
-				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+				name:"俄罗斯2048",
+				appid:"wx6838d3562692630c",
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_2048clear.png"
 			},
 			{
 				hideRate:0.5,
 				hotFlag:0,
-				name:"2048六角正版",
-				appid:"wxc796e8cabc773566",
-				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+				name:"绝地求升",
+				appid:"wx2bc7cdb0119bb86b",
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_snow.png"
 			},
 			{
 				hideRate:0.5,
 				hotFlag:0,
-				name:"2048六角正版",
-				appid:"wxc796e8cabc773566",
-				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
-			},
-			{
-				hideRate:0.5,
-				hotFlag:0,
-				name:"2048六角正版",
-				appid:"wxc796e8cabc773566",
-				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
-			},
-			{
-				hideRate:0.5,
-				hotFlag:0,
-				name:"2048六角正版",
-				appid:"wxc796e8cabc773566",
-				logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+				name:"无尽钓鱼",
+				appid:"wx52f8dec006405bf6",
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_fishmaster.png"
 			}
 		],
 		InnerChain:{
 			hotFlag:0,
 			name:"2048六角正版",
 			appid:"wxc796e8cabc773566",
-			logo:"https://alicdn.zhituokeji.com/minigame/2048Config/linkImages/linkSixAngle.png"
+			logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_sixAngle.png"
 		}
 	},
 	cdnGameConfig:{

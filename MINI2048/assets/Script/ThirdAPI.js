@@ -33,7 +33,9 @@ let ThirdAPI = {
 			if(code == 200){
 				util.updateObj(GlobalData,data,'cdnNumRate');
 				console.log(GlobalData);
-				callback();
+                if(callback){
+                    callback();
+                }
 			}
 		});
 	},

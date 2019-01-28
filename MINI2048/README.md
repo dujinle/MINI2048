@@ -7,3 +7,15 @@
 6,修改增加道具上限动画
 #增加视频 和广告功能
 #修复锁屏解锁 卡死问题
+
+"wx6107cc970100d3e1",
+    	"wxc796e8cabc773566",
+    	"wx9f92ce5369e9ea6c",
+    	"wx1be5e0dc277dff53",
+		"wx1df9f48e0336c276",
+		"wx52f8dec006405bf6",
+		"wx8a9d75a195cf40be",
+		"wx6838d3562692630c",
+		"wx2bc7cdb0119bb86b"
+
+		preserveDrawingBuffer

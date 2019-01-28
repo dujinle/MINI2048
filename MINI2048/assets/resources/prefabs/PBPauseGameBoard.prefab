@@ -890,7 +890,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": 6.5
+      "y": -3.5
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -1033,8 +1033,8 @@
       "height": 40
     },
     "_N$startAxis": 0,
-    "_N$paddingLeft": 0,
-    "_N$paddingRight": 0,
+    "_N$paddingLeft": 17,
+    "_N$paddingRight": 17,
     "_N$paddingTop": 0,
     "_N$paddingBottom": 0,
     "_N$spacingX": 17,
@@ -1188,7 +1188,7 @@
     "_N$paddingTop": 0,
     "_N$paddingBottom": 0,
     "_N$spacingX": 0,
-    "_N$spacingY": 0,
+    "_N$spacingY": 10,
     "_N$verticalDirection": 1,
     "_N$horizontalDirection": 0
   },
@@ -1243,6 +1243,9 @@
     },
     "returnGame": {
       "__id__": 13
+    },
+    "innerChainNode": {
+      "__id__": 21
     }
   },
   {

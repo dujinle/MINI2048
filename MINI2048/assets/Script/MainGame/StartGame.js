@@ -31,8 +31,13 @@ cc.Class({
          }, this.node);
 		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 	},
-	initInnerChain(){
+	initInnerChain(time){
+		var self = this;
+		this.innerChain.active = false;
 		this.innerChain.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
+		this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
+			self.innerChain.active = true;
+		})));
 	},
 	showInnerChain(){
 		this.innerChain.getComponent('ScrollLinkGame').playScrollLinkGame(true);
@@ -210,7 +215,7 @@ cc.Class({
 			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
 			this.buttonLayout.runAction(layoutMoveTo);
 			this.gameStart = true;
-			this.initInnerChain();
+			this.initInnerChain(GlobalData.TimeActionParam.StartGameMoveTime);
 		}else{
 			this.node.active = true;
 			this.scoreLabel.active = true;

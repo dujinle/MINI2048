@@ -38,7 +38,7 @@ cc.Class({
 		}
 		//异步加载动态数据
 		this.rate = 0;
-		this.resLength = 16;
+		this.resLength = 15;
 		GlobalData.assets = {};
 		var self = this;
 		this.loadUpdate = function(){

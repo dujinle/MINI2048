@@ -6,7 +6,6 @@ cc.Class({
 		appId:null,
 		linkPages:null,
 		gameLogo:cc.Node,
-		gameName:cc.Node,
 		logoUrl:null,
 		hotSprite:cc.Node,
     },
@@ -18,7 +17,6 @@ cc.Class({
 		this.appName = item.name;
 		this.appId = item.appid;
 		this.logoUrl = item.logo;
-		this.gameName.getComponent(cc.Label).string = item.name;
 		cc.loader.load(this.logoUrl, function (err, texture) {
             // Use texture to create sprite frame
 			//console.log('setLinkGame',texture);
@@ -27,7 +25,6 @@ cc.Class({
 			if(item.hotFlag != 0){
 				self.hotSprite.active = true;
 			}
-			//self.gameName.getComponent(cc.Label).string = item.name;
         });
 	},
 	pressCb(event){

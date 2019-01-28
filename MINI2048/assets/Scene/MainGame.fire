@@ -7708,7 +7708,7 @@
     "_position": {
       "__type__": "cc.Vec2",
       "x": 0,
-      "y": 4.5
+      "y": -3.5
     },
     "_skewX": 0,
     "_skewY": 0,
@@ -7806,7 +7806,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 108,
+      "width": 0,
       "height": 135
     },
     "_rotationX": 0,
@@ -7835,7 +7835,7 @@
     "_enabled": true,
     "_layoutSize": {
       "__type__": "cc.Size",
-      "width": 108,
+      "width": 0,
       "height": 135
     },
     "_resize": 1,
@@ -7847,8 +7847,8 @@
       "height": 40
     },
     "_N$startAxis": 0,
-    "_N$paddingLeft": 0,
-    "_N$paddingRight": 0,
+    "_N$paddingLeft": 17,
+    "_N$paddingRight": 17,
     "_N$paddingTop": 0,
     "_N$paddingBottom": 0,
     "_N$spacingX": 17,
@@ -7969,7 +7969,7 @@
     "_N$paddingTop": 0,
     "_N$paddingBottom": 0,
     "_N$spacingX": 0,
-    "_N$spacingY": 2,
+    "_N$spacingY": 10,
     "_N$verticalDirection": 1,
     "_N$horizontalDirection": 0
   },

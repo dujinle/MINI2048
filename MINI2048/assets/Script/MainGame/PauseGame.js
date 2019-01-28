@@ -5,6 +5,7 @@ cc.Class({
     properties: {
 		gotoHomeButton:cc.Node,
 		returnGame:cc.Node,
+		innerChainNode:cc.Node,
     },
 
     onLoad () {
@@ -32,6 +33,14 @@ cc.Class({
 		this.EventCustom.setUserData({type:'PauseReset'});
 		this.node.dispatchEvent(this.EventCustom);
 	},
+	initInnerChain(time){
+		var self = this;
+		this.innerChainNode.active = false;
+		this.innerChainNode.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
+		this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
+			self.innerChainNode.active = true;
+		})));
+	},
 	showPause(){
 		console.log("showPause game board show");
 		this.node.active = true;
@@ -41,6 +50,7 @@ cc.Class({
 		this.returnGame.runAction(returnGameScale);
 		var gotoHomeScale = cc.scaleTo(GlobalData.TimeActionParam.PauseGameMoveTime,1);
 		this.gotoHomeButton.runAction(gotoHomeScale);
+		this.initInnerChain(GlobalData.TimeActionParam.PauseGameMoveTime);
 	},
 	hidePause(callBack = null){
 		var self = this;

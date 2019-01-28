@@ -5,6 +5,7 @@ cc.Class({
     properties: {
 		rankSprite:cc.Node,
 		isDraw:false,
+		innerChainNode:cc.Node,
     },
     onLoad () {
 		console.log("finish game board load");
@@ -29,9 +30,21 @@ cc.Class({
 			this.sharedCanvas = openDataContext.canvas;
 		}catch(error){}
 	},
+	initInnerChain(time){
+		var self = this;
+		this.innerChainNode.active = false;
+		this.innerChainNode.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
+		this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
+			self.innerChainNode.active = true;
+		})));
+	},
+	showInnerChain(){
+		this.innerChainNode.getComponent('ScrollLinkGame').playScrollLinkGame(true);
+	},
 	show(){
 		console.log("finish game show");
 		this.isDraw = true;
+		this.initInnerChain(0);
 		//this.node.active = true;
 		var param = {
 			type:'gameOverUIRank'
