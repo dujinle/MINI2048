@@ -580,6 +580,28 @@ cc.Class({
 		}
 	},
 	//获取道具操作
+	showFailInfo(msg){
+		if(this.failNode != null){
+			this.failNode.stopAllActions();
+			this.failNode.removeFromParent();
+			this.failNode.destroy();
+			this.failNode = null;
+		}
+		this.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+		this.mainGameBoard.addChild(this.failNode);
+		if(msg != null){
+			this.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = msg;
+		}
+		var actionEnd = cc.callFunc(function(){
+			if(this.failNode != null){
+				this.failNode.stopAllActions();
+				this.failNode.removeFromParent();
+				this.failNode.destroy();
+				this.failNode = null;
+			}
+		}.bind(this),this);
+		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+	},
 	getShareProp(prop){
 		var propType = PropManager.getShareOrADKey(prop);
 		if(propType == 'PropShare'){
@@ -587,61 +609,44 @@ cc.Class({
 			this.isShareCallBack = false;
 			this.shareSuccessCb = function(type, shareTicket, arg){
 				console.log('main',type, shareTicket, arg);
-				if(arg.isShareCallBack == true){
+				if(this.isShareCallBack == true){
 					return;
 				}
-				arg.isShareCallBack = true;
+				this.isShareCallBack = true;
 				var spriteName = null;
 				var propNode = null;
-				if(arg.propKey == "PropFresh"){
+				if(this.propKey == "PropFresh"){
 					spriteName = "deletePropIcon";
-					propNode = arg.gamePropFresh;
-				}else if(arg.propKey == "PropBomb"){
+					propNode = this.gamePropFresh;
+				}else if(this.propKey == "PropBomb"){
 					spriteName = "bomb";
-					propNode = arg.gamePropBomb;
-				}else if(arg.propKey == "PropHammer"){
+					propNode = this.gamePropBomb;
+				}else if(this.propKey == "PropHammer"){
 					spriteName = "clearPropIcon";
-					propNode = arg.gamePropClear;
+					propNode = this.gamePropClear;
 				}else{
 					return;
 				}
 				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
-				arg.mainGameBoard.addChild(flyProp);
+				this.mainGameBoard.addChild(flyProp);
 				flyProp.setPosition(cc.p(0,0));
 				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
-					GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
-					arg.propFreshNum(arg.propKey);
-				});
+					GlobalData.GamePropParam.bagNum[this.propKey] += 1;
+					this.propFreshNum(this.propKey);
+				}.bind(this));
 			};
 			this.shareFailedCb = function(type,arg){
 				console.log(type,arg);
-				if(arg.isShareCallBack == false){
-					if(arg.failNode != null){
-						arg.failNode.stopAllActions();
-						arg.failNode.removeFromParent();
-						arg.failNode.destroy();
-						arg.failNode = null;
-					}
-					arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-					arg.mainGameBoard.addChild(arg.failNode);
-					var actionEnd = cc.callFunc(function(){
-						if(arg.failNode != null){
-							arg.failNode.stopAllActions();
-							arg.failNode.removeFromParent();
-							arg.failNode.destroy();
-							arg.failNode = null;
-						}
-					},arg);
-					arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-					
+				if(this.isShareCallBack == false){
+					this.showFailInfo(null);
 				}
-				arg.isShareCallBack = true;
+				this.isShareCallBack = true;
 			};
 			var param = {
 				type:null,
-				arg:this,
-				successCallback:this.shareSuccessCb,
-				failCallback:this.shareFailedCb,
+				arg:null,
+				successCallback:this.shareSuccessCb.bind(this),
+				failCallback:this.shareFailedCb.bind(this),
 				shareName:prop,
 				isWait:true
 			};
@@ -655,47 +660,30 @@ cc.Class({
 			this.shareSuccessCb = function(arg){
 				var spriteName = null;
 				var propNode = null;
-				if(arg.propKey == "PropFresh"){
+				if(this.propKey == "PropFresh"){
 					spriteName = "deletePropIcon";
-					propNode = arg.gamePropFresh;
-				}else if(arg.propKey == "PropBomb"){
+					propNode = this.gamePropFresh;
+				}else if(this.propKey == "PropBomb"){
 					spriteName = "bomb";
-					propNode = arg.gamePropBomb;
-				}else if(arg.propKey == "PropHammer"){
+					propNode = this.gamePropBomb;
+				}else if(this.propKey == "PropHammer"){
 					spriteName = "clearPropIcon";
-					propNode = arg.gamePropClear;
+					propNode = this.gamePropClear;
 				}else{
 					return;
 				}
 				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
-				arg.mainGameBoard.addChild(flyProp);
+				this.mainGameBoard.addChild(flyProp);
 				flyProp.setPosition(cc.p(0,0));
 				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
-					GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
-					arg.propFreshNum(arg.propKey);
-				});
-			};
+					GlobalData.GamePropParam.bagNum[this.propKey] += 1;
+					this.propFreshNum(this.propKey);
+				}.bind(this));
+			}.bind(this);
 			this.shareFailedCb = function(arg){
-				if(arg.failNode != null){
-					arg.failNode.stopAllActions();
-					arg.failNode.removeFromParent();
-					arg.failNode.destroy();
-					arg.failNode = null;
-				}
-				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
-				arg.mainGameBoard.addChild(arg.failNode);
-				var actionEnd = cc.callFunc(function(){
-					if(arg.failNode != null){
-						arg.failNode.stopAllActions();
-						arg.failNode.removeFromParent();
-						arg.failNode.destroy();
-						arg.failNode = null;
-					}
-				},arg);
-				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-			};
-			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,this);	
+				this.showFailInfo("看完视频才能获得奖励，请再看一次");
+			}.bind(this);
+			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,null);
 		}
 	},
 	getProp(eatNum,fromPos){

@@ -42,9 +42,9 @@ cc.Class({
 		if(this.openType == "PropShare"){
 			var param = {
 				type:null,
-				arg:this,
-				successCallback:this.shareSuccessCb,
-				failCallback:this.shareFailedCb,
+				arg:null,
+				successCallback:this.shareSuccessCb.bind(this),
+				failCallback:this.shareFailedCb.bind(this),
 				shareName:this.openType,
 				isWait:true
 			};
@@ -55,66 +55,55 @@ cc.Class({
 		}else if(this.openType == "PropAV"){
 			console.log(this.openType);
 			this.AVSuccessCb = function(arg){
-				arg.EventCustom.setUserData({
+				this.EventCustom.setUserData({
 					type:'StartBattleSuccess',
 					propKey:'PropBomb',
 					startPos:cc.p(0,0)
 				});
-				arg.node.dispatchEvent(arg.EventCustom);
-			};
+				this.node.dispatchEvent(this.EventCustom);
+			}.bind(this);
 			this.AVFailedCb = function(arg){
-				if(arg.failNode != null){
-					arg.failNode.stopAllActions();
-					arg.failNode.removeFromParent();
-					arg.failNode.destroy();
-					arg.failNode = null;
-				}
-				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
-				arg.node.addChild(arg.failNode);
-				var actionEnd = cc.callFunc(function(){
-					if(arg.failNode != null){
-						arg.failNode.stopAllActions();
-						arg.failNode.removeFromParent();
-						arg.failNode.destroy();
-						arg.failNode = null;
-					}
-				},arg);
-				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-			};
+				this.showFailInfo("看完视频才能获得奖励，请再看一次");
+			}.bind(this);
 			WxVideoAd.initCreateReward(this.AVSuccessCb,this.AVFailedCb,this);
 		}
 	},
 	shareSuccessCb(type, shareTicket, arg){
-		if(arg.iscallBack == false){
+		if(this.iscallBack == false){
 			console.log(type, shareTicket, arg);
-			arg.EventCustom.setUserData({type:'PropShareSuccess',propKey:arg.propKey,startPos:arg.startPos});
-			arg.node.dispatchEvent(arg.EventCustom);
+			this.EventCustom.setUserData({type:'PropShareSuccess',propKey:this.propKey,startPos:this.startPos});
+			this.node.dispatchEvent(this.EventCustom);
 		}
-		arg.iscallBack = true;
+		this.iscallBack = true;
 	},
 	shareFailedCb(type,arg){
-		if(arg.iscallBack == false && arg.node.active == true){
-			if(arg.failNode != null){
-				arg.failNode.stopAllActions();
-				arg.failNode.removeFromParent();
-				arg.failNode.destroy();
-				arg.failNode = null;
-			}
-			arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-			arg.node.addChild(arg.failNode);
-			var actionEnd = cc.callFunc(function(){
-				if(arg.failNode != null){
-					arg.failNode.stopAllActions();
-					arg.failNode.removeFromParent();
-					arg.failNode.destroy();
-					arg.failNode = null;
-				}
-			},arg);
-			arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+		if(this.iscallBack == false && this.node.active == true){
+			this.showFailInfo(null);
 			console.log(type,arg);
 		}
-		arg.iscallBack = true;
+		this.iscallBack = true;
+	},
+	showFailInfo(msg){
+		if(this.failNode != null){
+			this.failNode.stopAllActions();
+			this.failNode.removeFromParent();
+			this.failNode.destroy();
+			this.failNode = null;
+		}
+		this.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
+		this.node.addChild(this.failNode);
+		if(msg != null){
+			this.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = msg;
+		}
+		var actionEnd = cc.callFunc(function(){
+			if(this.failNode != null){
+				this.failNode.stopAllActions();
+				this.failNode.removeFromParent();
+				this.failNode.destroy();
+				this.failNode = null;
+			}
+		}.bind(this),this);
+		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
 	},
 	//道具个数发生变化
 	propFreshNum(prop,propNode){

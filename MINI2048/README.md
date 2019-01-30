@@ -21,7 +21,8 @@
 	  "wxf7d561f6e80365e7"
     ]
 
-
+空中飞车 		wx49cdcb489776e101	icon_airCar.png
+首富特烦恼 		wx9c26a6f645e0e734
 2048消除正版  	wx6107cc970100d3e1	icon_plus.png
 2048六角正版  	wxc796e8cabc773566	icon_sixAngle.png
 六角数字三消 	wx9f92ce5369e9ea6c	icon_threeClear.png

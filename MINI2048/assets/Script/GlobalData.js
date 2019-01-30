@@ -2,7 +2,7 @@ GlobalData = {
 	//皮肤设置
 	skin:'color1',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.3.json",
+	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.4.json",
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,
@@ -384,24 +384,24 @@ GlobalData = {
 				},
 				lock:{
 					PropHammer:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0,
+						PropAV:1
 					},
 					PropBomb:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0,
+						PropAV:1
 					},
 					PropSAB:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0,
+						PropAV:1
 					},
 					PropRelive:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0,
+						PropAV:1
 					},
 					PropBattle:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0,
+						PropAV:1
 					}
 				}
 			},

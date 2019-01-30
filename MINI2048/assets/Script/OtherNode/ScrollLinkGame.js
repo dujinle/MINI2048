@@ -71,6 +71,7 @@ cc.Class({
 
     //循环滑动播放内链
     playScrollLinkGame: function (isInit) {
+		if (!this.contentNode) return;
         this.contentNode.stopAllActions();
         console.log('停留位置', this.contentNode.x);
         if (this.contentNode.width <= this.showFrameWidth) {
