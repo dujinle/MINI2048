@@ -17,7 +17,19 @@
       "wx52f8dec006405bf6",
       "wx8a9d75a195cf40be",
       "wx6838d3562692630c",
-      "wx2bc7cdb0119bb86b"
+      "wx2bc7cdb0119bb86b",
+	  "wxf7d561f6e80365e7"
     ]
 
+
+2048消除正版  	wx6107cc970100d3e1	icon_plus.png
+2048六角正版  	wxc796e8cabc773566	icon_sixAngle.png
+六角数字三消 	wx9f92ce5369e9ea6c	icon_threeClear.png
+狂暴车神 		wx1be5e0dc277dff53	icon_raceCar.png
+陆超有头发真好 	wx1df9f48e0336c276	icon_noddle.png
+无尽钓鱼 		wx52f8dec006405bf6	icon_fishmaster.png
+天天打老板 		wx8a9d75a195cf40be	icon_ballsJourney.png
+俄罗斯2048		wx6838d3562692630c	icon_2048clear.png
+绝地求升 		wx2bc7cdb0119bb86b	icon_snow.png
+创意拼图		wxf7d561f6e80365e7	icon_jigsaw.png
 preserveDrawingBuffer
