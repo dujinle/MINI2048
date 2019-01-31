@@ -10,3 +10,5 @@ wx-open-data-project/library/*
 wx-open-data-project/build/*
 wx-open-data-project/local/*
 MINI2048-1.2/*
+MINI2048/settings/builder.json
+wx-open-data-project/settings/builder.json
