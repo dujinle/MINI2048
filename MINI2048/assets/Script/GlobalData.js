@@ -90,6 +90,7 @@ GlobalData = {
 		shareADLevel:50000,
 		PropShare:0.5,
 		PropAV:0.5,
+		NumRateJuNum:15,
 		shareCustomSet:1		//0 关闭 自定义分享 1打开自定义分享
 	},
 	//设置数字概率生成方式
@@ -454,7 +455,7 @@ GlobalData = {
 			}
 		}
 	},
-	cdnShareImages:["res/raw-assets/resources/shareImages/shareDefault.png"],
+	cdnShareImages:["res/raw-assets/resources/shareImages/shareDefault.d3b6b.png"],
 	cdnTexts:["你介意男生玩这个游戏吗?"],
 	//游戏数字存储矩阵
 	numMap:[

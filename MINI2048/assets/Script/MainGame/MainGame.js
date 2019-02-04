@@ -31,11 +31,8 @@ cc.Class({
     },
     onLoad () {
 		console.log("onLoad start");
-		if(util.isIphoneX()){
-			var cvs = this.node.getComponent(cc.Canvas);
-			cvs.fitHeight = true;
-			cvs.fitWidth = true;
-		}
+		//自动适配屏幕
+		util.customScreenAdapt(this.node);
 		//异步加载动态数据
 		this.rate = 0;
 		this.resLength = 15;
