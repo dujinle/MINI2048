@@ -134,46 +134,12 @@ let util = {
 		if ((size.width / size.height) == (1125/2436)){ //判断是不是iphonex
 			cc.view.setDesignResolutionSize(1125, 2436, cc.ResolutionPolicy.FIXED_WIDTH);
 			node.scaleX = 1125 / 640;
-			node.scaleY = (2436 - 160) / 1136;
+			node.scaleY = (2436 - 190) / 1136;
+			let openDataContext = wx.getOpenDataContext();
+			let sharedCanvas = openDataContext.canvas;
+			sharedCanvas.width = 1125 / (1125 / 640);
+			sharedCanvas.height = (2436 - 190) /( 2276 / 1136);
 		}
-		/*
-		
-		if (cc.sys.OS_ANDROID == cc.sys.os || cc.sys.OS_IOS == cc.sys.os) {
-		//这是手机
-		if ( (size.width / size.height) == (1125/2436) ) { //判断是不是iphonex
-		this.isIphoneX = true;
-		} else {
-		this.isIphoneX = false;
-		}
-		if ( (size.width / size.height) == (411 / 845) ) { //判断是不是三星手机
-		//是三星全面屏
-		} else {
-		//不是
-		}
-		if ( (size.width/size.height) >= (DesignWidth/DesignHeight) ) {
-		//宽度超出
-		console.log("宽度超出");
-		var width = size.width * (DesignHeight / size.height);
-		cc.view.setDesignResolutionSize(width, DesignHeight, cc.ResolutionPolicy.FIXED_HEIGHT);
-		} else {
-		//高度超出
-		console.log("高度超出");
-		var height = size.height * (DesignWidth / size.width);
-		cc.view.setDesignResolutionSize(DesignWidth, height, cc.ResolutionPolicy.FIXED_WIDTH);
-		console.log("当前画布高度", height);
-		}
-		} else {
-		cc.view.setDesignResolutionSize(DesignWidth, DesignHeight, cc.ResolutionPolicy.FIXED_WIDTH);
-		}
-		var canvasSize = cc.view.getCanvasSize();
-		console.log('customScreenAdapt',canvasSize);
-		if(this.isIphoneX){
-			console.log('isIphoneX true');
-			var cvs = node.getComponent(cc.Canvas);
-			cvs.fitHeight = false;
-			cvs.fitWidth = true;
-		}
-		*/
 	},
 	compareVersion:function(v1, v2) {
 		v1 = v1.split('.')

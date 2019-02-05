@@ -712,58 +712,11 @@ cc.Class({
 			});
 		}
 		var resArr = res.split("_");
-		if(resArr[0] == "PropBao" || resArr[0] == "PropShare"){
+		if(resArr[0] == "PropAV" || resArr[0] == "PropShare"){
 			this.propGameBoard = cc.instantiate(GlobalData.assets['PBPropGameBoard']);
 			this.node.addChild(this.propGameBoard);
 			this.propGameBoard.setPosition(cc.p(0,0));
 			this.propGameBoard.getComponent("PropGame").initLoad(fromPos,resArr[0],resArr[1]);
-		}
-		else if(resArr[0] == 'PropAV'){
-			this.propKey = resArr[1];
-			this.shareSuccessCb = function(arg){
-				var spriteName = null;
-				var propNode = null;
-				if(arg.propKey == "PropFresh"){
-					spriteName = "deletePropIcon";
-					propNode = arg.gamePropFresh;
-				}else if(arg.propKey == "PropBomb"){
-					spriteName = "bomb";
-					propNode = arg.gamePropBomb;
-				}else if(arg.propKey == "PropHammer"){
-					spriteName = "clearPropIcon";
-					propNode = arg.gamePropClear;
-				}else{
-					return;
-				}
-				var flyProp = cc.instantiate(GlobalData.assets["PBPropFly"]);
-				arg.mainGameBoard.addChild(flyProp);
-				flyProp.setPosition(cc.p(0,0));
-				flyProp.getComponent("NumFly").startFly(0.2,spriteName,1,propNode.getPosition(),function(){
-					GlobalData.GamePropParam.bagNum[arg.propKey] += 1;
-					arg.propFreshNum(arg.propKey);
-				});
-			};
-			this.shareFailedCb = function(arg){
-				if(arg.failNode != null){
-					arg.failNode.stopAllActions();
-					arg.failNode.removeFromParent();
-					arg.failNode.destroy();
-					arg.failNode = null;
-				}
-				arg.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-				arg.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = "看完视频才能获得奖励，请再看一次";
-				arg.mainGameBoard.addChild(arg.failNode);
-				var actionEnd = cc.callFunc(function(){
-					if(arg.failNode != null){
-						arg.failNode.stopAllActions();
-						arg.failNode.removeFromParent();
-						arg.failNode.destroy();
-						arg.failNode = null;
-					}
-				},arg);
-				arg.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-			};
-			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,this);
 		}
 	},
 	eventTouchStart(event){
@@ -788,8 +741,13 @@ cc.Class({
 	eventTouchMove(event){
 		//console.log('poker TOUCH_MOVE',event.touch.getDelta().x,event.touch.getDelta().y);
 		var delta = event.touch.getDelta();
-		this.boardItem.x += delta.x;
-		this.boardItem.y += delta.y;
+		if(util.isIphoneX){
+			this.boardItem.x += (delta.x / (1125 / 640));
+			this.boardItem.y += (delta.y / (2246 / 1136));
+		}else{
+			this.boardItem.x += delta.x;
+			this.boardItem.y += delta.y;
+		}
 		this.moveIdx = -1;
 		var movePos = this.boardItem.getPosition();
 		var box = this.blocksBoard.getBoundingBox();
