@@ -1,3 +1,4 @@
+var WxVideoAd = require('WxVideoAd');
 var ThirdAPI = require('ThirdAPI');
 cc.Class({
     extends: cc.Component,

@@ -120,25 +120,35 @@ let util = {
 		};
 		xhr.send(null);
 	},
-	isIphoneX:function(){
+	getPhoneModel:function(){
 		var size = cc.view.getFrameSize();
 		console.log('getFrameSize:',size);
-        var flag = (size.width == 375 && size.height == 812)
-               ||(size.width == 812 && size.height == 375);
-		return flag;
+		if(size.width / size.height == 1125 / 2436){
+			return 'IphoneX';
+		}else if(size.width / size.height == 828 / 1792){
+			return 'IphoneXR'
+		}
 	},
 	customScreenAdapt(node){
 		var DesignWidth = 640;
 		var DesignHeight = 1136;
 		let size = cc.view.getFrameSize();
-		if ((size.width / size.height) == (1125/2436)){ //判断是不是iphonex
+		if (this.getPhoneModel() == 'IphoneX'){ //判断是不是iphonex
 			cc.view.setDesignResolutionSize(1125, 2436, cc.ResolutionPolicy.FIXED_WIDTH);
 			node.scaleX = 1125 / 640;
 			node.scaleY = (2436 - 190) / 1136;
 			let openDataContext = wx.getOpenDataContext();
 			let sharedCanvas = openDataContext.canvas;
-			sharedCanvas.width = 1125 / (1125 / 640);
-			sharedCanvas.height = (2436 - 190) /( 2276 / 1136);
+			sharedCanvas.width = 640;
+			sharedCanvas.height = 1136;
+		}else if(this.getPhoneModel() == 'IphoneXR'){
+			cc.view.setDesignResolutionSize(828, 1792, cc.ResolutionPolicy.FIXED_WIDTH);
+			node.scaleX = 828 / 640;
+			node.scaleY = (1792 - 190) / 1136;
+			let openDataContext = wx.getOpenDataContext();
+			let sharedCanvas = openDataContext.canvas;
+			sharedCanvas.width = 640;
+			sharedCanvas.height = 1136;
 		}
 	},
 	compareVersion:function(v1, v2) {

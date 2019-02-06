@@ -45,7 +45,6 @@ let WxBannerAd = {
 							if (this.bannerAd && this.bannerAd.style) {
 								console.log("real:", this.bannerAd.style.realWidth, this.bannerAd.style.realHeight)
 							}
-
 							// 适配iphoneX
 							if (this.bannerAd && this.bannerAd.style) {
 								//var buttomHeight = sysInfo.screenHeight / 2 - (sysInfo.screenHeight * Math.abs(GlobalData.footPosY) / 568 / 2 - GlobalData.footPosY) / 2;
@@ -54,11 +53,6 @@ let WxBannerAd = {
 								}
 								//this.bannerAd.style.width = 300;
 								var buttomHeight = this.bannerAd.style.realHeight;
-								if (util.isIphoneX()) {
-									console.log('isIphoneX');
-									buttomHeight -= 6;
-								}
-								
 								console.log('buttomHeight', GlobalData.cdnGameConfig.footPosY, buttomHeight);
 								this.bannerAd.style.left = (screenWidth - res.width) / 2;
 								this.bannerAd.style.top = screenHeight - Math.abs(buttomHeight);

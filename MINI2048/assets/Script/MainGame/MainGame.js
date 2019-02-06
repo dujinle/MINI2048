@@ -741,9 +741,12 @@ cc.Class({
 	eventTouchMove(event){
 		//console.log('poker TOUCH_MOVE',event.touch.getDelta().x,event.touch.getDelta().y);
 		var delta = event.touch.getDelta();
-		if(util.isIphoneX){
+		if(util.getPhoneModel() == 'IphoneX'){
 			this.boardItem.x += (delta.x / (1125 / 640));
 			this.boardItem.y += (delta.y / (2246 / 1136));
+		}else if(util.getPhoneModel() == 'IphoneXR'){
+			this.boardItem.x += (delta.x / (828 / 640));
+			this.boardItem.y += (delta.y / (1602 / 1136));
 		}else{
 			this.boardItem.x += delta.x;
 			this.boardItem.y += delta.y;
