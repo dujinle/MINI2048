@@ -8,7 +8,8 @@
 7,更改宝箱获取道具直接视频的错误
 #增加视频 和广告功能
 #修复锁屏解锁 卡死问题
-
+#修复 内链无法更新的问题 内链无法点击问题
+#增加iphoneX XR XS XMS
  "navigateToMiniProgramAppIdList":[
       "wx6107cc970100d3e1",
       "wxc796e8cabc773566",

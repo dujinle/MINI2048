@@ -36,6 +36,11 @@ cc.Class({
 		if(this.innerChain.active == true){
 			this.initInnerChain(0);
 		}
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			this.battleButton.active = true;
+		}else{
+			this.battleButton.active = false;
+		}
 	},
 	initInnerChain(time){
 		var self = this;

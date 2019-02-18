@@ -32,7 +32,7 @@ cc.Class({
     onLoad () {
 		console.log("onLoad start");
 		//自动适配屏幕
-		util.customScreenAdapt(this.node);
+		util.customScreenAdapt(this);
 		//异步加载动态数据
 		this.rate = 0;
 		this.resLength = 15;
