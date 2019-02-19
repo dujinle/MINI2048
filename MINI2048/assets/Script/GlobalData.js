@@ -16,6 +16,11 @@ GlobalData = {
 		gold:0,
 		juNum:0		//当前第几局
 	},
+	cdnCopyKeys:[
+		'cdnOtherGameDoor',
+		'cdnNumRate',
+		'cdnNumRate15'
+	],
 	cdnOtherGameDoor:{
 		locker:[
 			{
@@ -27,10 +32,17 @@ GlobalData = {
 			},
 			{
 				hideRate:0.5,
-				hotFlag:1,
+				hotFlag:0,
 				name:"绝地求升",
 				appid:"wx2bc7cdb0119bb86b",
-				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_snow.png"
+				logo:"https://alicdn.zhituokeji.com/minigame/scrollLinkGameImage/icon_snow.png",
+				spriteFrameSpeed:1,
+				linkSpriteFrames: [
+					"https://alicdn.zhituokeji.com/minigame/spriteFrames/airCar/01.png",
+					"https://alicdn.zhituokeji.com/minigame/spriteFrames/airCar/02.png",
+					"https://alicdn.zhituokeji.com/minigame/spriteFrames/airCar/03.png",
+					"https://alicdn.zhituokeji.com/minigame/spriteFrames/airCar/04.png"
+				]
 			},
 			{
 				hideRate:0.5,
