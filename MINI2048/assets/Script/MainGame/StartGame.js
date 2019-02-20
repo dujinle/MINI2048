@@ -39,17 +39,24 @@ cc.Class({
 		}else{
 			this.battleButton.active = false;
 		}
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['StartMenu']){
+			this.buttonLayout.active = true;
+		}else{
+			this.buttonLayout.active = false;
+		}
 	},
 	initInnerChain(time){
 		var self = this;
 		this.innerChain.active = false;
-		if(GlobalData.cdnPropParam.PropUnLock.PropLocker <= GlobalData.gameRunTimeParam.juNum){
+		if(GlobalData.cdnPropParam.PropUnLock['PropLocker'] <= GlobalData.gameRunTimeParam.juNum){
 			this.innerChain.getComponent('ScrollLinkGame').createAllLinkGame(GlobalData.cdnOtherGameDoor.locker);
 			this.node.runAction(cc.sequence(cc.delayTime(time),cc.callFunc(function(){
 				self.innerChain.active = true;
 			})));
 		}
-		if(GlobalData.cdnPropParam.PropUnLock.PropInner <= GlobalData.gameRunTimeParam.juNum){
+		this.oneInner.active = false;
+		if(GlobalData.cdnPropParam.PropUnLock['PropInner'] <= GlobalData.gameRunTimeParam.juNum){
+			this.oneInner.active = true;
 			this.oneInner.getComponent('LockerItem').setLinkGame(GlobalData.cdnOtherGameDoor.InnerChain);
 		}
 	},
@@ -176,6 +183,11 @@ cc.Class({
 		}else{
 			this.battleButton.active = false;
 		}
+		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['StartMenu']){
+			this.buttonLayout.active = true;
+		}else{
+			this.buttonLayout.active = false;
+		}
 		if(this.gameStart == false){
 			this.node.active = true;
 			this.scoreLabel.active = true;
@@ -199,20 +211,22 @@ cc.Class({
 			
 			//挑战效果设置
 			this.battlePos = this.battleButton.getPosition();
-			var battleSize = this.battleButton.getContentSize();
-			var battleX = (battleSize.width/2 + winSize.width/2);
-			this.battleButton.setPosition(cc.p(battleX,this.battlePos.y));
-			var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.battlePos);
-			if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			if(this.battleButton.active == true){
+				var battleSize = this.battleButton.getContentSize();
+				var battleX = (battleSize.width/2 + winSize.width/2);
+				this.battleButton.setPosition(cc.p(battleX,this.battlePos.y));
+				var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.battlePos);
 				this.battleButton.runAction(battleMoveTo);
 			}
 			//分享，排行，声音效果设置
 			this.layoutPos = this.buttonLayout.getPosition();
-			var layoutSize = this.buttonLayout.getContentSize();
-			var layoutY = (winSize.height/2 + logoSize.height/2) * -1;
-			this.buttonLayout.setPosition(cc.p(this.layoutPos.x,layoutY));
-			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
-			this.buttonLayout.runAction(layoutMoveTo);
+			if(this.buttonLayout.active == true){
+				var layoutSize = this.buttonLayout.getContentSize();
+				var layoutY = (winSize.height/2 + logoSize.height/2) * -1;
+				this.buttonLayout.setPosition(cc.p(this.layoutPos.x,layoutY));
+				var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
+				this.buttonLayout.runAction(layoutMoveTo);
+			}
 			this.gameStart = true;
 			this.initInnerChain(GlobalData.TimeActionParam.StartGameMoveTime);
 		}else{
@@ -227,13 +241,16 @@ cc.Class({
 			var startMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.startPos);
 			this.startButton.runAction(startMoveTo);
 			//挑战效果设置
-			var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.battlePos);
-			if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+			if(this.battleButton.active == true){
+				var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.battlePos);
 				this.battleButton.runAction(battleMoveTo);
 			}
 			//分享，排行，声音效果设置
-			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
-			this.buttonLayout.runAction(layoutMoveTo);
+			if(this.buttonLayout.active == true){
+				var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,this.layoutPos);
+				this.buttonLayout.runAction(layoutMoveTo);
+			}
+			this.initInnerChain(GlobalData.TimeActionParam.StartGameMoveTime);
 		}
 	},
 	hideStaticStart(callBack){
@@ -302,20 +319,21 @@ cc.Class({
 		var startMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(startX,startPos.y));
 		this.startButton.runAction(startMoveTo);
 		//挑战效果设置
-		var battlePos = this.battleButton.getPosition();
-		var battleSize = this.battleButton.getContentSize();
-		var battleX = (battleSize.width/2 + winSize.width/2);
-		var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(battleX,battlePos.y));
-		if(GlobalData.gameRunTimeParam.juNum >= GlobalData.cdnPropParam.PropUnLock['PropBattle']){
+		if(this.battleButton.active == true){
+			var battlePos = this.battleButton.getPosition();
+			var battleSize = this.battleButton.getContentSize();
+			var battleX = (battleSize.width/2 + winSize.width/2);
+			var battleMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(battleX,battlePos.y));
 			this.battleButton.runAction(battleMoveTo);
 		}
 		//分享，排行，声音效果设置
-		var layoutPos = this.buttonLayout.getPosition();
-		var layoutSize = this.buttonLayout.getContentSize();
-		var layoutY = (winSize.height/2 + logoSize.height/2) * -1;
-		var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(layoutPos.x,layoutY));
-		this.buttonLayout.runAction(layoutMoveTo);
-		
+		if(this.buttonLayout.active == true){
+			var layoutPos = this.buttonLayout.getPosition();
+			var layoutSize = this.buttonLayout.getContentSize();
+			var layoutY = (winSize.height/2 + logoSize.height/2) * -1;
+			var layoutMoveTo = cc.moveTo(GlobalData.TimeActionParam.StartGameMoveTime,cc.p(layoutPos.x,layoutY));
+			this.buttonLayout.runAction(layoutMoveTo);
+		}
 		var hideAction = cc.callFunc(function(){
 			self.scoreLabel.active = false;
 			self.kingSprite.active = false;

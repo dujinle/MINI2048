@@ -318,8 +318,9 @@ GlobalData = {
 			PropShare:2,
 			PropRelive:3,
 			PropBattle:3,
-			PropInner:1,
-			PropLocker:1
+			PropInner:3,
+			PropLocker:3,
+			StartMenu:3
 		},
 		PropReliveRate:1,
 		SABOpenRate:{		//打开宝箱获取道具的概率
