@@ -20,8 +20,8 @@ let ThirdAPI = {
 			if(storage != null && storage != ""){
 				let localData = JSON.parse(storage);
                 //兼容新添加的数据
-				util.updateObj(GlobalData,localData,'cdnNumRate','cdnNumRate15');
-				console.log(GlobalData);
+				util.updateObj(GlobalData,localData,GlobalData.cdnCopyKeys);
+				console.log('loadLocalData',GlobalData);
             }
         } catch (error) {
 			console.log(error);
@@ -31,8 +31,8 @@ let ThirdAPI = {
 		var url = GlobalData.cdnWebsite + GlobalData.cdnFileDefaultPath;
 		util.httpGET(url,null,function(code,data){
 			if(code == 200){
-				util.updateObj(GlobalData,data,'cdnNumRate','cdnNumRate15');
-				console.log(GlobalData);
+				util.updateObj(GlobalData,data,GlobalData.cdnCopyKeys);
+				console.log('loadCDNData',GlobalData);
                 if(callback){
                     callback();
                 }

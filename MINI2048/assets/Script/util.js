@@ -82,14 +82,14 @@ let util = {
 		}
 	},
 	//复制对象，如果存在属性则更新
-	updateObj:function (newObj,obj,constKey,constKey1) {
+	updateObj:function (newObj,obj,copyKeys) {
 		if(typeof obj !== 'object'){
 			console.log('not a object data');
 			return;
 		}
 		//如果是一个数组对象则直接复制
 		for(var key in obj){
-			if(constKey == key || constKey1 == key){
+			if(copyKeys.includes(key)){
 				newObj[key] = obj[key];
 			}else if(newObj[key] == null){
 				newObj[key] = obj[key];
@@ -98,7 +98,7 @@ let util = {
 			}else if(this.isArrayFn(obj[key])){
 				newObj[key] = obj[key];
 			}else if(typeof obj[key] == 'object'){
-				this.updateObj(newObj[key],obj[key],constKey,constKey1);
+				this.updateObj(newObj[key],obj[key],copyKeys);
 			}
 		}
 	},
@@ -129,26 +129,28 @@ let util = {
 			return 'IphoneXR'
 		}
 	},
-	customScreenAdapt(node){
+	customScreenAdapt(pthis){
 		var DesignWidth = 640;
 		var DesignHeight = 1136;
 		let size = cc.view.getFrameSize();
 		if (this.getPhoneModel() == 'IphoneX'){ //判断是不是iphonex
 			cc.view.setDesignResolutionSize(1125, 2436, cc.ResolutionPolicy.FIXED_WIDTH);
-			node.scaleX = 1125 / 640;
-			node.scaleY = (2436 - 190) / 1136;
+			pthis.node.scaleX = 1125 / 640;
+			pthis.node.scaleY = 2436 / 1136;
 			let openDataContext = wx.getOpenDataContext();
 			let sharedCanvas = openDataContext.canvas;
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
+			pthis.mainGameBoard.setPosition(cc.p(0,-40));
 		}else if(this.getPhoneModel() == 'IphoneXR'){
 			cc.view.setDesignResolutionSize(828, 1792, cc.ResolutionPolicy.FIXED_WIDTH);
-			node.scaleX = 828 / 640;
-			node.scaleY = (1792 - 190) / 1136;
+			pthis.node.scaleX = 828 / 640;
+			pthis.node.scaleY = 1792 / 1136;
 			let openDataContext = wx.getOpenDataContext();
 			let sharedCanvas = openDataContext.canvas;
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
+			pthis.mainGameBoard.setPosition(cc.p(0,-40));
 		}
 	},
 	compareVersion:function(v1, v2) {
