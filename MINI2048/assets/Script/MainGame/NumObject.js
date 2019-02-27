@@ -10,8 +10,10 @@ cc.Class({
     },
     onInit(num) {
 		this.value = num;
+		this.node.scale = 1;
 		var spriteFrameName = GlobalData.skin + '_' + num;
 		this.bgSprite.getComponent(cc.Sprite).spriteFrame = GlobalData.assets[spriteFrameName];
+		this.bgSprite.runAction(cc.fadeIn(0));
 	},
 	merge2048Action(audioManager,sq,callback){
 		console.log("merge2048Action",sq);
@@ -98,10 +100,17 @@ cc.Class({
 	},
 	MergeFinishNum(num,audioManager,cb){
 		this.onInit(num);
-		this.scaleBigOnce(audioManager);
+		this.initScale = this.node.scale;
+		var scaleUpAction = cc.scaleTo(GlobalData.TimeActionParam.EatNodeBigTime, this.pressedScale);
+        var scaleDownAction = cc.scaleTo(GlobalData.TimeActionParam.EatNodeBigTime, this.initScale);
+		audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
+		//this.scaleBigOnce(audioManager);
 		var finish = cc.callFunc(function(){
-			cb();
+			if(cb != null){
+				cb();
+			}
 		},this);
-		this.node.runAction(cc.sequence(cc.delayTime(0.05),finish));
+		this.node.runAction(cc.sequence(scaleUpAction,scaleDownAction,finish));
+		//this.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.EatNodeBigTime),finish));
 	}
 });

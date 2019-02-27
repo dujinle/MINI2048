@@ -8,6 +8,8 @@ cc.Class({
 		openType:null,
 		cancelNode:cc.Node,
 		bgContext:cc.Node,
+		light:cc.Node,
+		typeSprite:cc.Node,
 		iscallBack:false,
     },
     onLoad () {
@@ -33,6 +35,12 @@ cc.Class({
 		this.startPos = startPos;
 		this.openType = openType;
 		this.propKey = prop;
+		if(this.openType == 'PropShare'){
+			this.typeSprite.getComponent(cc.Sprite).spriteFrame = GlobalData.assets['share'];
+		}else if(this.openType == 'PropAV'){
+			this.typeSprite.getComponent(cc.Sprite).spriteFrame = GlobalData.assets['share_video'];
+		}
+		this.light.runAction(cc.repeatForever(cc.rotateBy(2, 360)));
 		this.bgContext.runAction(cc.scaleTo(GlobalData.TimeActionParam.PropSBAScaleTime,1));
 		setTimeout(function(){
 			self.cancelNode.active = true;
@@ -57,14 +65,14 @@ cc.Class({
 			console.log(this.openType);
 			this.AVSuccessCb = function(arg){
 				this.EventCustom.setUserData({
-					type:'StartBattleSuccess',
+					type:'PropShareSuccess',
 					propKey:'PropBomb',
 					startPos:cc.p(0,0)
 				});
 				this.node.dispatchEvent(this.EventCustom);
 			}.bind(this);
 			this.AVFailedCb = function(arg){
-				this.showFailInfo("看完视频才能获得奖励，请再看一次");
+				this.showFailInfo();
 			}.bind(this);
 			WxVideoAd.initCreateReward(this.AVSuccessCb,this.AVFailedCb,this);
 		}
@@ -79,12 +87,37 @@ cc.Class({
 	},
 	shareFailedCb(type,arg){
 		if(this.iscallBack == false && this.node.active == true){
-			this.showFailInfo(null);
+			this.showFailInfo();
 			console.log(type,arg);
 		}
 		this.iscallBack = true;
 	},
-	showFailInfo(msg){
+	showFailInfo(){
+		try{
+			var self = this;
+			var content = '请分享到不同的群获得更多的好友帮助!';
+			if(this.openType == 'PropAV'){
+				content = '看完视频才能获得奖励，请再看一次!';
+			}
+			wx.showModal({
+				title:'提示',
+				content:content,
+				cancelText:'取消',
+				confirmText:'确定',
+				confirmColor:'#53679c',
+				success(res){
+					if (res.confirm) {
+						self.buttonCb();
+					}else if(res.cancel){
+						self.EventCustom.setUserData({type:'PropGameCancle'});
+						self.node.dispatchEvent(self.EventCustom);
+						self.node.removeFromParent();
+						self.node.destroy();
+					}
+				}
+			});
+		}catch(err){}
+		/*
 		if(this.failNode != null){
 			this.failNode.stopAllActions();
 			this.failNode.removeFromParent();
@@ -105,6 +138,7 @@ cc.Class({
 			}
 		}.bind(this),this);
 		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+		*/
 	},
 	//道具个数发生变化
 	propFreshNum(prop,propNode){
@@ -131,9 +165,31 @@ cc.Class({
 		}
 	},
 	cancel(){
-		this.EventCustom.setUserData({type:'PropGameCancle'});
-		this.node.dispatchEvent(this.EventCustom);
-		this.node.removeFromParent();
-		this.node.destroy();
+		try{
+			var self = this;
+			var content = '求助好友可领取礼包，要领取礼包吗？';
+			var confirmText = '免费领取';
+			if(this.openType == 'PropAV'){
+				content = '观看视频可领取礼包，要领取礼包吗？';
+				confirmText = '视频领取';
+			}
+			wx.showModal({
+				title:'领取礼包',
+				content:content,
+				cancelText:'放弃领取',
+				confirmText:'免费领取',
+				confirmColor:'#53679c',
+				success(res){
+					if (res.confirm) {
+						self.buttonCb();
+					}else if(res.cancel){
+						self.EventCustom.setUserData({type:'PropGameCancle'});
+						self.node.dispatchEvent(self.EventCustom);
+						self.node.removeFromParent();
+						self.node.destroy();
+					}
+				}
+			});
+		}catch(err){}
 	}
 });

@@ -1,8 +1,9 @@
 GlobalData = {
 	//皮肤设置
 	skin:'color1',
+	phoneModel:'',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.4.json",
+	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.5.json",
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,
@@ -19,6 +20,7 @@ GlobalData = {
 	cdnCopyKeys:[
 		'cdnOtherGameDoor',
 		'cdnNumRate',
+		'PropShareOrADRate',
 		'cdnNumRate15'
 	],
 	cdnOtherGameDoor:{
@@ -99,9 +101,10 @@ GlobalData = {
 		minShareTime:2.8,
 		gameModel:'crazy',
 		shareSuccessWeight:[1,1,1,1,1],
-		shareADLevel:50000,
+		shareADLevel:2000,
 		PropShare:0.5,
 		PropAV:0.5,
+		PropFreshEnableRate:0.5,
 		NumRateJuNum:15,
 		shareCustomSet:1		//0 关闭 自定义分享 1打开自定义分享
 	},
@@ -168,66 +171,66 @@ GlobalData = {
             1024: 0.011235955056179775
         }
     },
-	"cdnNumRate15":{
-        "20": {
-            "2": 0.20833333333333334,
-            "4": 0.3333333333333333,
-            "8": 0.041666666666666664,
-            "16": 0.4166666666666667,
-            "32": 0,
-            "64": 0,
-            "128": 0
+	cdnNumRate15:{
+        20: {
+            2: 0.20833333333333334,
+            4: 0.3333333333333333,
+            8: 0.041666666666666664,
+            16: 0.4166666666666667,
+            32: 0,
+            64: 0,
+            128: 0
         },
-        "45": {
-            "2": 0.1935483870967742,
-            "4": 0.25806451612903225,
-            "8": 0.06451612903225806,
-            "16": 0.0967741935483871,
-            "32": 0.22580645161290322,
-            "64": 0.16129032258064516,
-            "128": 0
+        45: {
+            2: 0.1935483870967742,
+            4: 0.25806451612903225,
+            8: 0.06451612903225806,
+            16: 0.0967741935483871,
+            32: 0.22580645161290322,
+            64: 0.16129032258064516,
+            128: 0
         },
-        "60": {
-            "2": 0.1875,
-            "4": 0.25,
-            "8": 0.125,
-            "16": 0.125,
-            "32": 0.0625,
-            "64": 0.0625,
-            "128": 0.1875
+        60: {
+            2: 0.1875,
+            4: 0.25,
+            8: 0.125,
+            16: 0.125,
+            32: 0.0625,
+            64: 0.0625,
+            128: 0.1875
         },
-        "80": {
-            "2": 0.11764705882352941,
-            "4": 0.17647058823529413,
-            "8": 0.23529411764705882,
-            "16": 0.11764705882352941,
-            "32": 0.11764705882352941,
-            "64": 0.058823529411764705,
-            "128": 0.11764705882352941,
-            "256": 0.058823529411764705
+        80: {
+            2: 0.11764705882352941,
+            4: 0.17647058823529413,
+            8: 0.23529411764705882,
+            16: 0.11764705882352941,
+            32: 0.11764705882352941,
+            64: 0.058823529411764705,
+            128: 0.11764705882352941,
+            256: 0.058823529411764705
         },
-        "100": {
-            "2": 0.10869565217391304,
-            "4": 0.16304347826086957,
-            "8": 0.21739130434782608,
-            "16": 0.13043478260869565,
-            "32": 0.05434782608695652,
-            "64": 0.05434782608695652,
-            "128": 0.16304347826086957,
-            "256": 0.05434782608695652,
-            "512": 0.05434782608695652
+        100: {
+            2: 0.10869565217391304,
+            4: 0.16304347826086957,
+            8: 0.21739130434782608,
+            16: 0.13043478260869565,
+            32: 0.05434782608695652,
+            64: 0.05434782608695652,
+            128: 0.16304347826086957,
+            256: 0.05434782608695652,
+            512: 0.05434782608695652
         },
-        "default": {
-            "2": 0.11235955056179775,
-            "4": 0.16853932584269662,
-            "8": 0.2247191011235955,
-            "16": 0.0898876404494382,
-            "32": 0.056179775280898875,
-            "64": 0.056179775280898875,
-            "128": 0.16853932584269662,
-            "256": 0.056179775280898875,
-            "512": 0.056179775280898875,
-            "1024": 0.011235955056179775
+        default: {
+            2: 0.11235955056179775,
+            4: 0.16853932584269662,
+            8: 0.2247191011235955,
+            16: 0.0898876404494382,
+            32: 0.056179775280898875,
+            64: 0.056179775280898875,
+            128: 0.16853932584269662,
+            256: 0.056179775280898875,
+            512: 0.056179775280898875,
+            1024: 0.011235955056179775
         }
     },
 	//数字更新时间
@@ -313,7 +316,7 @@ GlobalData = {
 			PropHammer:4,
 			PropSAB:2,
 			PropBomb:4,
-			PropAD:3,		//分享广告解锁盘数
+			PropAD:1,		//分享广告解锁盘数
 			PropAV:3,
 			PropShare:2,
 			PropRelive:3,
@@ -366,37 +369,68 @@ GlobalData = {
 			},
 			//复活概率参数设置
 			PropRelive:{
-				bagNum:1,
-				useNum:1
+				15:{
+					bagNum:1,
+					useNum:1
+				},
+				30:{
+					bagNum:2,
+					useNum:2
+				},
+				default:{
+					bagNum:2,
+					useNum:2
+				}
 			}
 		},
 		//不同的模式对应的概率不同 可以动态配置
 		PropShareOrADRate:{
 			crazy:{
-				isJushu:30,
-				unLock:{
+				4:{
 					PropHammer:{
-						PropShare:0.7,
-						PropAV:0.3
+						PropShare:0,
+						PropAV:1
 					},
 					PropBomb:{
-						PropShare:0.7,
-						PropAV:0.3
+						PropShare:0,
+						PropAV:1
 					},
 					PropSAB:{
-						PropShare:0.7,
-						PropAV:0.3
+						PropShare:0,
+						PropAV:1
 					},
 					PropRelive:{
-						PropShare:1,
-						PropAV:0
+						PropShare:0,
+						PropAV:1
 					},
 					PropBattle:{
-						PropShare:0.7,
-						PropAV:0.3
+						PropShare:0,
+						PropAV:1
 					}
 				},
-				lock:{
+				31:{
+					PropHammer:{
+						PropShare:0,
+						PropAV:1
+					},
+					PropBomb:{
+						PropShare:0,
+						PropAV:1
+					},
+					PropSAB:{
+						PropShare:0,
+						PropAV:1
+					},
+					PropRelive:{
+						PropShare:0,
+						PropAV:1
+					},
+					PropBattle:{
+						PropShare:0,
+						PropAV:1
+					}
+				},
+				'default':{
 					PropHammer:{
 						PropShare:0,
 						PropAV:1
@@ -420,49 +454,70 @@ GlobalData = {
 				}
 			},
 			normal:{
-				isJushu:10,
-				unLock:{
+				4:{
 					PropHammer:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0,
+						PropAV:1
 					},
 					PropBomb:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0,
+						PropAV:1
 					},
 					PropSAB:{
-						PropShare:0.7,
-						PropAV:0.3
+						PropShare:0,
+						PropAV:1
 					},
 					PropRelive:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0,
+						PropAV:1
 					},
 					PropBattle:{
-						PropShare:0.7,
-						PropAV:0.3
+						PropShare:0,
+						PropAV:1
 					}
 				},
-				lock:{
+				31:{
 					PropHammer:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0,
+						PropAV:1
 					},
 					PropBomb:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0,
+						PropAV:1
 					},
 					PropSAB:{
 						PropShare:0,
 						PropAV:1
 					},
 					PropRelive:{
-						PropShare:0.3,
-						PropAV:0.7
+						PropShare:0,
+						PropAV:1
 					},
 					PropBattle:{
 						PropShare:0,
 						PropAV:1
+					}
+				},
+				'default':{
+					PropHammer:{
+						PropShare:0.7,
+						PropAV:0.3
+					},
+					PropBomb:{
+						PropShare:0.7,
+						PropAV:0.3
+					},
+					PropSAB:{
+						PropShare:0.7,
+						PropAV:0.3
+					},
+					PropRelive:{
+						PropShare:1,
+						PropAV:0
+					},
+					PropBattle:{
+						PropShare:0.7,
+						PropAV:0.3
 					}
 				}
 			}

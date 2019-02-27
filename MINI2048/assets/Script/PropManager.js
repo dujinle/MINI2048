@@ -77,17 +77,17 @@ let PropManager = {
 	},
 	getShareOrADKey(prop){
 		var trate = GlobalData.cdnPropParam.PropShareOrADRate[GlobalData.cdnGameConfig.gameModel];
-		var isUnLock = trate.isJushu < GlobalData.gameRunTimeParam.juNum;
-		console.log(trate,isUnLock);
-		if(isUnLock == true){
-			var propsRate = trate.unLock[prop];
-			var netProp = this.getRandomRateKey(propsRate);
-			return netProp;
-		}else{
-			var propsRate = trate.lock[prop];
-			var netProp = this.getRandomRateKey(propsRate);
-			return netProp;
+		var myKey = 'default';
+		for(var key in trate){
+			if(key != 'default' && GlobalData.gameRunTimeParam.juNum < key){
+				myKey = key;
+				break;
+			}
 		}
+		var propsRate = trate[myKey][prop];
+		console.log(propsRate,myKey,prop);
+		var netProp = this.getRandomRateKey(propsRate);
+		return netProp;
 	},
 	getRandomRateKey(propsRate){
 		var prop = null;
@@ -104,7 +104,7 @@ let PropManager = {
 		return prop;
 	},
 	getPropBag(prop){
-		if(prop == 'PropFresh' || prop == 'PropRelive'){
+		if(prop == 'PropFresh'){
 			return GlobalData.cdnPropParam.PropParam[prop];
 		}else{
 			var bag = GlobalData.cdnPropParam.PropParam[prop];

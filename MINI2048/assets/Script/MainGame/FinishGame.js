@@ -5,6 +5,7 @@ cc.Class({
     properties: {
 		rankSprite:cc.Node,
 		isDraw:false,
+		openSprite:cc.Node,
 		innerChainNode:cc.Node,
     },
     onLoad () {

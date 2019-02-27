@@ -4,6 +4,7 @@ cc.Class({
 
     properties: {
 		isDraw:false,
+		time:0,
     },
 	start(){
 		try{
@@ -38,7 +39,12 @@ cc.Class({
 		this.texture.handleLoadedTexture();
 		this.node.getComponent(cc.Sprite).spriteFrame = new cc.SpriteFrame(this.texture);
 	},
-	update(){
+	update(dt){
+		this.time += dt;
+		if(this.time < 1){
+			return;
+		}
+		this.time = 0;
 		//console.log("update finish game");
 		if(this.isDraw == true){
 			this.rankSuccessCb();

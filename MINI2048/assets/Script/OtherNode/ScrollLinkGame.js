@@ -1,3 +1,4 @@
+var util = require('util');
 cc.Class({
     extends: cc.Component,
 
@@ -38,6 +39,7 @@ cc.Class({
 
     //创建所有的内链入口
     createAllLinkGame: function (linkGameConfig) {
+		console.log('createAllLinkGame');
         if (!linkGameConfig) return;
         if (!this.contentNode) return;
         this.contentNode.stopAllActions();
@@ -47,8 +49,9 @@ cc.Class({
         this.linkGameConfig = linkGameConfig;
         var linkGameNum = this.linkGameConfig.length;
         this.contentNode.width = linkGameNum * this.linkBoardWidth + (linkGameNum - 1) * this.space;
+		var array = util.getRandomArray(linkGameNum);
         for (let index = 0; index < linkGameNum; index++) {
-            var linkItem = this.linkGameConfig[index];
+            var linkItem = this.linkGameConfig[array[index]];
             if (linkItem) {
                 //设置内链的坐标
 				console.log(linkItem);

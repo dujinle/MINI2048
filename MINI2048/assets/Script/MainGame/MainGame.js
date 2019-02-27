@@ -27,7 +27,7 @@ cc.Class({
 		startGameBoard:cc.Node,
 		//其他参数
 		audioManager:cc.Node,
-		
+		touchMoveFlag:false,
     },
     onLoad () {
 		console.log("onLoad start");
@@ -36,6 +36,11 @@ cc.Class({
 		//异步加载动态数据
 		this.rate = 0;
 		this.resLength = 15;
+		this.propConfig = {
+			'PropFresh':'',
+			'PropHammer':'',
+			'PropBomb':''
+		};
 		GlobalData.assets = {};
 		var self = this;
 		this.loadUpdate = function(){
@@ -76,6 +81,7 @@ cc.Class({
 		});
 		this.initBoards();
 		this.startGameBoard.getComponent("StartGame").showStart();
+		this.nodePool = new cc.NodePool();
 	},
 	initBoards(){
 		console.log("initBoards start");
@@ -162,7 +168,7 @@ cc.Class({
 			//判断是否有道具可以使用
 			if(GlobalData.GamePropParam.bagNum[customEventData] <= 0){
 				//道具没有了点击跳出分享界面获取道具
-				this.getShareProp(customEventData);
+				this.getShareProp(customEventData,this.propConfig[customEventData]);
 				return;
 			}
 			this.propHammerGuide = cc.instantiate(GlobalData.assets["PBHammerGuide"]);
@@ -183,7 +189,7 @@ cc.Class({
 			//判断是否有道具可以使用
 			if(GlobalData.GamePropParam.bagNum[customEventData] <= 0){
 				//道具没有了点击跳出分享界面获取道具
-				this.getShareProp(customEventData);
+				this.getShareProp(customEventData,this.propConfig[customEventData]);
 				return;
 			}
 			this.propBombGuide = cc.instantiate(GlobalData.assets["PBBombGuide"]);
@@ -221,6 +227,7 @@ cc.Class({
 			this.boardItem.destroy();
 			this.boardItem = null;
 		}
+		this.nodePool.clear();
 		//清楚运行时数据
 		this.stopRotateProp();
 		//GlobalData.gameRunTimeParam.gameStatus = 0;
@@ -269,6 +276,7 @@ cc.Class({
 			this.startGuideBoard();
 		}
 		GlobalData.gameRunTimeParam.gameStatus = 1;
+
 		ThirdAPI.updataGameInfo();
 		var params = {
 			type:'initFriendRank'
@@ -285,6 +293,7 @@ cc.Class({
 			var yRate = 1 - yy/sizeHeight;
 			WxBannerAd.createBannerAd(yRate);
 		}
+		
 	},
 	startGuideBoard(){
 		var guideNode = cc.instantiate(GlobalData.assets["PBGuideStart"]);
@@ -305,9 +314,13 @@ cc.Class({
 			this.boardItem = null;
 		}
 		//var test = [256,512,1024,2048];
-		var num = util.refreshOneNum();
+		var num = util.refreshOneNum(scaleFlag);
 		GlobalData.gameRunTimeParam.lastFreshNum = num;
-		this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
+		if(this.nodePool.size() <= 0){
+			this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
+		}else{
+			this.boardItem = this.nodePool.get();
+		}
 		if(scaleFlag == false){
 			this.boardItem.getComponent("NumObject").onInit(num);
 		}else{
@@ -378,8 +391,9 @@ cc.Class({
 				oriNode.getComponent("NumObject").merge2048Action(this.audioManager,sq,function(){
 					console.log(GlobalData.numMap);
 					oriNode.stopAllActions();
-					oriNode.removeFromParent();
-					oriNode.destroy();	
+					self.nodePool.put(oriNode);
+					//oriNode.removeFromParent();
+					//oriNode.destroy();
 					self.mergeFinish();
 					//console.log(GlobalData.numMap);
 				});
@@ -510,6 +524,71 @@ cc.Class({
 		}
 		return null;
 	},
+	/*
+	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
+		var self = this;
+		setTimeout(function sameMerge(){
+			let numDic = mergeArray.shift();
+			console.log(numDic,totalScore);
+			if(numDic == null){
+				self.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
+				if(finishKey == 2048){
+					GlobalData.numMap[sq] = 0;
+					GlobalData.numNodeMap[sq] = 0;
+					oriNode.getComponent("NumObject").merge2048Action(self.audioManager,sq,function(){
+						console.log(GlobalData.numMap);
+						let pos = oriNode.getPosition();
+						oriNode.stopAllActions();
+						self.nodePool.put(oriNode);
+						//oriNode.removeFromParent();
+						//oriNode.destroy();
+						self.getProp(totalEatNum + 1,pos);
+						self.mergeFinish();
+					});
+				}else{
+					self.getProp(totalEatNum + 1,oriNode.getPosition());
+					self.mergeFinish();
+				}
+			}else{
+				oriNode.stopAllActions();
+				for(let j = 0;j < numDic.list.length;j++){
+					let node = numDic.list[j];
+					let finished = cc.callFunc(function(){
+						//console.log('eatNode',tsq);
+						node.stopAllActions();
+						self.nodePool.put(node);
+						//numDic.list[tsq].removeFromParent();
+						//numDic.list[tsq].destroy();
+					},self);
+					let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
+					node.runAction(cc.sequence(moveAction,finished));
+				}
+				setTimeout(function(){
+					//1.2播放音效
+					self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+					//1.1数字合并完毕，进行效果起飞
+					let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
+					GlobalData.gameRunTimeParam.totalScore += addScore;
+					if(self.flyNode == null){
+						self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+						self.flyNode.setLocalZOrder(3);
+						self.mainGameBoard.addChild(self.flyNode);
+					}
+					self.flyNode.stopAllActions();
+					var pos = oriNode.getPosition();
+					var size = oriNode.getContentSize();
+					var flyNodeSize = self.flyNode.getContentSize();
+					self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
+					self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore);
+					//4.刷新数字并执行吃子结束之后的动画效果
+					oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager);
+					deep = deep + 1;
+					totalScore += addScore;
+					setTimeout(sameMerge,GlobalData.TimeActionParam.EatNodeBigTime * 2 * 1000);
+				},GlobalData.TimeActionParam.EatNodeMoveTime * 1000);
+			}
+		},0);
+	},
 	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
 		console.log(totalEatNum,totalScore,deep);
 		var self = this;
@@ -576,8 +655,94 @@ cc.Class({
 			}
 		}
 	},
+	*/
+	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
+		console.log(totalEatNum,totalScore,deep);
+		var self = this;
+		var totalTime = 0;
+		var mergeEnd = function(){
+			self.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
+			if(finishKey == 2048){
+				GlobalData.numMap[sq] = 0;
+				GlobalData.numNodeMap[sq] = 0;
+				oriNode.getComponent("NumObject").merge2048Action(self.audioManager,sq,function(){
+					let pos = oriNode.getPosition();
+					oriNode.stopAllActions();
+					self.nodePool.put(oriNode);
+					//oriNode.removeFromParent();
+					//oriNode.destroy();
+					self.getProp(totalEatNum + 1,pos);
+					self.mergeFinish();
+				});
+			}else{
+				self.getProp(totalEatNum + 1,oriNode.getPosition());
+				self.mergeFinish();
+			}
+		};
+		var mergeSame = function(pthis,data){
+			let numDic = data.shift();
+			let deep = data.shift();
+			if(numDic == null){
+				mergeEnd();
+				return;
+			}
+			for(let j = 0;j < numDic.list.length;j++){
+				let node = numDic.list[j];
+				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
+				let finished = cc.callFunc(function(){
+					//node.stopAllActions();
+					self.nodePool.put(node);
+				},pthis);
+				node.runAction(cc.sequence(moveAction,finished));
+			}
+			let finish = cc.callFunc(function(){
+				//1.1数字合并完毕，进行效果起飞
+				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+				let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
+				GlobalData.gameRunTimeParam.totalScore += addScore;
+				if(self.flyNode == null){
+					self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+					self.flyNode.setLocalZOrder(3);
+					self.mainGameBoard.addChild(self.flyNode);
+				}
+				self.flyNode.stopAllActions();
+				var pos = oriNode.getPosition();
+				var size = oriNode.getContentSize();
+				var flyNodeSize = self.flyNode.getContentSize();
+				self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
+				self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore);
+				oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager,function(){
+					totalScore += addScore;
+					mergeSame(pthis,[mergeArray.shift(),deep + 1]);
+				});
+				//oriNode.getComponent("NumObject").onInit(numDic.key * 2);
+			},pthis);
+			self.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.EatNodeMoveTime),finish));
+		};
+		mergeSame(this,[mergeArray.shift(),deep]);
+	},
 	//获取道具操作
-	showFailInfo(msg){
+	showFailInfo(prop,propType){
+		try{
+			var self = this;
+			var content = '请分享到不同的群获得更多的好友帮助!';
+			if(propType == 'PropAV'){
+				content = '看完视频才能获得奖励，请再看一次!';
+			}
+			wx.showModal({
+				title:'提示',
+				content:content,
+				cancelText:'取消',
+				confirmText:'确定',
+				confirmColor:'#53679c',
+				success(res){
+					if (res.confirm) {
+						self.getShareProp(prop,propType);
+					}else if(res.cancel){}
+				}
+			});
+		}catch(err){}
+		/*
 		if(this.failNode != null){
 			this.failNode.stopAllActions();
 			this.failNode.removeFromParent();
@@ -598,9 +763,9 @@ cc.Class({
 			}
 		}.bind(this),this);
 		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+		*/
 	},
-	getShareProp(prop){
-		var propType = PropManager.getShareOrADKey(prop);
+	getShareProp(prop,propType){
 		if(propType == 'PropShare'){
 			this.propKey = prop;
 			this.isShareCallBack = false;
@@ -635,7 +800,7 @@ cc.Class({
 			this.shareFailedCb = function(type,arg){
 				console.log(type,arg);
 				if(this.isShareCallBack == false){
-					this.showFailInfo(null);
+					this.showFailInfo(prop,propType);
 				}
 				this.isShareCallBack = true;
 			};
@@ -678,7 +843,7 @@ cc.Class({
 				}.bind(this));
 			}.bind(this);
 			this.shareFailedCb = function(arg){
-				this.showFailInfo("看完视频才能获得奖励，请再看一次");
+				this.showFailInfo(prop,propType);
 			}.bind(this);
 			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,null);
 		}
@@ -720,6 +885,7 @@ cc.Class({
 		}
 	},
 	eventTouchStart(event){
+		this.touchMoveFlag = true;
 		this.moveIdx = -1;
 		if(this.propBombGuide != null && this.propBombGuide.isValid == true){
 			this.propBombGuide.stopAllActions();
@@ -733,18 +899,17 @@ cc.Class({
 		this.touchLocation = this.boardItem.parent.convertToNodeSpaceAR(event.getLocation());
 		//console.log(this.initLocation.x,this.initLocation.y,this.touchLocation.x,this.touchLocation.y);
 		var size = this.boardItem.getContentSize();
-		var moveToPos = cc.p(this.touchLocation.x,this.touchLocation.y + size.height / 2);
-		var moveAction = cc.moveTo(0.02,moveToPos);
-		this.boardItem.runAction(moveAction);
+		var moveToPos = cc.p(this.touchLocation.x,this.touchLocation.y + size.height/2);
+		this.boardItem.setPosition(moveToPos);
 		//console.log('poker TOUCH_START');
 	},
 	eventTouchMove(event){
 		//console.log('poker TOUCH_MOVE',event.touch.getDelta().x,event.touch.getDelta().y);
-		var delta = event.touch.getDelta();
-		if(util.getPhoneModel() == 'IphoneX'){
+		let delta = event.touch.getDelta();
+		if(GlobalData.phoneModel == 'IphoneX'){
 			this.boardItem.x += (delta.x / (1125 / 640));
 			this.boardItem.y += (delta.y / (2246 / 1136));
-		}else if(util.getPhoneModel() == 'IphoneXR'){
+		}else if(GlobalData.phoneModel == 'IphoneXR'){
 			this.boardItem.x += (delta.x / (828 / 640));
 			this.boardItem.y += (delta.y / (1602 / 1136));
 		}else{
@@ -752,35 +917,36 @@ cc.Class({
 			this.boardItem.y += delta.y;
 		}
 		this.moveIdx = -1;
+		
 		var movePos = this.boardItem.getPosition();
 		var box = this.blocksBoard.getBoundingBox();
 		if(cc.rectContainsPoint(box,movePos)){
-			//console.log("在矩形内部");
-			var nearDist = 10000;
-			for(var i = 0;i < this.blocksBoard.children.length;i++){
-				var block = this.blocksBoard.children[i];
-				//var blockPos = this.node.convertToNodeSpaceAR(block.getPosition());
-				var blocksBoardPos = this.blocksBoard.getPosition();
-				var blockPos = block.getPosition();
-				blockPos.x = blockPos.x + blocksBoardPos.x;
-				blockPos.y = blockPos.y + blocksBoardPos.y;
-				var dist = util.euclDist(blockPos,movePos);
-				//console.log(i,dist,blockPos.x,blockPos.y,movePos.x,movePos.y);
-				if(dist <= nearDist){
-					nearDist = dist;
-					this.moveIdx = i;
+			this.moveIdx = this.getNearBlock(movePos);
+			if(this.moveIdx >= 0 && this.moveIdx <= 15){
+				if(this.shadowBlok != null){
+					this.shadowBlok.getComponent("BlockBoard").shadowSprite.active = false;
 				}
+				this.shadowBlok = this.blocksBoard.children[this.moveIdx];
+				this.shadowBlok.getComponent("BlockBoard").shadowSprite.active = true;
+			}else{
+				this.moveIdx = -1;
 			}
-			this.blockShadow();
-			//console.log(this.moveIdx,nearDist);
-		}else{
-			this.blockShadowCancle();
 		}
 	},
-	
+	getNearBlock(TouchPos){
+		let blocksBoardSize = this.blocksBoard.getContentSize();
+		let itemLayoutPos = this.blocksBoard.getPosition();
+		let beginPos = cc.p(itemLayoutPos.x - blocksBoardSize.width/2,itemLayoutPos.y + blocksBoardSize.height/2);
+		let width = Math.abs(TouchPos.x - beginPos.x);
+		let height = Math.abs(TouchPos.y - beginPos.y);
+		let idx = Math.floor(width / (138 + 5));
+		let idy = Math.floor(height / (141 + 5));
+		return idy * 4 + idx;
+	},
 	eventTouchEnd(event){
 		//console.log('poker TOUCH_END');
 		//如果移动的位置合法则进行移动
+		this.touchMoveFlag = false;
 		if(this.moveIdx != -1){
 			var sq = GlobalData.ConvertToMapSpace(this.moveIdx);
 			if(GlobalData.numMap[sq] == 0){
@@ -797,17 +963,22 @@ cc.Class({
 				GlobalData.numNodeMap[sq] = this.boardItem;
 				this.gameLogic();
 			}else{
-				var moveAction = cc.moveTo(0.02,this.initLocation);
-				this.boardItem.runAction(moveAction);
+				//var moveAction = cc.moveTo(0.02,this.initLocation);
+				this.boardItem.setPosition(this.initLocation);//runAction(moveAction);
 			}
 		}else{
-			var moveAction = cc.moveTo(0.02,this.initLocation);
-			this.boardItem.runAction(moveAction);
+			if(this.shadowBlok != null){
+				this.shadowBlok.getComponent("BlockBoard").shadowSprite.active = false;
+			}
+			this.boardItem.setPosition(this.initLocation);
+			//var moveAction = cc.moveTo(0.02,this.initLocation);
+			//this.boardItem.runAction(moveAction);
 		}
 	},
 	eventTouchCancel(event){
 		//console.log('poker TOUCH_CANCEL');
 		//如果移动的位置合法则进行移动
+		this.touchMoveFlag = false;
 		if(this.moveIdx != -1){
 			var sq = GlobalData.ConvertToMapSpace(this.moveIdx);
 			if(GlobalData.numMap[sq] == 0){
@@ -825,12 +996,17 @@ cc.Class({
 				this.gameLogic();
 				return true;
 			}else{
-				var moveAction = cc.moveTo(0.02,this.initLocation);
-				this.boardItem.runAction(moveAction);
+				//var moveAction = cc.moveTo(0.02,this.initLocation);
+				//this.boardItem.runAction(moveAction);
+				this.boardItem.setPosition(this.initLocation);
 			}
 		}else{
-			var moveAction = cc.moveTo(0.02,this.initLocation);
-			this.boardItem.runAction(moveAction);
+			if(this.shadowBlok != null){
+				this.shadowBlok.getComponent("BlockBoard").shadowSprite.active = false;
+			}
+			this.boardItem.setPosition(this.initLocation);
+			//var moveAction = cc.moveTo(0.02,this.initLocation);
+			//this.boardItem.runAction(moveAction);
 		}
 	},
 	propPressCallBack(event){
@@ -861,32 +1037,13 @@ cc.Class({
 			WxBannerAd.showBannerAd();
 			return;
 		}
-		
-		var selectIdx = -1;
 		var pressPos = this.mainGameBoard.convertToNodeSpaceAR(data.currentTouch.getLocation());
 		var box = this.blocksBoard.getBoundingBox();
 		console.log(pressPos);
 		if(cc.rectContainsPoint(box,pressPos)){
 			//console.log("在矩形内部");
-			var nearDist = 10000;
-			var blockSize = null;
-			for(var i = 0;i < this.blocksBoard.children.length;i++){
-				var block = this.blocksBoard.children[i];
-				//var blockPos = this.node.convertToNodeSpaceAR(block.getPosition());
-				var blocksBoardPos = this.blocksBoard.getPosition();
-				var blockPos = block.getPosition();
-				blockPos.x = blockPos.x + blocksBoardPos.x;
-				blockPos.y = blockPos.y + blocksBoardPos.y;
-				var dist = util.euclDist(blockPos,pressPos);
-				//console.log(i,dist,blockPos.x,blockPos.y,movePos.x,movePos.y);
-				if(dist <= nearDist){
-					nearDist = dist;
-					selectIdx = i;
-				}
-				blockSize = block.getContentSize();
-			}
-			//this.blockShadow();
-			if(selectIdx != -1 && blockSize != null &&  nearDist < blockSize.width/2 && nearDist < blockSize.height/2){
+			var selectIdx = this.getNearBlock(pressPos);
+			if(selectIdx >= 0 && selectIdx <= 15){
 				var sq = GlobalData.ConvertToMapSpace(selectIdx);
 				if(GlobalData.numMap[sq] != 0 && GlobalData.numNodeMap[sq] != 0){
 					//如果找到选择的格子 则取消监听事件
@@ -911,7 +1068,6 @@ cc.Class({
 					});
 				}
 			}
-			console.log(selectIdx,nearDist);
 		}else{
 			/*
 			this.propHammerGuide.stopAllActions();
@@ -949,15 +1105,53 @@ cc.Class({
 				this.gamePropClear.getChildByName("numLabel").active = true;
 				this.gamePropClear.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropHammer'];
 			}else{
-				this.gamePropClear.getChildByName("add").active = true;
+				var addNode = this.gamePropClear.getChildByName("add");
+				var propBag = PropManager.getPropBag(prop);
+				//判断是否到达使用上限
+				if(propBag.useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[prop] >= propBag.useNum){
+						addNode.active = false;
+						this.gamePropClear.getChildByName("numLabel").active = true;
+						this.gamePropClear.getChildByName("numLabel").getComponent(cc.Label).string = "x" + 0;
+						return;
+					}
+				}
+				var propType = PropManager.getShareOrADKey(prop);
+				this.propConfig[prop] = propType;
+				if(propType == 'PropShare'){
+					addNode.getComponent(cc.Sprite).spriteFrame = GlobalData.assets['getsba'];
+				}else if(propType == 'PropAV'){
+					addNode.getComponent(cc.Sprite).spriteFrame = GlobalData.assets['video'];
+				}
+				addNode.active = true;
 				this.gamePropClear.getChildByName("numLabel").active = false;
 			}
 		}else if(prop == 'PropBomb'){
+			console.log(GlobalData.GamePropParam);
 			if(GlobalData.GamePropParam.bagNum['PropBomb'] > 0){
 				this.gamePropBomb.getChildByName("add").active = false;
 				this.gamePropBomb.getChildByName("numLabel").active = true;
 				this.gamePropBomb.getChildByName("numLabel").getComponent(cc.Label).string = "x" + GlobalData.GamePropParam.bagNum['PropBomb'];
 			}else{
+				var addNode = this.gamePropBomb.getChildByName("add");
+				var propBag = PropManager.getPropBag(prop);
+				//判断是否到达使用上限
+				if(propBag.useNum >= 0){
+					if(GlobalData.GamePropParam.useNum[prop] >= propBag.useNum){
+						addNode.active = false;
+						this.gamePropBomb.getChildByName("numLabel").active = true;
+						this.gamePropBomb.getChildByName("numLabel").getComponent(cc.Label).string = "x" + 0;
+						return;
+					}
+				}
+				var propType = PropManager.getShareOrADKey(prop);
+				this.propConfig[prop] = propType;
+				
+				if(propType == 'PropShare'){
+					addNode.getComponent(cc.Sprite).spriteFrame = GlobalData.assets['getsba'];
+				}else if(propType == 'PropAV'){
+					addNode.getComponent(cc.Sprite).spriteFrame = GlobalData.assets['video'];
+				}
 				this.gamePropBomb.getChildByName("add").active = true;
 				this.gamePropBomb.getChildByName("numLabel").active = false;
 			}
@@ -1167,24 +1361,4 @@ cc.Class({
 			}
 		}
 	},
-	blockShadow(){
-		for(var i = 0;i < this.blocksBoard.children.length;i++){
-			var block = this.blocksBoard.children[i];
-			var sq = GlobalData.ConvertToMapSpace(this.moveIdx);
-			if(i == this.moveIdx && GlobalData.numMap[sq] == 0){
-				block.getComponent("BlockBoard").shadowSprite.active = true;
-			}else{
-				block.getComponent("BlockBoard").shadowSprite.active = false;
-			}
-		}
-	},
-	blockShadowCancle(){
-		for(var i = 0;i < this.blocksBoard.children.length;i++){
-			var block = this.blocksBoard.children[i];
-			var sq = GlobalData.ConvertToMapSpace(i);
-			if(GlobalData.numMap[sq] == 0){
-				block.getComponent("BlockBoard").shadowSprite.active = false;
-			}
-		}
-	}
 });

@@ -45,3 +45,6 @@
 
 
 preserveDrawingBuffer
+main.js ==onStart(){
+	cc.view.enableRetina(true);
+}

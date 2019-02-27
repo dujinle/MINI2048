@@ -14,21 +14,21 @@ let util = {
 		return dist;
 	},
 	reSetPropShareOrADRate(){
-		var ucPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.crazy.unLock.PropSAB;
-		var cPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.crazy.lock.PropSAB;
-		var unPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.normal.unLock.PropSAB;
-		var nPropSAB = GlobalData.cdnPropParam.PropShareOrADRate.normal.lock.PropSAB;
-		ucPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
-		ucPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
-		
-		cPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
-		cPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
-		
-		unPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
-		unPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
-		
-		nPropSAB.PropShare = GlobalData.cdnGameConfig.PropShare;
-		nPropSAB.PropAD = GlobalData.cdnGameConfig.PropAD;
+		console.log('reSetPropShareOrADRate');
+		for(var key in GlobalData.cdnPropParam.PropShareOrADRate){
+			var item = GlobalData.cdnPropParam.PropShareOrADRate[key];
+			//cary or normal
+			for(var key2 in item){
+				//4,31,default
+				var item2 = item[key2];
+				for(var key3 in item2){
+					if(key3 == 'PropSAB'){
+						item2[key3].PropShare = GlobalData.cdnGameConfig.PropShare;
+						item2[key3].PropAV = GlobalData.cdnGameConfig.PropAV;
+					}
+				}
+			}
+		}
 	},
 	//获取随机数
 	getRandomNum:function(rateType){
@@ -47,30 +47,62 @@ let util = {
 		//这里返回2 避免rateType设置错误导致无效
 		return -1;
 	},
-	refreshOneNum(){
+	getRandomArray:function(length){
+		var res = new Array();
+		var dst = new Array();
+		for(var i = 0;i < length;i++){
+			res.push(i);
+		}
+		for(var i = length;i > 0;i--){
+			var idx = Math.floor(Math.random() * i);
+			dst.push(res[idx]);
+			res.splice(idx,1);
+		}
+		console.log('getRandomArray',dst);
+		return dst;
+	},
+	refreshOneNum(scaleFlag = false){
+		var enabled = false;
+		if(scaleFlag == true){
+			enabled = Math.random() <= GlobalData.cdnGameConfig.PropFreshEnableRate;
+			if(enabled == true){
+				var selectNum = new Array();
+				for(var i = GlobalData.RANK_TOP;i < 6;i++){
+					for(var j = GlobalData.FILE_LEFT;j < 6;j++){
+						var fsq = GlobalData.COORD_XY(i,j);
+						if(GlobalData.numMap[fsq] == 0){
+							for(var m = 0;m < GlobalData.moveStep.length;m++){
+								var step = GlobalData.moveStep[m];
+								var tsq = GlobalData.COORD_XY(i + step[0],j + step[1]);
+								if(GlobalData.numMap[tsq] != 0){
+									selectNum.push(GlobalData.numMap[tsq]);
+								}
+							}
+						}
+					}
+				}
+				var length = selectNum.length;
+				console.log('refreshOneNum',selectNum);
+				if(length > 0){
+					var num = selectNum[Math.floor(length * Math.random())];
+					return num;
+				}
+			}
+		}
 		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % test.length];
-		if(GlobalData.gameRunTimeParam.juNum <= GlobalData.cdnGameConfig.NumRateJuNum){
-			while(num == -1){
-				var lastKey = 'default';
-				for(var key in GlobalData.cdnNumRate){
-					if(GlobalData.gameRunTimeParam.stepNum <= key){
-						lastKey = key;
-						break;
-					}
+		var numRateMap = GlobalData.cdnNumRate;
+		if(GlobalData.gameRunTimeParam.juNum > GlobalData.cdnGameConfig.NumRateJuNum){
+			numRateMap = GlobalData.cdnNumRate15;
+		}
+		while(num == -1){
+			var lastKey = 'default';
+			for(var key in numRateMap){
+				if(GlobalData.gameRunTimeParam.stepNum <= key){
+					lastKey = key;
+					break;
 				}
-				num = this.getRandomNum(GlobalData.cdnNumRate[lastKey]);
 			}
-		}else{
-			while(num == -1){
-				var lastKey = 'default';
-				for(var key in GlobalData.cdnNumRate15){
-					if(GlobalData.gameRunTimeParam.stepNum <= key){
-						lastKey = key;
-						break;
-					}
-				}
-				num = this.getRandomNum(GlobalData.cdnNumRate15[lastKey]);
-			}
+			num = this.getRandomNum(numRateMap[lastKey]);
 		}
 		return num;
 	},
@@ -142,6 +174,7 @@ let util = {
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
 			pthis.mainGameBoard.setPosition(cc.p(0,-40));
+			GlobalData.phoneModel = 'IphoneX';
 		}else if(this.getPhoneModel() == 'IphoneXR'){
 			cc.view.setDesignResolutionSize(828, 1792, cc.ResolutionPolicy.FIXED_WIDTH);
 			pthis.node.scaleX = 828 / 640;
@@ -151,6 +184,9 @@ let util = {
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
 			pthis.mainGameBoard.setPosition(cc.p(0,-40));
+			GlobalData.phoneModel = 'IphoneXR';
+		}else{
+			GlobalData.phoneModel = 'Normal';
 		}
 	},
 	compareVersion:function(v1, v2) {
