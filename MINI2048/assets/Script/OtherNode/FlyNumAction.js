@@ -4,7 +4,7 @@ cc.Class({
     properties: {
 		numLabel:cc.Node,
     },
-	startFlyOnce(idx,keyNum,addScore){
+	startFlyOnce(idx,keyNum,addScore,cb){
 		if(idx == 0){
 			this.numLabel.getComponent(cc.Label).string = addScore + "";
 		}else{
@@ -15,7 +15,11 @@ cc.Class({
 		var pos = this.node.getPosition();
         var bigAction = cc.scaleTo(0.2, 1);
         var moveAction = cc.moveTo(0.5, cc.p(pos.x, pos.y + 120));
-		
-        this.node.runAction(cc.sequence(cc.fadeIn(),bigAction, moveAction, cc.fadeOut()));
+		var finish = cc.callFunc(function(){
+			if(cb != null){
+				cb();
+			}
+		},this);
+        this.node.runAction(cc.sequence(bigAction, moveAction,finish));
 	}
 });
