@@ -44,7 +44,7 @@ cc.Class({
 		this.bgContext.runAction(cc.scaleTo(GlobalData.TimeActionParam.PropSBAScaleTime,1));
 		setTimeout(function(){
 			self.cancelNode.active = true;
-		},2000);
+		},1000);
 	},
 	buttonCb(){
 		this.iscallBack = false;

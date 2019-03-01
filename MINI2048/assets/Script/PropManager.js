@@ -18,7 +18,12 @@ let PropManager = {
 			//确定宝箱是否解锁
 			if(GlobalData.cdnPropParam.PropUnLock['PropSAB'] > GlobalData.gameRunTimeParam.juNum){
 				//没有解锁 直接获取 刷新道具
-				return "PropFresh";
+				var mRate = GlobalData.cdnPropParam.UnLockMerge[mergeNum];
+				if(Math.random() <= mRate){
+					return "PropFresh";
+				}else{
+					return null;
+				}
 			}
 			prop = this.getShareOrADKey(prop);
 			//如果是分享则判断是否解锁

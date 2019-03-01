@@ -175,6 +175,6 @@ cc.Class({
 			}
 		};
 		this.schedule(this.loadUpdate,1);
-		this.cancleLabel.runAction(cc.sequence(cc.delayTime(2),cc.fadeIn()));
+		this.cancleLabel.runAction(cc.sequence(cc.delayTime(1),cc.fadeIn()));
 	}
 });

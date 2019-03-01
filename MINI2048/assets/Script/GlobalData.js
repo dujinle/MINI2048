@@ -311,6 +311,12 @@ GlobalData = {
 				PropSAB:1
 			}
 		},
+		UnLockMerge:{
+			2:0,
+			3:0,
+			4:0,
+			5:0
+		},
 		PropUnLock:{	//道具解锁盘数
 			PropFresh:1,
 			PropHammer:4,
