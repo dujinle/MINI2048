@@ -688,15 +688,23 @@ cc.Class({
 			for(let j = numDic.list.length - 1;j >= 0;j--){
 				let node = numDic.list[j];
 				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNodePos);
-				let finished = cc.callFunc(function(m){
+				let finished = cc.callFunc(function(pthis,m){
 					self.nodePool.put(node);
 					if(m == 0){
-						self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+						let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
+						GlobalData.gameRunTimeParam.totalScore += addScore;
 						oriNode.getComponent("NumObject").onInit(numDic.key * 2);
-						mergeSame(pthis,[mergeArray.shift(),deep + 1]);
+						self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
+						oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,function(){
+							totalScore += addScore;
+							mergeSame(pthis,[mergeArray.shift(),deep + 1]);
+						});
 					}
 				},pthis,j);
 				node.runAction(cc.sequence(moveAction,finished));
+				if(j == 0){
+					self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+				}
 			}
 			/*
 			setTimeout(function(){
