@@ -685,15 +685,26 @@ cc.Class({
 				mergeEnd();
 				return;
 			}
-			for(let j = 0;j < numDic.list.length;j++){
+			for(let j = numDic.list.length - 1;j >= 0;j--){
 				let node = numDic.list[j];
 				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNodePos);
-				let finished = cc.callFunc(function(){
+				let finished = cc.callFunc(function(m){
 					self.nodePool.put(node);
-				},pthis);
+					if(m == 0){
+						self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+						oriNode.getComponent("NumObject").onInit(numDic.key * 2);
+						mergeSame(pthis,[mergeArray.shift(),deep + 1]);
+					}
+				},pthis,j);
 				node.runAction(cc.sequence(moveAction,finished));
 			}
+			/*
 			setTimeout(function(){
+				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
+				oriNode.getComponent("NumObject").onInit(numDic.key * 2);
+				
+				mergeSame(pthis,[mergeArray.shift(),deep + 1]);
+				/*
 				//1.1数字合并完毕，进行效果起飞
 				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
 				let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
@@ -716,7 +727,9 @@ cc.Class({
 					mergeSame(pthis,[mergeArray.shift(),deep + 1]);
 				});
 				//oriNode.getComponent("NumObject").onInit(numDic.key * 2);
+			
 			},GlobalData.TimeActionParam.EatNodeMoveTime * 1000);
+			*/
 		};
 		mergeSame(this,[mergeArray.shift(),deep]);
 	},
