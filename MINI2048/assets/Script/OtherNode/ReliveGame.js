@@ -124,10 +124,7 @@ cc.Class({
 					if (res.confirm) {
 						self.continueNow(null);
 					}else if(res.cancel){
-						self.callback();
-						self.node.removeFromParent();
-						self.node.destroy();
-						//self.schedule(self.loadUpdate,1);
+						self.schedule(self.loadUpdate,1);
 					}
 				}
 			});
@@ -178,6 +175,6 @@ cc.Class({
 			}
 		};
 		this.schedule(this.loadUpdate,1);
-		this.cancleLabel.runAction(cc.sequence(cc.delayTime(4),cc.fadeIn()));
+		this.cancleLabel.runAction(cc.sequence(cc.delayTime(2),cc.fadeIn()));
 	}
 });

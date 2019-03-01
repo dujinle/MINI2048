@@ -108,37 +108,10 @@ cc.Class({
 				success(res){
 					if (res.confirm) {
 						self.buttonCb();
-					}else if(res.cancel){
-						self.EventCustom.setUserData({type:'PropGameCancle'});
-						self.node.dispatchEvent(self.EventCustom);
-						self.node.removeFromParent();
-						self.node.destroy();
-					}
+					}else if(res.cancel){}
 				}
 			});
 		}catch(err){}
-		/*
-		if(this.failNode != null){
-			this.failNode.stopAllActions();
-			this.failNode.removeFromParent();
-			this.failNode.destroy();
-			this.failNode = null;
-		}
-		this.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-		this.node.addChild(this.failNode);
-		if(msg != null){
-			this.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = msg;
-		}
-		var actionEnd = cc.callFunc(function(){
-			if(this.failNode != null){
-				this.failNode.stopAllActions();
-				this.failNode.removeFromParent();
-				this.failNode.destroy();
-				this.failNode = null;
-			}
-		}.bind(this),this);
-		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-		*/
 	},
 	//道具个数发生变化
 	propFreshNum(prop,propNode){
