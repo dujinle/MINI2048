@@ -97,17 +97,17 @@ cc.Class({
 		console.log(type,arg);
 	},
 	battleButtonCb(){
-		if(this.prop == null){
-			this.prop = PropManager.getShareOrADKey('PropBattle');
+		if(this.openType == null){
+			this.openType = PropManager.getShareOrADKey('PropBattle');
 		}
-		if(this.prop == 'PropShare'){
+		if(this.openType == 'PropShare'){
 			this.isShareCallBack = false;
 			var param = {
 				type:null,
 				arg:null,
 				successCallback:this.sharePropSuccessCb.bind(this),
 				failCallback:this.sharePropFailedCb.bind(this),
-				shareName:this.prop,
+				shareName:this.openType,
 				isWait:true
 			};
 			if(GlobalData.cdnGameConfig.shareCustomSet == 0){
@@ -115,18 +115,22 @@ cc.Class({
 			}
 			ThirdAPI.shareGame(param);
 		}
-		else if(this.prop == 'PropAV'){
+		else if(this.openType == 'PropAV'){
 			this.AVSuccessCb = function(arg){
 				this.EventCustom.setUserData({
 					type:'StartBattleSuccess',
 					propKey:'PropBomb',
 					startPos:cc.p(0,0)
 				});
-				this.prop = null;
 				this.node.dispatchEvent(this.EventCustom);
 			}.bind(this);
 			this.AVFailedCb = function(arg){
-				this.showFailInfo("看完视频才能获得奖励，请再看一次");
+				if(arg == 'cancle'){
+					this.showFailInfo();
+				}else if(arg == 'error'){
+					this.openType = "PropShare";
+					this.battleButtonCb(null);
+				}
 			}.bind(this);
 			WxVideoAd.initCreateReward(this.AVSuccessCb,this.AVFailedCb,null);
 		}
@@ -138,7 +142,6 @@ cc.Class({
 			propKey:'PropBomb',
 			startPos:cc.p(0,0)
 		});
-		this.prop = null;
 		this.node.dispatchEvent(this.EventCustom);
 	},
 	sharePropFailedCb(type,arg){
@@ -148,6 +151,26 @@ cc.Class({
 		this.isShareCallBack = true;
 	},
 	showFailInfo(msg){
+		try{
+			var self = this;
+			var content = '请分享到不同的群获得更多的好友帮助!';
+			if(this.openType == 'PropAV'){
+				content = '看完视频才能获得奖励，请再看一次!';
+			}
+			wx.showModal({
+				title:'提示',
+				content:content,
+				cancelText:'取消',
+				confirmText:'确定',
+				confirmColor:'#53679c',
+				success(res){
+					if (res.confirm) {
+						self.battleButtonCb(null);
+					}else if(res.cancel){}
+				}
+			});
+		}catch(err){}
+		/*
 		if(this.failNode != null){
 			this.failNode.stopAllActions();
 			this.failNode.removeFromParent();
@@ -168,9 +191,11 @@ cc.Class({
 			}
 		}.bind(this),this);
 		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
+		*/
 	},
 	showStart(){
 		console.log("start game board show");
+		this.openType = null;
 		if(GlobalData.AudioSupport == false){
 			this.soundOnNode.active = false;
 			this.soundOffNode.active = true;

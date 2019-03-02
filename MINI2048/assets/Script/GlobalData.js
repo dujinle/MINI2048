@@ -414,7 +414,7 @@ GlobalData = {
 						PropAV:1
 					}
 				},
-				31:{
+				21:{
 					PropHammer:{
 						PropShare:0,
 						PropAV:1

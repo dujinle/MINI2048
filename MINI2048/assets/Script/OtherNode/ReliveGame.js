@@ -57,7 +57,12 @@ cc.Class({
 				this.node.dispatchEvent(this.EventCustom);
 			};
 			this.AVFailedCb = function(arg){
-				this.showFailInfo();
+				if(arg == 'cancle'){
+					this.showFailInfo();
+				}else if(arg == 'error'){
+					this.openType = "PropShare";
+					this.continueNow(null);
+				}
 			};
 			WxVideoAd.initCreateReward(this.AVSuccessCb.bind(this),this.AVFailedCb.bind(this),null);
 		}

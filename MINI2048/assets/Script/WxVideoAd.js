@@ -43,7 +43,7 @@ let WxVideoAd = {
                             console.log('广告没看完');
                             if (onFailedCallBack) {
                                 console.log('回调失败');
-                                onFailedCallBack(arg);
+                                onFailedCallBack('cancle');
                             }
                         }
                     }
@@ -54,11 +54,14 @@ let WxVideoAd = {
                     // Global.viewControllerScript.showDialogTips(Global.cdnGameConfig.rewardVideoErrorDesc);
                     if (onFailedCallBack) {
                         console.log('广告拉起失败');
-                        onFailedCallBack(arg);
+                        onFailedCallBack('error');
                     }
                 })
             } catch (error) {
                 console.log('WxVideoAd error', error);
+				if (onFailedCallBack) {
+					onFailedCallBack('error');
+				}
             }
         }
     },

@@ -742,28 +742,6 @@ cc.Class({
 				}
 			});
 		}catch(err){}
-		/*
-		if(this.failNode != null){
-			this.failNode.stopAllActions();
-			this.failNode.removeFromParent();
-			this.failNode.destroy();
-			this.failNode = null;
-		}
-		this.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-		this.mainGameBoard.addChild(this.failNode);
-		if(msg != null){
-			this.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = msg;
-		}
-		var actionEnd = cc.callFunc(function(){
-			if(this.failNode != null){
-				this.failNode.stopAllActions();
-				this.failNode.removeFromParent();
-				this.failNode.destroy();
-				this.failNode = null;
-			}
-		}.bind(this),this);
-		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-		*/
 	},
 	getShareProp(prop,propType){
 		if(propType == 'PropShare'){
@@ -843,7 +821,11 @@ cc.Class({
 				}.bind(this));
 			}.bind(this);
 			this.shareFailedCb = function(arg){
-				this.showFailInfo(prop,propType);
+				if(arg == 'cancle'){
+					this.showFailInfo(prop,propType);
+				}else if(arg == 'error'){
+					this.getShareProp(prop,'PropShare');
+				}
 			}.bind(this);
 			WxVideoAd.initCreateReward(this.shareSuccessCb,this.shareFailedCb,null);
 		}
