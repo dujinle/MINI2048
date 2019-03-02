@@ -295,6 +295,12 @@ cc.Class({
 			WxBannerAd.createBannerAd(yRate);
 		}
 		this.refeshNumObject();
+		if(this.flyNode == null){
+			this.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+			this.flyNode.setLocalZOrder(3);
+			this.mainGameBoard.addChild(this.flyNode);
+			this.flyNode.runAction(cc.fadeOut());
+		}
 	},
 	startGuideBoard(){
 		var guideNode = cc.instantiate(GlobalData.assets["PBGuideStart"]);
@@ -695,6 +701,11 @@ cc.Class({
 						GlobalData.gameRunTimeParam.totalScore += addScore;
 						oriNode.getComponent("NumObject").onInit(numDic.key * 2);
 						self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
+						self.flyNode.stopAllActions();
+						var size = oriNode.getContentSize();
+						var flyNodeSize = self.flyNode.getContentSize();
+						self.flyNode.setPosition(cc.p(oriNodePos.x,oriNodePos.y + size.height/2 + flyNodeSize.height/2));
+						self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore,null);
 						oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,function(){
 							totalScore += addScore;
 							mergeSame(pthis,[mergeArray.shift(),deep + 1]);
@@ -706,38 +717,6 @@ cc.Class({
 					self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
 				}
 			}
-			/*
-			setTimeout(function(){
-				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
-				oriNode.getComponent("NumObject").onInit(numDic.key * 2);
-				
-				mergeSame(pthis,[mergeArray.shift(),deep + 1]);
-				/*
-				//1.1数字合并完毕，进行效果起飞
-				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
-				let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
-				GlobalData.gameRunTimeParam.totalScore += addScore;
-				if(self.flyNodePool.size() > 0){
-					var flyNode = self.flyNodePool.get();
-				}else{
-					var flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
-				}
-				self.mainGameBoard.addChild(flyNode);
-				var size = oriNode.getContentSize();
-				var flyNodeSize = flyNode.getContentSize();
-				flyNode.setPosition(cc.p(oriNodePos.x,oriNodePos.y + size.height/2 + flyNodeSize.height/2));
-				flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore,function(){
-					self.flyNodePool.put(flyNode);
-				});
-				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
-				oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,function(){
-					totalScore += addScore;
-					mergeSame(pthis,[mergeArray.shift(),deep + 1]);
-				});
-				//oriNode.getComponent("NumObject").onInit(numDic.key * 2);
-			
-			},GlobalData.TimeActionParam.EatNodeMoveTime * 1000);
-			*/
 		};
 		mergeSame(this,[mergeArray.shift(),deep]);
 	},

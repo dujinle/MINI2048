@@ -14,12 +14,12 @@ cc.Class({
 		this.node.scale = 0.5;
 		var pos = this.node.getPosition();
         var bigAction = cc.scaleTo(0.2, 1);
-        var moveAction = cc.moveTo(0.5, cc.p(pos.x, pos.y + 120));
+        var moveAction = cc.moveTo(0.4, cc.p(pos.x, pos.y + 96));
 		var finish = cc.callFunc(function(){
 			if(cb != null){
 				cb();
 			}
 		},this);
-        this.node.runAction(cc.sequence(bigAction, moveAction,finish));
+        this.node.runAction(cc.sequence(cc.fadeIn(),bigAction, moveAction,cc.fadeOut(),finish));
 	}
 });
