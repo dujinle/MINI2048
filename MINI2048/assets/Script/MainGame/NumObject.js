@@ -98,19 +98,16 @@ cc.Class({
 		this.node.runAction(cc.sequence(scaleUpAction,scaleDownAction));
 		this.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.RefreshNodeTime),playAudioAction));
 	},
-	MergeFinishNum(num,audioManager,cb){
+	MergeFinishNum(num,cb){
 		this.onInit(num);
 		this.initScale = this.node.scale;
 		var scaleUpAction = cc.scaleTo(GlobalData.TimeActionParam.EatNodeBigTime, this.pressedScale);
         var scaleDownAction = cc.scaleTo(GlobalData.TimeActionParam.EatNodeBigTime, this.initScale);
-		audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
-		//this.scaleBigOnce(audioManager);
 		var finish = cc.callFunc(function(){
 			if(cb != null){
 				cb();
 			}
 		},this);
 		this.node.runAction(cc.sequence(scaleUpAction,scaleDownAction,finish));
-		//this.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.EatNodeBigTime),finish));
 	}
 });

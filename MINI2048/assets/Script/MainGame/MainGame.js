@@ -282,7 +282,6 @@ cc.Class({
 			type:'initFriendRank'
 		};
 		ThirdAPI.getRank(params);
-		this.refeshNumObject();
 		this.battleNode.getComponent('BattleNode').onStart();
 		//添加广告计算 最下面的节点位置所占的全屏比例 广告位置 不得超过这个节点
 		if(GlobalData.cdnPropParam.PropUnLock['PropAD'] <= GlobalData.gameRunTimeParam.juNum){
@@ -293,7 +292,13 @@ cc.Class({
 			var yRate = 1 - yy/sizeHeight;
 			WxBannerAd.createBannerAd(yRate);
 		}
-		
+		this.refeshNumObject();
+		if(this.flyNode == null){
+			this.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
+			this.flyNode.setLocalZOrder(3);
+			this.mainGameBoard.addChild(this.flyNode);
+			this.flyNode.runAction(cc.fadeOut());
+		}
 	},
 	startGuideBoard(){
 		var guideNode = cc.instantiate(GlobalData.assets["PBGuideStart"]);
@@ -524,158 +529,24 @@ cc.Class({
 		}
 		return null;
 	},
-	/*
-	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
-		var self = this;
-		setTimeout(function sameMerge(){
-			let numDic = mergeArray.shift();
-			console.log(numDic,totalScore);
-			if(numDic == null){
-				self.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
-				if(finishKey == 2048){
-					GlobalData.numMap[sq] = 0;
-					GlobalData.numNodeMap[sq] = 0;
-					oriNode.getComponent("NumObject").merge2048Action(self.audioManager,sq,function(){
-						console.log(GlobalData.numMap);
-						let pos = oriNode.getPosition();
-						oriNode.stopAllActions();
-						self.nodePool.put(oriNode);
-						//oriNode.removeFromParent();
-						//oriNode.destroy();
-						self.getProp(totalEatNum + 1,pos);
-						self.mergeFinish();
-					});
-				}else{
-					self.getProp(totalEatNum + 1,oriNode.getPosition());
-					self.mergeFinish();
-				}
-			}else{
-				oriNode.stopAllActions();
-				for(let j = 0;j < numDic.list.length;j++){
-					let node = numDic.list[j];
-					let finished = cc.callFunc(function(){
-						//console.log('eatNode',tsq);
-						node.stopAllActions();
-						self.nodePool.put(node);
-						//numDic.list[tsq].removeFromParent();
-						//numDic.list[tsq].destroy();
-					},self);
-					let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
-					node.runAction(cc.sequence(moveAction,finished));
-				}
-				setTimeout(function(){
-					//1.2播放音效
-					self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
-					//1.1数字合并完毕，进行效果起飞
-					let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
-					GlobalData.gameRunTimeParam.totalScore += addScore;
-					if(self.flyNode == null){
-						self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
-						self.flyNode.setLocalZOrder(3);
-						self.mainGameBoard.addChild(self.flyNode);
-					}
-					self.flyNode.stopAllActions();
-					var pos = oriNode.getPosition();
-					var size = oriNode.getContentSize();
-					var flyNodeSize = self.flyNode.getContentSize();
-					self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
-					self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore);
-					//4.刷新数字并执行吃子结束之后的动画效果
-					oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager);
-					deep = deep + 1;
-					totalScore += addScore;
-					setTimeout(sameMerge,GlobalData.TimeActionParam.EatNodeBigTime * 2 * 1000);
-				},GlobalData.TimeActionParam.EatNodeMoveTime * 1000);
-			}
-		},0);
-	},
-	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
-		console.log(totalEatNum,totalScore,deep);
-		var self = this;
-		var numDic = mergeArray.shift();
-		if(numDic == null){
-			this.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
-			if(finishKey == 2048){
-				GlobalData.numMap[sq] = 0;
-				GlobalData.numNodeMap[sq] = 0;
-				oriNode.getComponent("NumObject").merge2048Action(this.audioManager,sq,function(){
-					console.log(GlobalData.numMap);
-					oriNode.stopAllActions();
-					oriNode.removeFromParent();
-					oriNode.destroy();
-					self.getProp(totalEatNum + 1,oriNode.getPosition());
-				});
-			}else{
-				this.getProp(totalEatNum + 1,oriNode.getPosition());
-			}
-			this.mergeFinish();
-		}else{
-			var mergeFinishAction = function(){
-				console.log('start run mergeFinishAction');
-				//1.1数字合并完毕，进行效果起飞
-				let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
-				GlobalData.gameRunTimeParam.totalScore += addScore;
-				if(self.flyNode == null){
-					self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
-					self.flyNode.setLocalZOrder(3);
-					self.mainGameBoard.addChild(self.flyNode);
-				}
-				self.flyNode.stopAllActions();
-				var pos = oriNode.getPosition();
-				var size = oriNode.getContentSize();
-				var flyNodeSize = self.flyNode.getContentSize();
-				self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
-				self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore);
-				//oriNode.getComponent("NumObject").flyMergeScore(numDic.key,numDic.list.length,deep,addScore);
-				//4.刷新数字并执行吃子结束之后的动画效果
-				oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager,function(){
-					self.deepCallSameMerge(sq,
-						mergeArray,
-						oriNode,
-						finishKey,
-						totalEatNum,
-						totalScore + addScore,
-						deep + 1
-					);
-				});
-				//1.2播放音效
-				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
-			}
-			for(let j = 0;j < numDic.list.length;j++){
-				let finished = cc.callFunc(function(pthis,tsq){
-					//console.log('eatNode',tsq);
-					numDic.list[tsq].removeFromParent();
-					numDic.list[tsq].destroy();
-					if(j == numDic.list.length - 1){
-						mergeFinishAction();
-					}
-				},this,j);
-				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
-				numDic.list[j].runAction(cc.sequence(moveAction,finished));
-			}
-		}
-	},
-	*/
 	deepCallSameMerge(sq,mergeArray,oriNode,finishKey,totalEatNum,totalScore,deep){
 		console.log(totalEatNum,totalScore,deep);
 		var self = this;
 		var totalTime = 0;
+		var oriNodePos = oriNode.getPosition();
 		var mergeEnd = function(){
 			self.scoreLabel.getComponent("NumWrap").startRollNum(totalScore);
 			if(finishKey == 2048){
 				GlobalData.numMap[sq] = 0;
 				GlobalData.numNodeMap[sq] = 0;
 				oriNode.getComponent("NumObject").merge2048Action(self.audioManager,sq,function(){
-					let pos = oriNode.getPosition();
 					oriNode.stopAllActions();
 					self.nodePool.put(oriNode);
-					//oriNode.removeFromParent();
-					//oriNode.destroy();
-					self.getProp(totalEatNum + 1,pos);
+					self.getProp(totalEatNum + 1,oriNodePos);
 					self.mergeFinish();
 				});
 			}else{
-				self.getProp(totalEatNum + 1,oriNode.getPosition());
+				self.getProp(totalEatNum + 1,oriNodePos);
 				self.mergeFinish();
 			}
 		};
@@ -686,38 +557,32 @@ cc.Class({
 				mergeEnd();
 				return;
 			}
-			for(let j = 0;j < numDic.list.length;j++){
+			for(let j = numDic.list.length - 1;j >= 0;j--){
 				let node = numDic.list[j];
-				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNode.getPosition());
-				let finished = cc.callFunc(function(){
-					//node.stopAllActions();
+				let moveAction = cc.moveTo(GlobalData.TimeActionParam.EatNodeMoveTime,oriNodePos);
+				let finished = cc.callFunc(function(pthis,m){
 					self.nodePool.put(node);
-				},pthis);
+					if(m == 0){
+						let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
+						GlobalData.gameRunTimeParam.totalScore += addScore;
+						oriNode.getComponent("NumObject").onInit(numDic.key * 2);
+						self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioFall);
+						self.flyNode.stopAllActions();
+						var size = oriNode.getContentSize();
+						var flyNodeSize = self.flyNode.getContentSize();
+						self.flyNode.setPosition(cc.p(oriNodePos.x,oriNodePos.y + size.height/2 + flyNodeSize.height/2));
+						self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore,null);
+						oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,function(){
+							totalScore += addScore;
+							mergeSame(pthis,[mergeArray.shift(),deep + 1]);
+						});
+					}
+				},pthis,j);
 				node.runAction(cc.sequence(moveAction,finished));
-			}
-			let finish = cc.callFunc(function(){
-				//1.1数字合并完毕，进行效果起飞
-				self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
-				let addScore = (numDic.key * 2) * numDic.list.length * (deep + 1);
-				GlobalData.gameRunTimeParam.totalScore += addScore;
-				if(self.flyNode == null){
-					self.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
-					self.flyNode.setLocalZOrder(3);
-					self.mainGameBoard.addChild(self.flyNode);
+				if(j == 0){
+					self.audioManager.getComponent('AudioManager').play(GlobalData.AudioParam.AudioComb1 + deep);
 				}
-				self.flyNode.stopAllActions();
-				var pos = oriNode.getPosition();
-				var size = oriNode.getContentSize();
-				var flyNodeSize = self.flyNode.getContentSize();
-				self.flyNode.setPosition(cc.p(pos.x,pos.y + size.height/2 + flyNodeSize.height/2));
-				self.flyNode.getComponent("FlyNumAction").startFlyOnce(deep,numDic.key * 2,addScore);
-				oriNode.getComponent("NumObject").MergeFinishNum(numDic.key * 2,self.audioManager,function(){
-					totalScore += addScore;
-					mergeSame(pthis,[mergeArray.shift(),deep + 1]);
-				});
-				//oriNode.getComponent("NumObject").onInit(numDic.key * 2);
-			},pthis);
-			self.node.runAction(cc.sequence(cc.delayTime(GlobalData.TimeActionParam.EatNodeMoveTime),finish));
+			}
 		};
 		mergeSame(this,[mergeArray.shift(),deep]);
 	},
