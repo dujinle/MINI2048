@@ -3,7 +3,7 @@ GlobalData = {
 	skin:'color1',
 	phoneModel:'',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.5.json",
+	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.6.json",
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,
@@ -21,7 +21,8 @@ GlobalData = {
 		'cdnOtherGameDoor',
 		'cdnNumRate',
 		'PropShareOrADRate',
-		'cdnNumRate15'
+		'cdnNumRate15',
+		'MergeParam'
 	],
 	cdnOtherGameDoor:{
 		locker:[
@@ -294,44 +295,61 @@ GlobalData = {
 	},
 	cdnPropParam:{	//道具自定义参数
 		MergeParam:{	//合并数字出现刷新或者其他概率
-			2:{
-				PropFresh:0,
-				PropSAB:0
-			},
 			3:{
-				PropSAB:0.2,
-				PropFresh:0.2
+				2:{
+					PropFresh:0,
+					PropSAB:0
+				},
+				3:{
+					PropFresh:0,
+					PropSAB:0
+				},
+				4:{
+					PropFresh:1,
+					PropSAB:0
+				},
+				5:{
+					PropFresh:1,
+					PropSAB:0
+				}
 			},
-			4:{
-				PropFresh:0.45,
-				PropSAB:0.3
-			},
-			5:{
-				PropFresh:0,
-				PropSAB:1
+			default:{
+				2:{
+					PropFresh:0,
+					PropSAB:0
+				},
+				3:{
+					PropSAB:0.2,
+					PropFresh:0.2
+				},
+				4:{
+					PropFresh:0.45,
+					PropSAB:0.3
+				},
+				5:{
+					PropFresh:0,
+					PropSAB:1
+				}
 			}
-		},
-		UnLockMerge:{
-			2:0,
-			3:0,
-			4:0,
-			5:0
 		},
 		PropUnLock:{	//道具解锁盘数
 			PropFresh:1,
-			PropHammer:4,
-			PropSAB:2,
-			PropBomb:4,
+			PropHammer:1,
+			PropSAB:3,
+			PropBomb:1,
 			PropAD:1,		//分享广告解锁盘数
-			PropAV:3,
-			PropShare:2,
+			PropAV:1,
+			PropShare:1,
 			PropRelive:3,
 			PropBattle:3,
-			PropInner:3,
-			PropLocker:3,
-			StartMenu:3
+			PropInner:2,
+			PropLocker:2,
+			StartMenu:2
 		},
-		PropReliveRate:1,
+		PropReliveRate:{
+			3:1,
+			default:1
+		},
 		SABOpenRate:{		//打开宝箱获取道具的概率
 			PropFresh:1,
 			PropHammer:0,
@@ -346,8 +364,8 @@ GlobalData = {
 			//锤子概率参数设置
 			PropHammer:{
 				15:{
-					bagNum:2,
-					useNum:2
+					bagNum:3,
+					useNum:3
 				},
 				30:{
 					bagNum:3,
@@ -361,8 +379,8 @@ GlobalData = {
 			//炸弹概率参数设置
 			PropBomb:{
 				15:{
-					bagNum:2,
-					useNum:2
+					bagNum:3,
+					useNum:3
 				},
 				30:{
 					bagNum:3,
@@ -376,23 +394,23 @@ GlobalData = {
 			//复活概率参数设置
 			PropRelive:{
 				15:{
-					bagNum:1,
-					useNum:1
+					bagNum:3,
+					useNum:3
 				},
 				30:{
-					bagNum:2,
-					useNum:2
+					bagNum:3,
+					useNum:3
 				},
 				default:{
-					bagNum:2,
-					useNum:2
+					bagNum:3,
+					useNum:3
 				}
 			}
 		},
 		//不同的模式对应的概率不同 可以动态配置
 		PropShareOrADRate:{
 			crazy:{
-				4:{
+				3:{
 					PropHammer:{
 						PropShare:0,
 						PropAV:1
@@ -406,56 +424,56 @@ GlobalData = {
 						PropAV:1
 					},
 					PropRelive:{
-						PropShare:0,
-						PropAV:1
+						PropShare:1,
+						PropAV:0
 					},
 					PropBattle:{
-						PropShare:0,
-						PropAV:1
+						PropShare:1,
+						PropAV:0
 					}
 				},
-				21:{
+				20:{
 					PropHammer:{
-						PropShare:0,
-						PropAV:1
+						PropShare:0.8,
+						PropAV:0.2
 					},
 					PropBomb:{
-						PropShare:0,
-						PropAV:1
+						PropShare:0.8,
+						PropAV:0.2
 					},
 					PropSAB:{
 						PropShare:0,
 						PropAV:1
 					},
 					PropRelive:{
-						PropShare:0,
-						PropAV:1
+						PropShare:1,
+						PropAV:0
 					},
 					PropBattle:{
-						PropShare:0,
-						PropAV:1
+						PropShare:1,
+						PropAV:0
 					}
 				},
 				'default':{
 					PropHammer:{
-						PropShare:0,
-						PropAV:1
+						PropShare:0.2,
+						PropAV:0.8
 					},
 					PropBomb:{
-						PropShare:0,
-						PropAV:1
+						PropShare:0.2,
+						PropAV:0.8
 					},
 					PropSAB:{
-						PropShare:0,
-						PropAV:1
+						PropShare:0.6,
+						PropAV:0.4
 					},
 					PropRelive:{
-						PropShare:0,
-						PropAV:1
+						PropShare:0.8,
+						PropAV:0.2
 					},
 					PropBattle:{
-						PropShare:0,
-						PropAV:1
+						PropShare:1,
+						PropAV:0
 					}
 				}
 			},
@@ -529,7 +547,7 @@ GlobalData = {
 			}
 		}
 	},
-	cdnShareImages:["res/raw-assets/resources/shareImages/shareDefault.d3b6b.png"],
+	cdnShareImages:["res/raw-assets/resources/shareImages/shareDefault.png"],
 	cdnTexts:["你介意男生玩这个游戏吗?"],
 	//游戏数字存储矩阵
 	numMap:[

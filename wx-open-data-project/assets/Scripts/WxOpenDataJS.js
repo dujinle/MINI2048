@@ -8,11 +8,11 @@ cc.Class({
 		aboveGameView:cc.Node,
     },
 	onLoad(){
-		this.setViewVisiable(null);
+		//this.setViewVisiable(null);
 	},
     start () {
         wx.onMessage(data => {
-			this.setViewVisiable(null);
+			//this.setViewVisiable(null);
             switch (data.type) {
                 case 'gameOverUIRank':
 					wx.getFriendCloudStorage({

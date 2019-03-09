@@ -134,28 +134,6 @@ cc.Class({
 				}
 			});
 		}catch(err){}
-		/*
-		if(this.failNode != null){
-			this.failNode.stopAllActions();
-			this.failNode.removeFromParent();
-			this.failNode.destroy();
-			this.failNode = null;
-		}
-		this.failNode = cc.instantiate(GlobalData.assets['PBShareFail']);
-		this.node.addChild(this.failNode);
-		if(msg != null){
-			this.failNode.getChildByName('tipsLabel').getComponent(cc.Label).string = msg;
-		}
-		var actionEnd = cc.callFunc(function(){
-			if(this.failNode != null){
-				this.failNode.stopAllActions();
-				this.failNode.removeFromParent();
-				this.failNode.destroy();
-				this.failNode = null;
-			}
-		}.bind(this),this);
-		this.failNode.runAction(cc.sequence(cc.fadeIn(0.5),cc.delayTime(1),cc.fadeOut(0.5),actionEnd));
-		*/
 	},
 	waitCallBack(action,prop,cb){
 		var self = this;

@@ -35,7 +35,7 @@ cc.Class({
 		util.customScreenAdapt(this);
 		//异步加载动态数据
 		this.rate = 0;
-		this.resLength = 15;
+		this.resLength = 14;
 		this.propConfig = {
 			'PropFresh':'',
 			'PropHammer':'',
@@ -45,12 +45,22 @@ cc.Class({
 		var self = this;
 		this.loadUpdate = function(){
 			console.log("this.rate:" + self.rate);
-			var scale = Math.floor((self.rate/self.resLength ) * 100);
 			if(self.rate >= self.resLength){
 				self.startButton.getComponent(cc.Button).interactable = true;
 				self.unschedule(self.loadUpdate);
 			}
 		};
+		GlobalData.gameRunTimeParam.juNum = 1;
+		ThirdAPI.loadLocalData();
+		//监听事件传递
+		this.startButton.getComponent(cc.Button).interactable = false;
+		this.node.on('dispatchEvent',this.dispatchMyEvent,this);
+	},
+	start(){
+		console.log("start");
+		//初始化所有面板
+		var self = this;
+		/*
 		cc.loader.loadRes("dynamicPlist", cc.SpriteAtlas, function (err, atlas) {
 			for(var key in atlas._spriteFrames){
 				console.log("load res :" + key);
@@ -66,16 +76,7 @@ cc.Class({
 			}
 		});
 		this.schedule(this.loadUpdate,0.5);
-		GlobalData.gameRunTimeParam.juNum = 1;
-		ThirdAPI.loadLocalData();
-		//监听事件传递
-		this.startButton.getComponent(cc.Button).interactable = false;
-		this.node.on('dispatchEvent',this.dispatchMyEvent,this);
-	},
-	start(){
-		console.log("start");
-		//初始化所有面板
-		var self = this;
+		*/
 		ThirdAPI.loadCDNData(function(){
 			self.startGameBoard.getComponent("StartGame").refreshGame();
 		});
@@ -763,8 +764,9 @@ cc.Class({
 			this.boardItem.x += delta.x;
 			this.boardItem.y += delta.y;
 		}
+		/*
 		this.moveIdx = -1;
-		
+
 		var movePos = this.boardItem.getPosition();
 		var box = this.blocksBoard.getBoundingBox();
 		if(cc.rectContainsPoint(box,movePos)){
@@ -779,6 +781,8 @@ cc.Class({
 				this.moveIdx = -1;
 			}
 		}
+		*/
+
 	},
 	getNearBlock(TouchPos){
 		let blocksBoardSize = this.blocksBoard.getContentSize();
@@ -1208,4 +1212,23 @@ cc.Class({
 			}
 		}
 	},
+	update(dt){
+		if(this.touchMoveFlag == true){
+			this.moveIdx = -1;
+			var movePos = this.boardItem.getPosition();
+			var box = this.blocksBoard.getBoundingBox();
+			if(cc.rectContainsPoint(box,movePos)){
+				this.moveIdx = this.getNearBlock(movePos);
+				if(this.moveIdx >= 0 && this.moveIdx <= 15){
+					if(this.shadowBlok != null){
+						this.shadowBlok.getComponent("BlockBoard").shadowSprite.active = false;
+					}
+					this.shadowBlok = this.blocksBoard.children[this.moveIdx];
+					this.shadowBlok.getComponent("BlockBoard").shadowSprite.active = true;
+				}else{
+					this.moveIdx = -1;
+				}
+			}
+		}
+	}
 });

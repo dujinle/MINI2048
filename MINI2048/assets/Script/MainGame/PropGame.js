@@ -143,6 +143,11 @@ cc.Class({
 		}
 	},
 	cancel(){
+		this.EventCustom.setUserData({type:'PropGameCancle'});
+		this.node.dispatchEvent(this.EventCustom);
+		this.node.removeFromParent();
+		this.node.destroy();
+		/*
 		try{
 			var self = this;
 			var content = '求助好友可领取礼包，要领取礼包吗？';
@@ -169,5 +174,6 @@ cc.Class({
 				}
 			});
 		}catch(err){}
+		*/
 	}
 });
