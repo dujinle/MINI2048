@@ -26,7 +26,7 @@ cc.Class({
 		mainGameBoard:cc.Node,
 		startGameBoard:cc.Node,
 		//其他参数
-		audioManager:cc.Node,
+		audioManager:null,
 		touchMoveFlag:false,
     },
     onLoad () {
@@ -60,7 +60,7 @@ cc.Class({
 		console.log("start");
 		//初始化所有面板
 		var self = this;
-		/*
+
 		cc.loader.loadRes("dynamicPlist", cc.SpriteAtlas, function (err, atlas) {
 			for(var key in atlas._spriteFrames){
 				console.log("load res :" + key);
@@ -72,11 +72,13 @@ cc.Class({
 			for(var i = 0;i < assets.length;i++){
 				GlobalData.assets[assets[i].name] = assets[i];
 				self.rate = self.rate + 1;
+				if(assets[i].name == 'PBAudioSources'){
+					self.audioManager = cc.instantiate(assets[i]);
+				}
 				console.log("load res prefab:" + assets[i].name);
 			}
 		});
 		this.schedule(this.loadUpdate,0.5);
-		*/
 		ThirdAPI.loadCDNData(function(){
 			self.startGameBoard.getComponent("StartGame").refreshGame();
 		});
