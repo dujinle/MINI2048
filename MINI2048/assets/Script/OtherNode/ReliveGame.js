@@ -68,6 +68,8 @@ cc.Class({
 		}
 	},
 	cancleButtonCb(){
+		this.callback();
+		/*
 		try{
 			this.unschedule(this.loadUpdate);
 			var self = this;
@@ -97,6 +99,7 @@ cc.Class({
 				}
 			});
 		}catch(err){}
+		*/
 	},
 	shareSuccessCb(type, shareTicket, arg){
 		if(this.iscallBack == false){

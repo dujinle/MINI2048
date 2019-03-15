@@ -565,7 +565,7 @@ GlobalData = {
 			}
 		}
 	},
-	cdnShareImages:["res/raw-assets/resources/shareImages/shareDefault.png"],
+	cdnShareImages:["res/raw-assets/ec/ec930766-ae2c-4069-86c1-c8c67ce4aa96.png"],
 	cdnTexts:["你介意男生玩这个游戏吗?"],
 	//游戏数字存储矩阵
 	numMap:[
