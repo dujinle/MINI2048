@@ -4,6 +4,24 @@ GlobalData = {
 	phoneModel:'',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
 	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.6.json",
+	gameSceneDic:{
+		PBBombGuide:['prefabs/PBBombGuide','PropBombEffect'],
+		PBContinueGameBoard:['prefabs/PBContinueGameBoard','ContinueGame'],
+		PBFinishGameBoard:['prefabs/PBFinishGameBoard','FinishGame'],
+		PBGuideStart:['prefabs/PBGuideStart','GuideStart'],
+		PBHammerGuide:['prefabs/PBHammerGuide','PropHammerEffect'],
+		PBInnerItem:['prefabs/PBInnerItem','LockerItem'],
+		PBNumFly:['prefabs/PBNumFly','FlyNumAction'],
+		PBNumObject:['prefabs/PBNumObject','NumObject'],
+		PBPauseGameBoard:['prefabs/PBPauseGameBoard','PauseGame'],
+		PBPropFly:['prefabs/PBPropFly','NumFly'],
+		PBPropGameBoard:['prefabs/PBPropGameBoard','PropGame'],
+		PBRankGameBoard:['prefabs/PBRankGameBoard','RankGame'],
+		PBReliveGameBoard:['prefabs/PBReliveGameBoard','ReliveGame']
+	},
+	gameRunTimeScene:{
+		
+	},
 	//历史游戏的最高得分
 	gameRunTimeParam:{
 		StartGuideFlag:false,

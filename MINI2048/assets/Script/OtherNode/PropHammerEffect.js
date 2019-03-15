@@ -13,25 +13,16 @@ cc.Class({
 		this.hammerRealNode.active = false;
 		var self = this;
 		this.EventCustom = new cc.Event.EventCustom("pressed", true);
-		cc.eventManager.addListener({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
-            onTouchBegan: function (touch, event) {
-				self.EventCustom.setUserData(event);
-				self.node.dispatchEvent(self.EventCustom);
-                return true;
-            },
-            onTouchMoved: function (touch, event) {            // 触摸移动时触发
-            },
-            onTouchEnded: function (touch, event) {            // 点击事件结束处理
-			}
-        }, this.node);
+		this.node.on(cc.Node.EventType.TOUCH_START, this.touchCB, this);
+	},
+	touchCB(event){
+		this.EventCustom.setUserData(event);
+		this.node.dispatchEvent(this.EventCustom);
 	},
 	start(){
 		//this.onStart();
 	},
-	onStart(){
+	show(){
 		this.node.active = true;
 		var self = this;
 		this.startEffect(function(){
@@ -60,8 +51,8 @@ cc.Class({
 		this.handlePos = this.handleNode.getPosition();
 		var handleSize = this.handleNode.getContentSize();
 		var endPos = this.numItemNode.getPosition();
-		var moveToNode = cc.moveTo(0.5,cc.p(endPos.x,endPos.y + 5));
-		var pressRotate = cc.moveTo(0.2,cc.p(endPos.x,endPos.y));
+		var moveToNode = cc.moveTo(0.5,cc.v2(endPos.x,endPos.y + 5));
+		var pressRotate = cc.moveTo(0.2,cc.v2(endPos.x,endPos.y));
 		var callFunc = cc.callFunc(function(){
 			self.handleNode.setPosition(self.handlePos);
 			self.handleNode.runAction(cc.fadeIn(0));
@@ -74,7 +65,7 @@ cc.Class({
 		this.hammerPos = this.hammerNode.getPosition();
 		var hammerSize = this.hammerNode.getContentSize();
 		var endPos = this.numItemNode.getPosition();
-		var moveToNode = cc.moveTo(0.5,cc.p(endPos.x + hammerSize.width/2,endPos.y + 5));
+		var moveToNode = cc.moveTo(0.5,cc.v2(endPos.x + hammerSize.width/2,endPos.y + 5));
 		var pressAction = cc.sequence(cc.rotateTo(0.2,-30),cc.rotateTo(0.2,0));
 		var moveToOrig = cc.moveTo(0.5,this.hammerPos);
 		var callFunc = cc.callFunc(function(){
@@ -90,12 +81,12 @@ cc.Class({
 		this.hammerRealNode.active = true;
 		var hammerSize = this.hammerRealNode.getContentSize();
 		var hammerScale = this.hammerRealNode.scale;
-		this.hammerRealNode.setPosition(cc.p(endPos.x + hammerSize.width * hammerScale,endPos.y - 100));
+		this.hammerRealNode.setPosition(cc.v2(endPos.x + hammerSize.width * hammerScale,endPos.y - 100));
 		
 		this.hammerPos = this.hammerRealNode.getPosition();
 		
 		
-		var moveToNode = cc.moveTo(0.5,cc.p(endPos.x + hammerSize.width * hammerScale,endPos.y + 10));
+		var moveToNode = cc.moveTo(0.5,cc.v2(endPos.x + hammerSize.width * hammerScale,endPos.y + 10));
 		var pressAction = cc.sequence(cc.rotateTo(0.2,-30),cc.rotateTo(0.2,0));
 		var moveShow = cc.spawn(moveToNode,cc.fadeIn(0.5));
 		var moveHide = cc.spawn(cc.moveTo(0.5,this.hammerPos),cc.fadeOut(0.5));

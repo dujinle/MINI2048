@@ -101,7 +101,7 @@ cc.Class({
         if (!this.node.active) return;
         this.contentNode.stopAllActions();
         var playTime = Math.ceil(diffValue / (this.linkBoardWidth + this.space)) * 2000 / 1000;
-        var moveTime = cc.moveTo(Math.abs(playTime), cc.p(this.leftPosX, 0));
+        var moveTime = cc.moveTo(Math.abs(playTime), cc.v2(this.leftPosX, 0));
         var callBack = cc.callFunc(this.playRightAction, this);
         this.contentNode.runAction(cc.sequence(moveTime, cc.delayTime(2), callBack));
     },
@@ -111,7 +111,7 @@ cc.Class({
         if (!this.node.active) return;
         this.contentNode.stopAllActions();
         var playTime = Math.ceil(Math.abs(this.contentNode.x) / (this.linkBoardWidth + this.space)) * 2000 / 1000;
-        var moveTime = cc.moveTo(Math.abs(playTime), cc.p(0, 0));
+        var moveTime = cc.moveTo(Math.abs(playTime), cc.v2(0, 0));
         var self = this;
         var callBack = cc.callFunc(function () {
             var distForLeft = Math.abs(self.contentNode.x - self.leftPosX);

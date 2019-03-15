@@ -1,4 +1,12 @@
 {
+  "android-instant": {
+    "REMOTE_SERVER_ROOT": "",
+    "host": "",
+    "pathPattern": "",
+    "recordPath": "",
+    "scheme": "https",
+    "skipRecord": false
+  },
   "appKey": "",
   "appSecret": "",
   "encryptJs": true,
@@ -12,7 +20,7 @@
   "inlineSpriteFrames_native": false,
   "jailbreakPlatform": false,
   "md5Cache": false,
-  "mergeStartScene": true,
+  "mergeStartScene": false,
   "oauthLoginServer": "",
   "optimizeHotUpdate": false,
   "orientation": {
@@ -21,16 +29,15 @@
     "portrait": false,
     "upsideDown": false
   },
-  "packageName": "org.cocos2d.helloworld",
+  "packageName": "org.cocos2d.MINI2048",
   "privateKey": "",
   "qqplay": {
     "REMOTE_SERVER_ROOT": "",
     "orientation": "portrait"
   },
-  "renderMode": "0",
   "startScene": "2d2f792f-a40c-49bb-a189-ed176a246e49",
   "title": "MINI2048",
-  "webOrientation": "portrait",
+  "webOrientation": "auto",
   "wechatgame": {
     "REMOTE_SERVER_ROOT": "",
     "appid": "wx56aed21454925bd1",
@@ -38,6 +45,6 @@
     "orientation": "portrait",
     "subContext": "wx-open-data-project"
   },
-  "xxteaKey": "1576510d-d964-41",
+  "xxteaKey": "327c86c8-ed54-4f",
   "zipCompressJs": true
 }

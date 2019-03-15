@@ -17,32 +17,23 @@ cc.Class({
 	onLoad(){
 		var self = this;
 		this.EventCustom = new cc.Event.EventCustom("pressed", true);
-		/*
-		cc.eventManager.addListener({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
-            onTouchBegan: function (touch, event) {
-                return true;
-            },
-            onTouchMoved: function (touch, event) {            // 触摸移动时触发
-            },
-            onTouchEnded: function (touch, event) {            // 点击事件结束处理
-			}
-        }, this.node);
-		*/
 		this.eliminateNode1.runAction(cc.fadeOut());
 		this.eliminateNode2.runAction(cc.fadeOut());
 		this.eliminateNode3.runAction(cc.fadeOut());
 		for(var i = 0;i < this.numNodes.length;i++){
 			this.numNodes[i].active = true;
 		}
+		//this.node.on(cc.Node.EventType.TOUCH_START, this.touchCB, this);
+	},
+	touchCB(event){
+		this.EventCustom.setUserData(event);
+		this.node.dispatchEvent(this.EventCustom);
 	},
 	start(){
 		this.node.active = true;
 		//this.onStart();
 	},
-	onStart(){
+	show(){
 		this.node.active = true;
 		var self = this;
 		this.startEffect(function(){
@@ -72,7 +63,7 @@ cc.Class({
 		this.bombNode.setPosition(this.handlePos);
 		var handleSize = this.handleNode.getContentSize();
 		var endPos = this.numItemNode.getPosition();
-		var moveToNode = cc.moveTo(0.5,cc.p(endPos.x,endPos.y + 5));
+		var moveToNode = cc.moveTo(0.5,cc.v2(endPos.x,endPos.y + 5));
 		var bombMove = cc.moveTo(0.5,endPos);
 		var callFunc = cc.callFunc(function(){
 			self.node.stopAllActions();
@@ -110,12 +101,12 @@ cc.Class({
 		var endPos = itemNode.getPosition();
 		this.bombRealNode.active = true;
 		var bombSize = this.bombRealNode.getContentSize();
-		this.bombRealNode.setPosition(cc.p(endPos.x + bombSize.width,endPos.y - 100));
+		this.bombRealNode.setPosition(cc.v2(endPos.x + bombSize.width,endPos.y - 100));
 		
 		this.bombPos = this.bombRealNode.getPosition();
 		
 		
-		var moveToNode = cc.moveTo(0.5,cc.p(endPos.x + bombSize.width,endPos.y + 10));
+		var moveToNode = cc.moveTo(0.5,cc.v2(endPos.x + bombSize.width,endPos.y + 10));
 		var pressAction = cc.sequence(cc.rotateTo(0.2,-30),cc.rotateTo(0.2,0));
 		var moveShow = cc.spawn(moveToNode,cc.fadeIn(0.5));
 		var moveHide = cc.spawn(cc.moveTo(0.5,this.bombPos),cc.fadeOut(0.5));

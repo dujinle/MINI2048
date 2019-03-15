@@ -83,7 +83,7 @@ cc.Class({
 		var pos = this.node.getPosition();
 		var size = this.node.getContentSize();
 		var flyNodeSize = this.flyNode.getContentSize();
-		this.flyNode.setPosition(cc.p(0,size.height/2 + flyNodeSize.height/4));
+		this.flyNode.setPosition(cc.v2(0,size.height/2 + flyNodeSize.height/4));
 		this.flyNode.getComponent("FlyNumAction").startFlyOnce(idx,key,addScore);
 	},
 	scaleShow(num,audioManager){

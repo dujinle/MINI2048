@@ -20,7 +20,7 @@
 	  "wxf7d561f6e80365e7",
       "wx7d21331bc1e6b20e",
       "wx8a9d75a195cf40be",
-	  "wx1df9f48e0336c276"
+	  "wx3dc9719c4f3366c9"
     ]
 
 2048六角正版  	wxc796e8cabc773566	icon_sixAngle.png
@@ -33,7 +33,7 @@
 无敌坦克 		wx7d21331bc1e6b20e
 天天打老板 		wx8a9d75a195cf40be	icon_ballsJourney.png
 陆超有头发真好 	wx1df9f48e0336c276	icon_noddle.png
-
+弹珠少女 		wx3dc9719c4f3366c9
 2048消除正版  	wx6107cc970100d3e1	icon_plus.png
 
 首富特烦恼 		wx9c26a6f645e0e734

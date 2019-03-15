@@ -13,18 +13,6 @@ cc.Class({
 		iscallBack:false,
     },
     onLoad () {
-		cc.eventManager.addListener({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
-            onTouchBegan: function (touch, event) {
-                return true;
-            },
-            onTouchMoved: function (touch, event) {            // 触摸移动时触发
-            },
-            onTouchEnded: function (touch, event) {            // 点击事件结束处理
-			}
-         }, this.node);
 		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		 this.cancelNode.active = false;
 		 this.iscallBack = false;
@@ -67,7 +55,7 @@ cc.Class({
 				this.EventCustom.setUserData({
 					type:'PropShareSuccess',
 					propKey:'PropBomb',
-					startPos:cc.p(0,0)
+					startPos:cc.v2(0,0)
 				});
 				this.node.dispatchEvent(this.EventCustom);
 			}.bind(this);

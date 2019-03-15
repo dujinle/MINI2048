@@ -10,11 +10,11 @@ cc.Class({
 		}else{
 			this.numLabel.getComponent(cc.Label).string = addScore + "x" + (idx + 1);
 		}
-		this.numLabel.color = cc.hexToColor(GlobalData.flyNumColors[keyNum]);
+		this.numLabel.color = this.numLabel.color.fromHEX(GlobalData.flyNumColors[keyNum]);//cc.hexToColor(GlobalData.flyNumColors[keyNum]);
 		this.node.scale = 0.5;
 		var pos = this.node.getPosition();
         var bigAction = cc.scaleTo(0.2, 1);
-        var moveAction = cc.moveTo(0.4, cc.p(pos.x, pos.y + 96));
+        var moveAction = cc.moveTo(0.4, cc.v2(pos.x, pos.y + 96));
 		var finish = cc.callFunc(function(){
 			if(cb != null){
 				cb();

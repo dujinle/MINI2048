@@ -31,11 +31,12 @@ cc.Class({
 		//this.sharedCanvas.height = 1136;
 	},
 	onClose(){
+		GlobalData.gameRunTimeScene['PBRankGameBoard'] = null;
 		this.node.removeFromParent();
 		this.node.destroy();
 	},
 	show(){
-		console.log("finish game show");
+		console.log("rank game show");
 		this.isDraw = true;
 		this.node.active = true;
 		var param = {

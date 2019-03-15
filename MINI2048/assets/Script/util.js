@@ -173,7 +173,7 @@ let util = {
 			let sharedCanvas = openDataContext.canvas;
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
-			pthis.mainGameBoard.setPosition(cc.p(0,-40));
+			pthis.mainGameBoard.setPosition(cc.v2(0,-40));
 			GlobalData.phoneModel = 'IphoneX';
 		}else if(this.getPhoneModel() == 'IphoneXR'){
 			cc.view.setDesignResolutionSize(828, 1792, cc.ResolutionPolicy.FIXED_WIDTH);
@@ -183,7 +183,7 @@ let util = {
 			let sharedCanvas = openDataContext.canvas;
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
-			pthis.mainGameBoard.setPosition(cc.p(0,-40));
+			pthis.mainGameBoard.setPosition(cc.v2(0,-40));
 			GlobalData.phoneModel = 'IphoneXR';
 		}else{
 			GlobalData.phoneModel = 'Normal';

@@ -43,7 +43,7 @@ cc.Class({
 			})));
 		}
 	},
-	showPause(){
+	show(){
 		console.log("showPause game board show");
 		this.node.active = true;
 		this.gotoHomeButton.scale = 0;
