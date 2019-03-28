@@ -1,5 +1,6 @@
 var WxVideoAd = require('WxVideoAd');
 var ThirdAPI = require('ThirdAPI');
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -13,7 +14,6 @@ cc.Class({
 		iscallBack:false,
     },
     onLoad () {
-		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		 this.cancelNode.active = false;
 		 this.iscallBack = false;
 		 this.bgContext.scale = 0.2;
@@ -52,12 +52,11 @@ cc.Class({
 		}else if(this.openType == "PropAV"){
 			console.log(this.openType);
 			this.AVSuccessCb = function(arg){
-				this.EventCustom.setUserData({
+				EventManager.emit({
 					type:'PropShareSuccess',
 					propKey:'PropBomb',
 					startPos:cc.v2(0,0)
 				});
-				this.node.dispatchEvent(this.EventCustom);
 			}.bind(this);
 			this.AVFailedCb = function(arg){
 				if(arg == 'cancle'){
@@ -73,8 +72,7 @@ cc.Class({
 	shareSuccessCb(type, shareTicket, arg){
 		if(this.iscallBack == false){
 			console.log(type, shareTicket, arg);
-			this.EventCustom.setUserData({type:'PropShareSuccess',propKey:this.propKey,startPos:this.startPos});
-			this.node.dispatchEvent(this.EventCustom);
+			EventManager.emit({type:'PropShareSuccess',propKey:this.propKey,startPos:this.startPos});
 		}
 		this.iscallBack = true;
 	},
@@ -131,37 +129,8 @@ cc.Class({
 		}
 	},
 	cancel(){
-		this.EventCustom.setUserData({type:'PropGameCancle'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'PropGameCancle'});
 		this.node.removeFromParent();
 		this.node.destroy();
-		/*
-		try{
-			var self = this;
-			var content = '求助好友可领取礼包，要领取礼包吗？';
-			var confirmText = '免费领取';
-			if(this.openType == 'PropAV'){
-				content = '观看视频可领取礼包，要领取礼包吗？';
-				confirmText = '视频领取';
-			}
-			wx.showModal({
-				title:'领取礼包',
-				content:content,
-				cancelText:'放弃领取',
-				confirmText:'免费领取',
-				confirmColor:'#53679c',
-				success(res){
-					if (res.confirm) {
-						self.buttonCb();
-					}else if(res.cancel){
-						self.EventCustom.setUserData({type:'PropGameCancle'});
-						self.node.dispatchEvent(self.EventCustom);
-						self.node.removeFromParent();
-						self.node.destroy();
-					}
-				}
-			});
-		}catch(err){}
-		*/
 	}
 });

@@ -1,5 +1,6 @@
 var ThirdAPI = require('ThirdAPI');
 var WxVideoAd = require('WxVideoAd');
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -15,19 +16,6 @@ cc.Class({
     },
     onLoad () {
 		var self = this;
-		cc.eventManager.addListener({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
-            onTouchBegan: function (touch, event) {
-                return true;
-            },
-            onTouchMoved: function (touch, event) {            // 触摸移动时触发
-            },
-            onTouchEnded: function (touch, event) {            // 点击事件结束处理
-			}
-        }, this.node);
-		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		this.numLabel.getComponent(cc.Label).string = 10;
 		this.processBar.getComponent(cc.ProgressBar).progress = 1;
 		this.cancleLabel.runAction(cc.fadeOut());
@@ -53,8 +41,7 @@ cc.Class({
 			ThirdAPI.shareGame(param);
 		}else if(this.openType == "PropAV"){
 			this.AVSuccessCb = function(arg){
-				this.EventCustom.setUserData({type:'ReliveBack',action:this.action});
-				this.node.dispatchEvent(this.EventCustom);
+				EventManager.emit({type:'ReliveBack',action:this.action});
 			};
 			this.AVFailedCb = function(arg){
 				if(arg == 'cancle'){
@@ -104,8 +91,7 @@ cc.Class({
 	shareSuccessCb(type, shareTicket, arg){
 		if(this.iscallBack == false){
 			console.log(type, shareTicket, arg);
-			this.EventCustom.setUserData({type:'ReliveBack',action:this.action});
-			this.node.dispatchEvent(this.EventCustom);
+			EventManager.emit({type:'ReliveBack',action:this.action});
 		}
 		this.iscallBack = true;
 	},

@@ -1,6 +1,7 @@
 var ThirdAPI = require('ThirdAPI');
 var PropManager = require('PropManager');
 var WxVideoAd = require('WxVideoAd');
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -18,7 +19,6 @@ cc.Class({
 		oneInner:cc.Node,
     },
 	onLoad(){
-		this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 	},
 	refreshGame(){
 		this.initInnerChain(0);
@@ -71,12 +71,10 @@ cc.Class({
 		}
 	},
 	rankButtonCb(){
-		this.EventCustom.setUserData({type:'RankView'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'RankView'});
 	},
 	startButtonCb(){
-		this.EventCustom.setUserData({type:'StartGame'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'StartGame'});
 	},
 	shareSuccessCb(type, shareTicket, arg){
 		console.log(type, shareTicket, arg);
@@ -84,7 +82,7 @@ cc.Class({
 	shareFailedCb(type,arg){
 		console.log(type,arg);
 	},
-	battleButtonCb(){
+	battleButtonCb(event){
 		if(this.openType == null){
 			this.openType = PropManager.getShareOrADKey('PropBattle');
 		}
@@ -105,12 +103,11 @@ cc.Class({
 		}
 		else if(this.openType == 'PropAV'){
 			this.AVSuccessCb = function(arg){
-				this.EventCustom.setUserData({
+				EventManager.emit({
 					type:'StartBattleSuccess',
 					propKey:'PropBomb',
 					startPos:cc.v2(0,0)
 				});
-				this.node.dispatchEvent(this.EventCustom);
 			}.bind(this);
 			this.AVFailedCb = function(arg){
 				if(arg == 'cancle'){
@@ -125,12 +122,11 @@ cc.Class({
 	},
 	sharePropSuccessCb(type, shareTicket, arg){
 		this.isShareCallBack = true;
-		this.EventCustom.setUserData({
+		EventManager.emit({
 			type:'StartBattleSuccess',
 			propKey:'PropBomb',
 			startPos:cc.v2(0,0)
 		});
-		this.node.dispatchEvent(this.EventCustom);
 	},
 	sharePropFailedCb(type,arg){
 		if(this.isShareCallBack == false){

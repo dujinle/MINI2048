@@ -1,3 +1,4 @@
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -12,12 +13,10 @@ cc.Class({
 	onLoad(){
 		this.hammerRealNode.active = false;
 		var self = this;
-		this.EventCustom = new cc.Event.EventCustom("pressed", true);
 		this.node.on(cc.Node.EventType.TOUCH_START, this.touchCB, this);
 	},
 	touchCB(event){
-		this.EventCustom.setUserData(event);
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emitPress({type:'HammerTouch',pos:event.currentTouch.getLocation()});
 	},
 	start(){
 		//this.onStart();
@@ -39,8 +38,7 @@ cc.Class({
 		this.node.getChildByName("propBg").active = false;
 		this.node.getChildByName("bgSprite").active = false;
 		this.node.getChildByName("cancleBg").active = false;
-		this.EventCustom.setUserData(event);
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emitPress({'type':'HammerCancle'});
 	},
     startEffect(callback){
 		this.numItemNode.getChildByName("numSprite").runAction(cc.fadeIn(0));

@@ -1,4 +1,5 @@
 var ThirdAPI = require('ThirdAPI');
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -10,19 +11,6 @@ cc.Class({
     },
     onLoad () {
 		console.log("finish game board load");
-		cc.eventManager.addListener({
-            event: cc.EventListener.TOUCH_ONE_BY_ONE,
-            swallowTouches: true,
-            // 设置是否吞没事件，在 onTouchBegan 方法返回 true 时吞没
-            onTouchBegan: function (touch, event) {
-                return true;
-            },
-            onTouchMoved: function (touch, event) {            // 触摸移动时触发
-            },
-            onTouchEnded: function (touch, event) {            // 点击事件结束处理
-			}
-         }, this.node);
-		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 	},
 	start(){
 		try{
@@ -59,12 +47,10 @@ cc.Class({
 		this.node.active = false;
 	},
 	rankButtonCb(){
-		this.EventCustom.setUserData({type:'RankView'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'RankView'});
 	},
 	restartButtonCb(){
-		this.EventCustom.setUserData({type:'FRestart'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'FRestart'});
 	},
 	shareToFriends(){
 		var param = {

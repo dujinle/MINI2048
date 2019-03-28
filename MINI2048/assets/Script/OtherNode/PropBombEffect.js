@@ -1,3 +1,4 @@
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -16,18 +17,15 @@ cc.Class({
     },
 	onLoad(){
 		var self = this;
-		this.EventCustom = new cc.Event.EventCustom("pressed", true);
 		this.eliminateNode1.runAction(cc.fadeOut());
 		this.eliminateNode2.runAction(cc.fadeOut());
 		this.eliminateNode3.runAction(cc.fadeOut());
 		for(var i = 0;i < this.numNodes.length;i++){
 			this.numNodes[i].active = true;
 		}
-		//this.node.on(cc.Node.EventType.TOUCH_START, this.touchCB, this);
 	},
 	touchCB(event){
-		this.EventCustom.setUserData(event);
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emitPress({type:'HammerTouch',pos:event.currentTouch.getLocation()});
 	},
 	start(){
 		this.node.active = true;
@@ -47,8 +45,7 @@ cc.Class({
 		});
 	},
 	cancleButtonCb(event){
-		this.EventCustom.setUserData(event);
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emitPress({'type':'BombCancle'});
 	},
     startEffect(callback){
 		this.bombNode.runAction(cc.fadeIn());

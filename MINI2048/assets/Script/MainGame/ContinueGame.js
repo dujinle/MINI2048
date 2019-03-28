@@ -1,4 +1,4 @@
-
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -7,18 +7,15 @@ cc.Class({
     },
 
     onLoad () {
-		 this.EventCustom = new cc.Event.EventCustom("dispatchEvent", true);
 		 this.node.scale = 0.5;
 	},
 	//继续游戏按钮回调
 	onContinueCb(event){
-		this.EventCustom.setUserData({type:'ContinueGame'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'ContinueGame'});
 	},
 	//重新开始按钮回调
 	onResetCb(event){
-		this.EventCustom.setUserData({type:'ResetGame'});
-		this.node.dispatchEvent(this.EventCustom);
+		EventManager.emit({type:'ResetGame'});
 	},
 	onClose(event){
 		this.node.removeFromParent();

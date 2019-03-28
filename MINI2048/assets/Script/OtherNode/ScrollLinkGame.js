@@ -74,6 +74,7 @@ cc.Class({
 
     //循环滑动播放内链
     playScrollLinkGame: function (isInit) {
+		var self = this;
 		if (!this.contentNode) return;
         this.contentNode.stopAllActions();
         console.log('停留位置', this.contentNode.x);
@@ -85,13 +86,13 @@ cc.Class({
         var time = isInit ? 10 : 3000;
         this.countdownID = setTimeout(() => {
             //先判断位置,偏向左边还是右边
-            var distForLeft = Math.abs(this.contentNode.x - this.leftPosX);
-            var distForRight = Math.abs(this.contentNode.x - this.rightPosX);
+            var distForLeft = Math.abs(self.contentNode.x - self.leftPosX);
+            var distForRight = Math.abs(self.contentNode.x - self.rightPosX);
             var diffValue = distForLeft - distForRight;
             if (diffValue > 0) {
-                this.playLeftAction(diffValue);
+                self.playLeftAction(diffValue);
             } else {
-                this.playRightAction();
+                self.playRightAction();
             }
         }, time);
     },

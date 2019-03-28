@@ -3,7 +3,7 @@ GlobalData = {
 	skin:'color1',
 	phoneModel:'',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"minigame/mini2048/cdnParam1.2.0.6.json",
+	cdnFileDefaultPath:"cdnParam1.2.0.6",
 	gameSceneDic:{
 		PBBombGuide:['prefabs/PBBombGuide','PropBombEffect'],
 		PBContinueGameBoard:['prefabs/PBContinueGameBoard','ContinueGame'],

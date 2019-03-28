@@ -28,16 +28,30 @@ let ThirdAPI = {
 		}
     },
     loadCDNData:function(callback){
-		var url = GlobalData.cdnWebsite + GlobalData.cdnFileDefaultPath;
-		util.httpGET(url,null,function(code,data){
-			if(code == 200){
-				util.updateObj(GlobalData,data,GlobalData.cdnCopyKeys);
-				console.log('loadCDNData',GlobalData);
-                if(callback){
-                    callback();
-                }
-			}
-		});
+		try{
+			wx.cloud.init({ env:'test-b1697d'});
+			const db = wx.cloud.database()
+			db.collection('MINI2048').where({
+				FileName:GlobalData.cdnFileDefaultPath
+			}).get({
+				success(res) {
+					// res.data 包含该记录的数据
+					console.log(res.data);
+					if(res.data.length > 0){
+						var data = res.data[0];
+						util.updateObj(GlobalData,data,GlobalData.cdnCopyKeys);
+						if(callback){
+							callback();
+						}
+					}
+				},
+				fail(err){
+				  console.log(err);
+				}
+			});
+		}catch(err){
+			console.log(err);
+		}
 	},
 	//更新游戏云端数据
     updataGameInfo: function () {

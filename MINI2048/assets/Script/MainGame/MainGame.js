@@ -3,6 +3,7 @@ var util = require('util');
 var PropManager = require('PropManager');
 var WxBannerAd = require('WxBannerAd');
 var WxVideoAd = require('WxVideoAd');
+var EventManager = require('EventManager');
 cc.Class({
     extends: cc.Component,
 
@@ -67,12 +68,13 @@ cc.Class({
 				console.log("load res prefab:" + assets[i].name);
 			}
 		});
-		this.schedule(this.loadUpdate,0.5);
+		this.schedule(this.loadUpdate,0.1);
 		GlobalData.gameRunTimeParam.juNum = 1;
 		ThirdAPI.loadLocalData();
 		//监听事件传递
 		//this.startButton.getComponent(cc.Button).interactable = false;
-		this.node.on('dispatchEvent',this.dispatchMyEvent,this);
+		EventManager.on(this.dispatchMyEvent,this);
+		EventManager.onPress(this.propPressCallBack,this);
 	},
 	start(){
 		console.log("start");
@@ -184,7 +186,6 @@ cc.Class({
 			this.propHammerGuide.setPosition(mainPos);
 			this.propHammerGuide.getComponent("PropHammerEffect").onStart();
 			*/
-			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
 			WxBannerAd.hideBannerAd();
 		}else if(customEventData == "PropBomb"){
 			//判断是否超过使用上限
@@ -211,7 +212,6 @@ cc.Class({
 			GlobalData.GamePropParam.useNum[customEventData] += 1;
 			GlobalData.GamePropParam.bagNum[customEventData] -= 1;
 			this.propFreshNum(customEventData);
-			this.mainGameBoard.on("pressed",this.propPressCallBack,this);
 			this.propBombAction(2048);
 			WxBannerAd.hideBannerAd();
 		}
@@ -895,33 +895,15 @@ cc.Class({
 			//this.boardItem.runAction(moveAction);
 		}
 	},
-	propPressCallBack(event){
-		var data = event.getUserData();
-		if(data == null){
-			return;
-		}
-		console.log(data.currentTarget.name)
+	propPressCallBack(data){
+		console.log(data);
 		//取消按钮的传递
-		if(data.currentTarget.name == 'cancleLabel'){
+		if(data.type == 'HammerCancle'){
 			this.destroyGameBoard('PBHammerGuide');
-			/*
-			this.propHammerGuide.stopAllActions();
-			this.propHammerGuide.removeFromParent();
-			this.propHammerGuide.destroy();
-			this.propHammerGuide = null;
-			*/
-			this.mainGameBoard.off("pressed",this.propPressCallBack,this);
 			WxBannerAd.showBannerAd();
 			return;
-		}else if(data.currentTarget.name == 'BombCancleLabel'){
+		}else if(data.type == 'BombCancle'){
 			this.destroyGameBoard('PBBombGuide');
-			/*
-			this.propBombGuide.stopAllActions();
-			this.propBombGuide.removeFromParent();
-			this.propBombGuide.destroy();
-			this.propBombGuide = null;
-			*/
-			this.mainGameBoard.off("pressed",this.propPressCallBack,this);
 			this.propBombAction(GlobalData.gameRunTimeParam.lastFreshNum);
 			GlobalData.GamePropParam.useNum['PropBomb'] -= 1;
 			GlobalData.GamePropParam.bagNum['PropBomb'] += 1;
@@ -929,43 +911,44 @@ cc.Class({
 			WxBannerAd.showBannerAd();
 			return;
 		}
-		var pressPos = this.mainGameBoard.convertToNodeSpaceAR(data.currentTouch.getLocation());
-		var box = this.blocksBoard.getBoundingBox();
-		console.log(pressPos);
-		if(box.contains(pressPos)){
-			//console.log("在矩形内部");
-			var selectIdx = this.getNearBlock(pressPos);
-			if(selectIdx >= 0 && selectIdx <= 15){
-				var sq = GlobalData.ConvertToMapSpace(selectIdx);
-				if(GlobalData.numMap[sq] != 0 && GlobalData.numNodeMap[sq] != 0){
-					//如果找到选择的格子 则取消监听事件
-					var self = this;
-					var selectNode = GlobalData.numNodeMap[sq];
-					var selectPos = selectNode.getPosition();
-					this.mainGameBoard.off("pressed",this.propPressCallBack,this);
-					var propHammerGuide = GlobalData.gameRunTimeScene['PBHammerGuide'];
-					propHammerGuide.getComponent("PropHammerEffect").hammerOneNum(selectNode,function(){
-						selectNode.removeFromParent();
-						selectNode.destroy();
-						GlobalData.numNodeMap[sq] = 0;
-						GlobalData.numMap[sq] = 0;
-						var block = self.blocksBoard.children[selectIdx];
-						block.getComponent("BlockBoard").shadowSprite.active = false;
-						self.destroyGameBoard('PBHammerGuide');
-						/*
-						self.propHammerGuide.stopAllActions();
-						self.propHammerGuide.removeFromParent();
-						self.propHammerGuide.destroy();
-						*/
-						GlobalData.GamePropParam.useNum['PropHammer'] += 1;
-						GlobalData.GamePropParam.bagNum['PropHammer'] -= 1;
-						self.propFreshNum('PropHammer');
-						WxBannerAd.showBannerAd();
-					});
+		else if(data.type == 'HammerTouch'){
+			var pressPos = this.mainGameBoard.convertToNodeSpaceAR(data.pos);
+			var box = this.blocksBoard.getBoundingBox();
+			console.log(pressPos);
+			if(box.contains(pressPos)){
+				//console.log("在矩形内部");
+				var selectIdx = this.getNearBlock(pressPos);
+				if(selectIdx >= 0 && selectIdx <= 15){
+					var sq = GlobalData.ConvertToMapSpace(selectIdx);
+					if(GlobalData.numMap[sq] != 0 && GlobalData.numNodeMap[sq] != 0){
+						//如果找到选择的格子 则取消监听事件
+						var self = this;
+						var selectNode = GlobalData.numNodeMap[sq];
+						var selectPos = selectNode.getPosition();
+						var propHammerGuide = GlobalData.gameRunTimeScene['PBHammerGuide'];
+						propHammerGuide.getComponent("PropHammerEffect").hammerOneNum(selectNode,function(){
+							selectNode.removeFromParent();
+							selectNode.destroy();
+							GlobalData.numNodeMap[sq] = 0;
+							GlobalData.numMap[sq] = 0;
+							var block = self.blocksBoard.children[selectIdx];
+							block.getComponent("BlockBoard").shadowSprite.active = false;
+							self.destroyGameBoard('PBHammerGuide');
+							/*
+							self.propHammerGuide.stopAllActions();
+							self.propHammerGuide.removeFromParent();
+							self.propHammerGuide.destroy();
+							*/
+							GlobalData.GamePropParam.useNum['PropHammer'] += 1;
+							GlobalData.GamePropParam.bagNum['PropHammer'] -= 1;
+							self.propFreshNum('PropHammer');
+							WxBannerAd.showBannerAd();
+						});
+					}
 				}
+			}else{
+				console.log("在矩形外部");
 			}
-		}else{
-			console.log("在矩形外部");
 		}
 	},
 	propBombAction(num){
@@ -1048,9 +1031,9 @@ cc.Class({
 			}
 		}
 	},
-	dispatchMyEvent(event){
+	dispatchMyEvent(data){
 		var self = this;
-		var data = event.getUserData();
+		//var data = event.getUserData();
 		console.log('dispatchMyEvent',data);
 		if(data.type != 'ReliveBack' && data.type != 'PropShareSuccess'){
 			this.audioManager.getComponent("AudioManager").play(GlobalData.AudioParam.AudioButton);
