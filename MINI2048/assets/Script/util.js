@@ -61,32 +61,34 @@ let util = {
 		console.log('getRandomArray',dst);
 		return dst;
 	},
-	refreshOneNum(scaleFlag = false){
+	refreshOneNum(scaleFlag = 0){
 		var enabled = false;
-		if(scaleFlag == true){
+		if(scaleFlag == 1){
 			enabled = Math.random() <= GlobalData.cdnGameConfig.PropFreshEnableRate;
-			if(enabled == true){
-				var selectNum = new Array();
-				for(var i = GlobalData.RANK_TOP;i < 6;i++){
-					for(var j = GlobalData.FILE_LEFT;j < 6;j++){
-						var fsq = GlobalData.COORD_XY(i,j);
-						if(GlobalData.numMap[fsq] == 0){
-							for(var m = 0;m < GlobalData.moveStep.length;m++){
-								var step = GlobalData.moveStep[m];
-								var tsq = GlobalData.COORD_XY(i + step[0],j + step[1]);
-								if(GlobalData.numMap[tsq] != 0){
-									selectNum.push(GlobalData.numMap[tsq]);
-								}
+		}else if(scaleFlag == 2){
+			enabled = Math.random() <= GlobalData.cdnGameConfig.NoDeadRate;
+		}
+		if(enabled == true){
+			var selectNum = new Array();
+			for(var i = GlobalData.RANK_TOP;i < 6;i++){
+				for(var j = GlobalData.FILE_LEFT;j < 6;j++){
+					var fsq = GlobalData.COORD_XY(i,j);
+					if(GlobalData.numMap[fsq] == 0){
+						for(var m = 0;m < GlobalData.moveStep.length;m++){
+							var step = GlobalData.moveStep[m];
+							var tsq = GlobalData.COORD_XY(i + step[0],j + step[1]);
+							if(GlobalData.numMap[tsq] != 0){
+								selectNum.push(GlobalData.numMap[tsq]);
 							}
 						}
 					}
 				}
-				var length = selectNum.length;
-				console.log('refreshOneNum',selectNum);
-				if(length > 0){
-					var num = selectNum[Math.floor(length * Math.random())];
-					return num;
-				}
+			}
+			var length = selectNum.length;
+			console.log('refreshOneNum',selectNum);
+			if(length > 0){
+				var num = selectNum[Math.floor(length * Math.random())];
+				return num;
 			}
 		}
 		var num = -1;//test[GlobalData.gameRunTimeParam.stepNum % test.length];
@@ -155,17 +157,42 @@ let util = {
 	getPhoneModel:function(){
 		var size = cc.view.getFrameSize();
 		console.log('getFrameSize:',size);
-		if(size.width / size.height == 1125 / 2436){
+		var biLi = cc.winSize.width / cc.winSize.height;
+		if (typeof wx !== 'undefined') {
+            try {
+                var sysInfo = wx.getSystemInfoSync();
+                if (sysInfo && sysInfo.model) {
+                    // 适配iphoneX
+                    var isFitIphoneX = (sysInfo.model.toLowerCase().replace(/\s+/g, "").indexOf("iphonex", 0) != -1);
+                    if (isFitIphoneX) {
+                        return 'IphoneX';
+                    }
+					if(biLi < 0.5){
+						return 'IphoneX';
+					}else{
+						return 'Normal';
+					}
+                }
+            } catch (error) {
+				if(biLi < 0.5){
+					return 'IphoneX';
+				}else{
+					return 'Normal';
+				}
+            }
+        }
+		if(biLi < 0.5){
 			return 'IphoneX';
-		}else if(size.width / size.height == 828 / 1792){
-			return 'IphoneXR'
+		}else{
+			return 'Normal';
 		}
 	},
 	customScreenAdapt(pthis){
 		var DesignWidth = 640;
 		var DesignHeight = 1136;
 		let size = cc.view.getFrameSize();
-		if (this.getPhoneModel() == 'IphoneX'){ //判断是不是iphonex
+		GlobalData.phoneModel = this.getPhoneModel();
+		if (GlobalData.phoneModel == 'IphoneX'){ //判断是不是iphonex
 			cc.view.setDesignResolutionSize(1125, 2436, cc.ResolutionPolicy.FIXED_WIDTH);
 			pthis.node.scaleX = 1125 / 640;
 			pthis.node.scaleY = 2436 / 1136;
@@ -173,9 +200,9 @@ let util = {
 			let sharedCanvas = openDataContext.canvas;
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
-			pthis.mainGameBoard.setPosition(cc.v2(0,-40));
+			pthis.mainGameBoard.setPosition(cc.v2(0,-30));
 			GlobalData.phoneModel = 'IphoneX';
-		}else if(this.getPhoneModel() == 'IphoneXR'){
+		}else if(GlobalData.phoneModel == 'IphoneXR'){
 			cc.view.setDesignResolutionSize(828, 1792, cc.ResolutionPolicy.FIXED_WIDTH);
 			pthis.node.scaleX = 828 / 640;
 			pthis.node.scaleY = 1792 / 1136;
@@ -183,7 +210,7 @@ let util = {
 			let sharedCanvas = openDataContext.canvas;
 			sharedCanvas.width = 640;
 			sharedCanvas.height = 1136;
-			pthis.mainGameBoard.setPosition(cc.v2(0,-40));
+			pthis.mainGameBoard.setPosition(cc.v2(0,-30));
 			GlobalData.phoneModel = 'IphoneXR';
 		}else{
 			GlobalData.phoneModel = 'Normal';

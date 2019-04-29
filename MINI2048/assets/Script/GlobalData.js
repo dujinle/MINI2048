@@ -3,7 +3,7 @@ GlobalData = {
 	skin:'color1',
 	phoneModel:'',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"cdnParam1.2.0.6",
+	cdnFileDefaultPath:"cdnParam1.2.0.7",
 	gameSceneDic:{
 		PBBombGuide:['prefabs/PBBombGuide','PropBombEffect'],
 		PBContinueGameBoard:['prefabs/PBContinueGameBoard','ContinueGame'],
@@ -123,7 +123,9 @@ GlobalData = {
 		shareADLevel:2000,
 		PropShare:0.5,
 		PropAV:0.5,
-		PropFreshEnableRate:0.5,
+		NoDeadTotal:100,//防死持续步数
+		NoDeadRate:0.5,
+		PropFreshEnableRate:0.5,//刷出有用数值的概率
 		NumRateJuNum:15,
 		shareCustomSet:1		//0 关闭 自定义分享 1打开自定义分享
 	},

@@ -4,7 +4,6 @@ MINI2048/temp/*
 MINI2048/build/*
 MINI2048/wxbuild/*
 MINI2048/local/*
-MINI2048/build-templates/*
 MINI2048/wxbuild_1/*
 wx-open-data-project/temp/*
 wx-open-data-project/library/*

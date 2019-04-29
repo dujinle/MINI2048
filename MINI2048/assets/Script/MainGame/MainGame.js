@@ -163,7 +163,8 @@ cc.Class({
 			GlobalData.GamePropParam.useNum[customEventData] += 1;
 			GlobalData.GamePropParam.bagNum[customEventData] -= 1;
 			this.propFreshNum(customEventData);
-			this.refeshNumObject(true);
+			//1 进行概率的有效数字
+			this.refeshNumObject(true,1);
 		}else if(customEventData == "PropHammer"){
 			//判断是否超过使用上限
 			var propBag = PropManager.getPropBag(customEventData);
@@ -308,7 +309,7 @@ cc.Class({
 			var yRate = 1 - yy/sizeHeight;
 			WxBannerAd.createBannerAd(yRate);
 		}
-		this.refeshNumObject();
+		this.refeshNumObject(false,0);
 		if(this.flyNode == null){
 			this.flyNode = cc.instantiate(GlobalData.assets["PBNumFly"]);
 			this.flyNode.zIndex = 3;
@@ -328,14 +329,16 @@ cc.Class({
 		guideNode.getComponent("GuideStart").showGuide(this.blockBoard.getPosition(),blockPos);
 		GlobalData.gameRunTimeParam.StartGuideFlag = true;
 	},
-	refeshNumObject(scaleFlag = false){
+	refeshNumObject(scaleFlag,enbaled){
+		console.log('refeshNumObject',scaleFlag,enbaled);
 		if(this.boardItem != null){
 			this.boardItem.removeFromParent();
 			this.boardItem.destroy();
 			this.boardItem = null;
 		}
 		//var test = [256,512,1024,2048];
-		var num = util.refreshOneNum(scaleFlag);
+		//enbaled 0:随机 1:按钮概率 2:防死概率
+		var num = util.refreshOneNum(enbaled);
 		GlobalData.gameRunTimeParam.lastFreshNum = num;
 		if(this.nodePool.size() <= 0){
 			this.boardItem = cc.instantiate(GlobalData.assets["PBNumObject"]);
@@ -464,7 +467,11 @@ cc.Class({
 		}else if(leftNum == 1){
 			GlobalData.gameRunTimeParam.stepNum += 1;
 			this.boardItem = null;
-			this.refeshNumObject();
+			if(GlobalData.gameRunTimeParam.stepNum <= GlobalData.cdnGameConfig.NoDeadTotal){
+				this.refeshNumObject(false,2);
+			}else{
+				this.refeshNumObject(false,0);
+			}
 			//如果剩余一个格子则进行道具的引导使用 随机一个道具进行晃动
 			var propArray = new Array();
 			if(GlobalData.GamePropParam.bagNum['PropFresh'] > 0){
@@ -491,7 +498,7 @@ cc.Class({
 			this.stopRotateProp();
 			GlobalData.gameRunTimeParam.stepNum += 1;
 			this.boardItem = null;
-			this.refeshNumObject();
+			this.refeshNumObject(false,0);
 		}
 		ThirdAPI.updataGameInfo();
 	},

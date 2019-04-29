@@ -11,19 +11,19 @@
 #修复 内链无法更新的问题 内链无法点击问题
 #增加iphoneX XR XS XMS
  "navigateToMiniProgramAppIdList":[
-      "wxc796e8cabc773566",
-	  "wx2bc7cdb0119bb86b",
-	  "wx52f8dec006405bf6",
-	  "wx6838d3562692630c",
-      "wx9f92ce5369e9ea6c",
-	  "wx49cdcb489776e101",
-	  "wxf7d561f6e80365e7",
-      "wx7d21331bc1e6b20e",
-      "wx8a9d75a195cf40be",
-	  "wx3dc9719c4f3366c9"
-    ]
+	"wxc796e8cabc773566",
+	"wx52f8dec006405bf6",
+	"wx2bc7cdb0119bb86b",
+	"wx49cdcb489776e101",
+	"wx7d21331bc1e6b20e",
+	"wx6a047d69ef2c05cb",
+	"wxb4c7f7b1c1872f00",
+	"wx5ea73a2386d0a157",
+	"wx7e731b25dafcb499",
+	"wx3dc9719c4f3366c9"
+]
 
-2048六角正版  	wxc796e8cabc773566	icon_sixAngle.png
+2048六角正版	wxc796e8cabc773566	icon_sixAngle.png
 绝地求升 		wx2bc7cdb0119bb86b	icon_snow.png
 无尽钓鱼 		wx52f8dec006405bf6	icon_fishmaster.png
 俄罗斯2048		wx6838d3562692630c	icon_2048clear.png
@@ -39,6 +39,20 @@
 首富特烦恼 		wx9c26a6f645e0e734
 狂暴车神 		wx1be5e0dc277dff53	icon_raceCar.png
 
+A-Ye:
+
+2048六角正版	wxc796e8cabc773566
+无尽钓鱼 		wx52f8dec006405bf6
+绝地求升 		wx2bc7cdb0119bb86b
+空中飞车 		wx49cdcb489776e101
+无敌坦克 		wx7d21331bc1e6b20e
+侦探明星		wx6a047d69ef2c05cb
+无敌弓箭手 		wxb4c7f7b1c1872f00
+飞车转圈圈 		wx5ea73a2386d0a157
+彩虹战机  		wx7e731b25dafcb499
+
+A-Ye:
+弹珠少女 		wx3dc9719c4f3366c9
 
 
 
