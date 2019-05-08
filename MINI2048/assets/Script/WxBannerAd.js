@@ -12,7 +12,7 @@ let wxBannerAd = {
             console.log('sysinfo: ', sysInfo);
             if (sysInfo && sysInfo.SDKVersion && sysInfo.SDKVersion !== '' && sysInfo.SDKVersion.slice(0, 5).replace(/\./g, "") >= 204) {
                 console.log('bannerAd:', this.bannerAd);
-                if (this.isCreateSuccess && !Global.cdnGameConfig.refreshBanner) {
+                if (this.isCreateSuccess && !GlobalData.cdnGameConfig.refreshBanner) {
                     console.log('不刷新banner广告');
                     this.showBannerAd();
                     return;
@@ -91,7 +91,7 @@ let wxBannerAd = {
     destroyBannerAd: function () {
         console.log('call destroyBannerAd');
         if (this.bannerAd) {
-            if (!Global.cdnGameConfig.refreshBanner) {
+            if (!GlobalData.cdnGameConfig.refreshBanner) {
                 console.log('不销毁banner广告，只隐藏');
                 this.hideBannerAd();
                 return;
@@ -109,7 +109,7 @@ let wxBannerAd = {
     //强制删除
     forceDestroyBannerAd: function () {
         console.log('call forceDestroyBannerAd');
-        if (this.bannerAd && Global.cdnGameConfig.refreshBanner) {
+        if (this.bannerAd && GlobalData.cdnGameConfig.refreshBanner) {
             console.log('删除bannerad');
             try {
                 this.bannerAd.destroy();

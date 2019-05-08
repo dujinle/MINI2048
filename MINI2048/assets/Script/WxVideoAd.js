@@ -51,7 +51,6 @@ let WxVideoAd = {
 
                 videoAd.onError(err => {
                     console.log('onError:', err.errMsg)
-                    // Global.viewControllerScript.showDialogTips(Global.cdnGameConfig.rewardVideoErrorDesc);
                     if (onFailedCallBack) {
                         console.log('广告拉起失败');
                         onFailedCallBack('error');

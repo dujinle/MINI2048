@@ -86,8 +86,11 @@ let util = {
 			}
 			var length = selectNum.length;
 			console.log('refreshOneNum',selectNum);
-			if(length > 0){
+			while(length > 0){
 				var num = selectNum[Math.floor(length * Math.random())];
+				if(num == GlobalData.gameRunTimeParam.lastFreshNum){
+					continue;
+				}
 				return num;
 			}
 		}
@@ -105,6 +108,9 @@ let util = {
 				}
 			}
 			num = this.getRandomNum(numRateMap[lastKey]);
+			if(num == GlobalData.gameRunTimeParam.lastFreshNum){
+				num = -1;
+			}
 		}
 		return num;
 	},

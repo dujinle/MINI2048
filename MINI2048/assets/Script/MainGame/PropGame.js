@@ -77,7 +77,7 @@ cc.Class({
 		this.iscallBack = true;
 	},
 	shareFailedCb(type,arg){
-		if(this.iscallBack == false && this.node.active == true){
+		if(this.iscallBack == false && this.node){
 			this.showFailInfo();
 			console.log(type,arg);
 		}

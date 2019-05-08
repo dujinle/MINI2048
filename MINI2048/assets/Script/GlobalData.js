@@ -3,7 +3,7 @@ GlobalData = {
 	skin:'color1',
 	phoneModel:'',
 	cdnWebsite: "https://alicdn.zhituokeji.com/",
-	cdnFileDefaultPath:"cdnParam1.2.0.7",
+	cdnFileDefaultPath:"cdnParam1.2.0.8",
 	gameSceneDic:{
 		PBBombGuide:['prefabs/PBBombGuide','PropBombEffect'],
 		PBContinueGameBoard:['prefabs/PBContinueGameBoard','ContinueGame'],
@@ -39,6 +39,7 @@ GlobalData = {
 		'cdnOtherGameDoor',
 		'cdnNumRate',
 		'PropShareOrADRate',
+		'PropParam',
 		'cdnNumRate15',
 		'MergeParam'
 	],
